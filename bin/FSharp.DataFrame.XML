@@ -775,6 +775,59 @@
 <member name="">
 
 </member>
+<member name="M:FSharp.DataFrame.FrameExtensions.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,System.Collections.Generic.IEnumerable{System.String},System.Char,System.Globalization.CultureInfo)">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+
+ ## Parameters
+  - `path` - Specifies the output file name where the CSV data should be written
+  - `keyNames` - Specifies the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+
+ [category:Input and output]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,System.Boolean,System.Collections.Generic.IEnumerable{System.String},System.Char,System.Globalization.CultureInfo)">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+
+ ## Parameters
+  - `path` - Specifies the output file name where the CSV data should be written
+  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+
+ [category:Input and output]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.IO.Stream,System.Boolean,System.Collections.Generic.IEnumerable{System.String},System.Char,System.Globalization.CultureInfo)">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
+
+ ## Parameters
+  - `stream` - Specifies the output stream where the CSV data should be written
+  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+
+ [category:Input and output]
+</summary>
+</member>
 <member name="">
 
 </member>
@@ -1336,6 +1389,12 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="M:FSharp.DataFrame.Frame`2.GetColumns``1">
 <summary>
  [category:Fancy accessors]
@@ -1457,6 +1516,11 @@
 <summary>
  When `true`, the formatter in F# Interactive will not attempt to evaluate the
  vector to print it. This is useful when the vector contains lazily loaded data.
+</summary>
+</member>
+<member name="P:FSharp.DataFrame.IVector.ObjectSequence">
+<summary>
+ Returns all values of the vector as a sequence of optional objects
 </summary>
 </member>
 <member name="P:FSharp.DataFrame.IVector.ElementType">
@@ -2679,9 +2743,46 @@
  [category:Operators]
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Series`2.Pairwise(Microsoft.FSharp.Core.FSharpOption{FSharp.DataFrame.Boundary},Microsoft.FSharp.Core.FSharpOption{FSharp.DataFrame.Direction})">
+<member name="M:FSharp.DataFrame.Series`2.Pairwise(FSharp.DataFrame.Boundary)">
 <summary>
- [category:Aggregation]
+ Returns a series containing an element and its neighbor for each input.
+ The returned series is one key shorter (it does not contain a 
+ value for the first or last key depending on `boundary`). If `boundary` is 
+ other than `Boundary.Skip`, then the key is included in the returned series, 
+ but its value is missing.
+
+ ## Parameters
+  - `series` - The input series to be aggregated.
+  - `boundary` - Specifies the direction in which the series is aggregated and 
+    how the corner case is handled. If the value is `Boundary.AtEnding`, then the
+    function returns value and its successor, otherwise it returns value and its
+    predecessor.
+
+ ## Example
+
+     let input = series [ 1 =&gt; &apos;a&apos;; 2 =&gt; &apos;b&apos;; 3 =&gt; &apos;c&apos;]
+     let res = input.Pairwise()
+     res = series [2 =&gt; (&apos;a&apos;, &apos;b&apos;); 3 =&gt; (&apos;b&apos;, &apos;c&apos;) ]
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.Pairwise">
+<summary>
+ Returns a series containing the predecessor and an element for each input, except
+ for the first one. The returned series is one key shorter (it does not contain a 
+ value for the first key).
+
+ ## Parameters
+  - `series` - The input series to be aggregated.
+
+ ## Example
+
+     let input = series [ 1 =&gt; &apos;a&apos;; 2 =&gt; &apos;b&apos;; 3 =&gt; &apos;c&apos;]
+     let res = input.Pairwise()
+     res = series [2 =&gt; (&apos;a&apos;, &apos;b&apos;); 3 =&gt; (&apos;b&apos;, &apos;c&apos;) ]
+
+ [category:Windowing, chunking and grouping]
 </summary>
 </member>
 <member name="">
@@ -2732,7 +2833,17 @@
 </member>
 <member name="M:FSharp.DataFrame.Series`2.GroupBy``2(Microsoft.FSharp.Core.FSharpFunc{`0,Microsoft.FSharp.Core.FSharpFunc{`1,``0}},Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{`0,`1},FSharp.DataFrame.OptionalValue{``1}}})">
 <summary>
- [category:Aggregation]
+ Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+ and then aggregates each group into a single value, returned in the resulting series,
+ using the provided `valueSelector` function.
+
+ ## Parameters
+  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+    key and value. The new key must support equality testing.
+  - `valueSelector` - A value selector function that is called to aggregate 
+    each group of collected elements.
+
+ [category:Windowing, chunking and grouping]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.GetSubrange(Microsoft.FSharp.Core.FSharpOption{System.Tuple{`0,FSharp.DataFrame.Indices.BoundaryBehavior}},Microsoft.FSharp.Core.FSharpOption{System.Tuple{`0,FSharp.DataFrame.Indices.BoundaryBehavior}})">
@@ -2862,8 +2973,21 @@
  [category:Appending and joining]
 </summary>
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.Series`2.Aggregate``2(FSharp.DataFrame.Aggregation{`0},System.Func{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{`0,`1}},``0},System.Func{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{`0,`1}},``1})">
+<summary>
+ Aggregates an ordered series using the method specified by `Aggregation&lt;K&gt;` and then
+ applies the provided `valueSelector` on each window or chunk to produce the result
+ which is returned as a new series. A key for each window or chunk is
+ selected using the specified `keySelector`.
 
+ ## Parameters
+  - `aggregation` - Specifies the aggregation method using `Aggregation&lt;K&gt;`. This is
+    a discriminated union listing various chunking and windowing conditions.
+  - `keySelector` - A function that is called on each chunk to obtain a key.
+  - `valueSelector` - A value selector function that is called to aggregate each chunk or window.
+
+ [category:Windowing, chunking and grouping]
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Acos(FSharp.DataFrame.Series{`0,System.Double})">
 <summary>
@@ -3210,6 +3334,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="T:FSharp.DataFrame.Delayed.DelayedVector`2">
 <summary>
  A delayed vector that is linked to a DelayedSource specified during construction
@@ -3329,29 +3456,58 @@
 <member name="">
 
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame`2.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,System.Collections.Generic.IEnumerable{System.String},Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
 
+ ## Parameters
+  - `path` - Specifies the output file name where the CSV data should be written
+  - `keyNames` - Specifies the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+
+ [category:Input and output]
+</summary>
 </member>
-<member name="T:FSharp.DataFrame.ExpressionHelpers">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame`2.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Collections.Generic.IEnumerable{System.String}},Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
 
+ ## Parameters
+  - `path` - Specifies the output file name where the CSV data should be written
+  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+
+ [category:Input and output]
+</summary>
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame`2.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Collections.Generic.IEnumerable{System.String}},Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
+<summary>
+ Save data frame to a CSV file or to a `Stream`. When calling the operation,
+ you can specify whether you want to save the row keys or not (and headers for the keys)
+ and you can also specify the separator (use `\t` for writing TSV files). When specifying
+ file name ending with `.tsv`, the `\t` separator is used automatically.
 
-</member>
-<member name="">
+ ## Parameters
+  - `stream` - Specifies the output stream where the CSV data should be written
+  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    TSV files and `,` for CSV files)
+  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
 
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
+ [category:Input and output]
+</summary>
 </member>
 <member name="">
 
@@ -3384,7 +3540,7 @@
  columns, it will be successfully added, but there will be missing values.
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.readCsv.Static(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -3407,7 +3563,7 @@
     values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture. 
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.readCsv.Static(System.String,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.String,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -3416,7 +3572,7 @@
 
  ## Parameters
 
-  * `location` - Specifies a file name or an web location of the resource.
+  * `path` - Specifies a file name or an web location of the resource.
   * `inferTypes` - Specifies whether the method should attempt to infer types
     of columns automatically (set this to `false` if you want to specify schema)
   * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -3992,6 +4148,12 @@
  Load data from a CSV file using F# Data API
 </summary>
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="T:FSharp.DataFrame.FrameUtilsModule">
 
 </member>
@@ -4409,8 +4571,69 @@
 </member>
 <member name="T:FSharp.DataFrame.Internal.IFsiFormattable">
 <summary>
+ [omit]
  An interface implemented by types that support nice formatting for F# Interactive
  (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:FSharp.DataFrame.Internal.DynamicExtensions.Dynamic">
+
+</member>
+<member name="T:FSharp.DataFrame.Internal.DynamicExtensions">
+<summary>
+ [omit]
+ 
 </summary>
 </member>
 <member name="">
@@ -4437,7 +4660,10 @@
 </summary>
 </member>
 <member name="T:FSharp.DataFrame.Internal.Formatting">
-
+<summary>
+ [omit]
+ Contains helper functions and configuration constants for pretty printing
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.Internal.Seq.alignWithoutOrdering``2(System.Collections.Generic.IEnumerable{System.Tuple{``0,``1}},System.Collections.Generic.IEnumerable{System.Tuple{``0,``1}})">
 <summary>
@@ -5337,6 +5563,348 @@
  [category:Missing values]
 </summary>
 </member>
+<member name="M:FSharp.DataFrame.SeriesModule.groupBy``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+ and then returns a series of (nested) series as the result. The outer series is indexed by
+ the newly produced keys, the nested series are indexed with the original keys.
+
+ ## Parameters
+  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+    key and value. The new key must support equality testing.
+  - `series` - An input series to be grouped. 
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.groupInto``4(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},Microsoft.FSharp.Core.FSharpFunc{``2,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``3}},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+ and then aggregates each group into a single value, returned in the resulting series,
+ using the provided `valueSelector` function.
+
+ ## Parameters
+  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+    key and value. The new key must support equality testing.
+  - `valueSelector` - A value selector function that is called to aggregate 
+    each group of collected elements.
+  - `series` - An input series to be grouped. 
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.pairwiseWith``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{System.Tuple{``1,``1},``2}},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into pairs containing the predecessor and an element for each input, except
+ for the first one. Then calls the specified aggregation function `f` with a tuple and a key.
+ The returned series is one key shorter (it does not contain a  value for the first key).
+
+ ## Parameters
+  - `f` - A function that is called for each pair to produce result in the final series.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.pairwise``2(FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Returns a series containing the predecessor and an element for each input, except
+ for the first one. The returned series is one key shorter (it does not contain a 
+ value for the first key).
+
+ ## Parameters
+  - `series` - The input series to be aggregated.
+
+ ## Example
+
+     let input = series [ 1 =&gt; &apos;a&apos;; 2 =&gt; &apos;b&apos;; 3 =&gt; &apos;c&apos;]
+     let res = input |&gt; Series.pairwise
+     res = series [2 =&gt; (&apos;a&apos;, &apos;b&apos;); 3 =&gt; (&apos;b&apos;, &apos;c&apos;) ]
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunk``2(System.Int32,FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks and returns the produced chunks as
+ a nested series. The key in the new series is the last key of the chunk. This function
+ skips incomplete chunks - you can use `Series.chunkSize` for more options.
+
+ ## Parameters
+  - `size` - The size of the chunk.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkInto``3(System.Int32,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks and then applies the provided 
+ value selector `f` on each chunk to produce the result which is returned as a new series. 
+ The key in the new series is the last key of the chunk. This function
+ skips incomplete chunks - you can use `Series.chunkSizeInto` for more options.
+
+ ## Parameters
+  - `size` - The size of the chunk.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.window``2(System.Int32,FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window using the specified size and returns the produced windows as 
+ a nested series. The key in the new series is the last key of the window. This function
+ skips incomplete chunks - you can use `Series.windowSize` for more options.
+
+ ## Parameters
+  - `size` - The size of the sliding window.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowInto``3(System.Int32,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window using the specified size and then applies the provided 
+ value selector `f` on each window to produce the result which is returned as a new series. 
+ This function skips incomplete chunks - you can use `Series.windowSizeInto` for more options.
+
+ ## Parameters
+  - `size` - The size of the sliding window.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkWhile``2(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,System.Boolean}},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+ once the specified `cond` function returns `false` when called on  the first and the last key of the 
+ previous chunk. The chunks are then returned as a nested series.
+ The key of each chunk is the key of the first element in the chunk.
+
+ ## Parameters
+  - `cond` - A function that is called on the first and the last key of a chunk
+    to determine when a window should end.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkWhileInto``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,System.Boolean}},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+ once the specified `cond` function returns `false` when called on  the first and the last key of the 
+ previous chunk. Each chunk is then aggregated into a value using the
+ specified function `f`. The key of each chunk is the key of the first element in the chunk.
+
+ ## Parameters
+  - `cond` - A function that is called on the first and the last key of a chunk
+    to determine when a window should end.
+  - `f` - A value selector that is called to aggregate each chunk.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkDist``3(``0,FSharp.DataFrame.Series{``1,``2})">
+<summary>
+ Aggregates the input into a series of adacent chunks. A chunk is started once
+ the distance between the first and the last key of a previous chunk is greater
+ than the specified `distance`. The chunks are then returned as a nested series.
+ The key of each chunk is the key of the first element in the chunk.
+
+ ## Parameters
+  - `distance` - The maximal allowed distance between keys of a chunk. Note that this
+    is an inline function - there must be `-` operator defined between `distance` and the
+    keys of the series.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkDistInto``4(``0,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``1,``2},``3},FSharp.DataFrame.Series{``1,``2})">
+<summary>
+ Aggregates the input into a series of adacent chunks. A chunk is started once
+ the distance between the first and the last key of a previous chunk is greater
+ than the specified `distance`. Each chunk is then aggregated into a value using the
+ specified function `f`. The key of each chunk is the key of the first element in the chunk.
+
+ ## Parameters
+  - `distance` - The maximal allowed distance between keys of a chunk. Note that this
+    is an inline function - there must be `-` operator defined between `distance` and the
+    keys of the series.
+  - `f` - A value selector that is called to aggregate each chunk.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkSize``2(System.Int32,FSharp.DataFrame.Boundary,FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
+ the produced chunks as a nested series. The key is the last key of the chunk, unless
+ boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+
+ ## Parameters
+  - `bounds` - Specifies the chunk size and bounary behavior. The boundary behavior
+    can be `Boundary.Skip` (meaning that no incomplete chunks are produced), 
+    `Boundary.AtBeginning` (meaning that incomplete chunks are produced at the beginning)
+    or `Boundary.AtEnding` (to produce incomplete chunks at the end of series)
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.chunkSizeInto``3(System.Int32,FSharp.DataFrame.Boundary,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and then
+ applies the provided value selector `f` on each chunk to produce the result
+ which is returned as a new series. The key is the last key of the chunk, unless
+ boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+
+ ## Parameters
+  - `bounds` - Specifies the chunk size and bounary behavior. The boundary behavior
+    can be `Boundary.Skip` (meaning that no incomplete chunks are produced), 
+    `Boundary.AtBeginning` (meaning that incomplete chunks are produced at the beginning)
+    or `Boundary.AtEnding` (to produce incomplete chunks at the end of series)
+  - `f` - A value selector that is called to aggregate each chunk.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowWhile``2(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,System.Boolean}},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window based on a condition on keys. A window is started at each
+ input element and ends once the specified `cond` function returns `false` when called on 
+ the first and the last key of the window. The windows are then returned as a nested series.
+ The key of each window is the key of the first element in the window.
+
+ ## Parameters
+  - `cond` - A function that is called on the first and the last key of a window
+    to determine when a window should end.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowWhileInto``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,System.Boolean}},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window based on a condition on keys. A window is started at each
+ input element and ends once the specified `cond` function returns `false` when called on 
+ the first and the last key of the window. Each window is then aggregated into a value using the
+ specified function `f`. The key of each window is the key of the first element in the window.
+
+ ## Parameters
+  - `cond` - A function that is called on the first and the last key of a window
+    to determine when a window should end.
+  - `f` - A function that is used to aggregate each window into a single value.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowDist``3(``0,FSharp.DataFrame.Series{``1,``2})">
+<summary>
+ Creates a sliding window based on distance between keys. A window is started at each
+ input element and ends once the distance between the first and the last key is greater
+ than the specified `distance`. The windows are then returned as a nested series.
+ The key of each window is the key of the first element in the window.
+
+ ## Parameters
+  - `distance` - The maximal allowed distance between keys of a window. Note that this
+    is an inline function - there must be `-` operator defined between `distance` and the
+    keys of the series.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowDistInto``4(``0,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``1,``2},``3},FSharp.DataFrame.Series{``1,``2})">
+<summary>
+ Creates a sliding window based on distance between keys. A window is started at each
+ input element and ends once the distance between the first and the last key is greater
+ than the specified `distance`. Each window is then aggregated into a value using the
+ specified function `f`. The key of each window is the key of the first element in the window.
+
+ ## Parameters
+  - `distance` - The maximal allowed distance between keys of a window. Note that this
+    is an inline function - there must be `-` operator defined between `distance` and the
+    keys of the series.
+  - `f` - A function that is used to aggregate each window into a single value.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowSize``2(System.Int32,FSharp.DataFrame.Boundary,FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window using the specified size and boundary behavior and returns
+ the produced windows as a nested series. The key is the last key of the window, unless
+ boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+
+ ## Parameters
+  - `bounds` - Specifies the window size and bounary behavior. The boundary behavior
+    can be `Boundary.Skip` (meaning that no incomplete windows are produced), 
+    `Boundary.AtBeginning` (meaning that incomplete windows are produced at the beginning)
+    or `Boundary.AtEnding` (to produce incomplete windows at the end of series)
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.windowSizeInto``3(System.Int32,FSharp.DataFrame.Boundary,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Creates a sliding window using the specified size and boundary behavior and then
+ applies the provided value selector `f` on each window to produce the result
+ which is returned as a new series. The key is the last key of the window, unless
+ boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+
+ ## Parameters
+  - `bounds` - Specifies the window size and bounary behavior. The boundary behavior
+    can be `Boundary.Skip` (meaning that no incomplete windows are produced), 
+    `Boundary.AtBeginning` (meaning that incomplete windows are produced at the beginning)
+    or `Boundary.AtEnding` (to produce incomplete windows at the end of series)
+  - `f` - A value selector that is called to aggregate each window.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.aggregateInto``4(FSharp.DataFrame.Aggregation{``0},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``2},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``3},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates an ordered series using the method specified by `Aggregation&lt;K&gt;` and then
+ applies the provided value selector `f` on each window or chunk to produce the result
+ which is returned as a new series. A key for each window or chunk is
+ selected using the specified `keySelector`.
+
+ ## Parameters
+  - `aggregation` - Specifies the aggregation method using `Aggregation&lt;K&gt;`. This is
+    a discriminated union listing various chunking and windowing conditions.
+  - `keySelector` - A function that is called on each chunk to obtain a key.
+  - `f` - A value selector function that is called to aggregate each chunk or window.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.aggregate``3(FSharp.DataFrame.Aggregation{``0},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``2},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Aggregates an ordered series using the method specified by `Aggregation&lt;K&gt;` and 
+ returns the windows or chunks as nested series. A key for each window or chunk is
+ selected using the specified `keySelector`.
+
+ ## Parameters
+  - `aggregation` - Specifies the aggregation method using `Aggregation&lt;K&gt;`. This is
+    a discriminated union listing various chunking and windowing conditions.
+  - `keySelector` - A function that is called on each chunk to obtain a key.
+  - `series` - The input series to be aggregated.
+
+ [category:Windowing, chunking and grouping]
+</summary>
+</member>
 <member name="">
 
 </member>
@@ -5402,79 +5970,10 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="M:FSharp.DataFrame.SeriesModule.aggregate``3(FSharp.DataFrame.Aggregation{``0},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{``0,``1}},``2},FSharp.DataFrame.Series{``0,``1})">
-<summary>
- Stuff
- [category:Windowing, chunking and grouping]
-</summary>
-</member>
 <member name="M:FSharp.DataFrame.SeriesModule.diff``3(System.Int32,FSharp.DataFrame.Series{``0,``1})">
 <summary>
  `result[k] = series[k] - series[k - offset]`
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -5633,10 +6132,10 @@
 <summary>
  Series module comment..
  
- ## Example
- Not really
-
  ## Lookup, resampling and scaling
+ More stuff here
+
+ ## Missing values
  More stuff here
 
  ## Windowing, chunking and grouping
@@ -5926,6 +6425,9 @@
 <summary>
  Represents a range inside a vector
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
