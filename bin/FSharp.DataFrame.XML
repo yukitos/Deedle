@@ -657,7 +657,10 @@
 <member name="">
 
 </member>
-<member name="M:FSharp.DataFrame.Frame.ReadCsv(System.IO.Stream,System.Boolean,System.Int32,System.String,System.String,System.String)">
+<member name="">
+
+</member>
+<member name="M:FSharp.DataFrame.Frame.ReadCsv(System.IO.Stream,System.Nullable{System.Boolean},System.Boolean,System.Int32,System.String,System.String,System.String)">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -667,6 +670,8 @@
  ## Parameters
 
   * `stream` - Specifies the input stream, opened at the beginning of CSV data
+  * `hasHeaders` - Specifies whether the input CSV file has header row
+     (when not set, the default value is `true`)
   * `skipTypeInference` - Specifies whether the method should skip inferring types
     of columns automatically (when set to `true` you need to provide explicit `schema`)
   * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -680,7 +685,7 @@
     values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture. 
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Frame.ReadCsv(System.String,System.Boolean,System.Int32,System.String,System.String,System.String)">
+<member name="M:FSharp.DataFrame.Frame.ReadCsv(System.String,System.Nullable{System.Boolean},System.Boolean,System.Int32,System.String,System.String,System.String)">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -690,6 +695,8 @@
  ## Parameters
 
   * `location` - Specifies a file name or an web location of the resource.
+  * `hasHeaders` - Specifies whether the input CSV file has header row
+     (when not set, the default value is `true`)
   * `skipTypeInference` - Specifies whether the method should skip inferring types
     of columns automatically (when set to `true` you need to provide explicit `schema`)
   * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -709,43 +716,69 @@
 <member name="">
 
 </member>
-<member name="M:FSharp.DataFrame.Frame.FromRows``2(System.Collections.Generic.IEnumerable{FSharp.DataFrame.Series{``0,``1}})">
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.Where``2(FSharp.DataFrame.Frame{``0,``1},System.Func{System.Collections.Generic.KeyValuePair{``0,FSharp.DataFrame.ObjectSeries{``1}},System.Int32,System.Boolean})">
 <summary>
- Creates a data frame with ordinal Integer index from a sequence of rows.
- The column indices of individual rows are unioned, so if a row has fewer
- columns, it will be successfully added, but there will be missing values.
+ Filters frame rows using the specified condtion. Returns a new data frame
+ that contains rows for which the provided function returned false. The function
+ is called with `KeyValuePair` containing the row key as the `Key` and `Value`
+ gives access to the row series and a row index.
+
+ ## Parameters
+
+  * `frame` - A data frame to invoke the filtering function on.
+  * `condition` - A delegate that specifies the filtering condition.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="M:FSharp.DataFrame.Frame.FromColumns``3(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``1,FSharp.DataFrame.Series{``0,``2}}})">
-<summary>
- Creates a data frame with ordinal Integer index from a sequence of rows.
- The column indices of individual rows are unioned, so if a row has fewer
- columns, it will be successfully added, but there will be missing values.
-</summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="M:FSharp.DataFrame.FrameExtensions.Where``2(FSharp.DataFrame.Frame{``0,``1},System.Func{System.Collections.Generic.KeyValuePair{``0,FSharp.DataFrame.ObjectSeries{``1}},System.Boolean})">
 <summary>
@@ -759,6 +792,25 @@
   * `frame` - A data frame to invoke the filtering function on.
   * `condition` - A delegate that specifies the filtering condition.
 </summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.Transpose``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Returns a transposed data frame. The rows of the original data frame are used as the
+ columns of the new one (and vice versa). Use this operation if you have a data frame
+ and you mostly need to access its rows as a series (because accessing columns as a 
+ series is more efficient).
+ 
+ ## Parameters
+  - `frame` - Source data frame to be transposed.
+ 
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -831,14 +883,81 @@
 <member name="">
 
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.FrameExtensions.RealignRows``2(FSharp.DataFrame.Frame{``0,``1},System.Collections.Generic.IEnumerable{``0})">
+<summary>
+ Align the existing data to a specified collection of row keys. Values in the data frame
+ that do not match any new key are dropped, new keys (that were not in the original data 
+ frame) are assigned missing values.
 
+ ## Parameters
+  - `frame` - Source data frame that is to be realigned.
+  - `keys` - A sequence of new row keys. The keys must have the same type as the original
+    frame keys (because the rows are realigned).
+
+ [category:Index manipulation]
+</summary>
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.FrameExtensions.OrderRows``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Returns a data frame that contains the same data as the input, 
+ but whose rows are an ordered series. This allows using operations that are
+ only available on indexed series such as alignment and inexact lookup.
 
+ ## Parameters
+  - `frame` - Source data frame to be ordered.
+ 
+ [category:Index manipulation]
+</summary>
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.FrameExtensions.OrderColumns``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Returns a data frame that contains the same data as the input, 
+ but whose columns are an ordered series. This allows using operations that are
+ only available on indexed series such as alignment and inexact lookup.
 
+ ## Parameters
+  - `frame` - Source data frame to be ordered.
+ 
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.IndexRowsWith``3(FSharp.DataFrame.Frame{``0,``1},System.Collections.Generic.IEnumerable{``2})">
+<summary>
+ Replace the row index of the frame with the provided sequence of row keys.
+ The rows of the frame are assigned keys according to the current order, or in a
+ non-deterministic way, if the current row index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose row index are to be replaced.
+  - `keys` - A collection of new row keys.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.IndexRowsOrdinally``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Replace the row index of the frame with ordinarilly generated integers starting from zero.
+ The rows of the frame are assigned index according to the current order, or in a
+ non-deterministic way, if the current row index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose row index are to be replaced.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameExtensions.IndexColumnsWith``3(FSharp.DataFrame.Frame{``0,``1},System.Collections.Generic.IEnumerable{``2})">
+<summary>
+ Replace the column index of the frame with the provided sequence of column keys.
+ The columns of the frame are assigned keys according to the current order, or in a
+ non-deterministic way, if the current column index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose column index are to be replaced.
+  - `keys` - A collection of new column keys.
+
+ [category:Index manipulation]
+</summary>
 </member>
 <member name="">
 
@@ -871,6 +990,12 @@
 <summary>
  [category:Fancy accessors]
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="M:FSharp.DataFrame.FrameExtensions.FillMissing``3(FSharp.DataFrame.Frame{``0,``1},System.Func{FSharp.DataFrame.Series{``0,``2},``0,``2})">
 <summary>
@@ -971,8 +1096,19 @@
 <member name="">
 
 </member>
-<member name="">
+<member name="T:FSharp.DataFrame.FrameExtensions">
+<summary>
+ Some comment
 
+ ## Index manipulation
+ Summary 1
+
+ ## Input and output
+ Summary 2
+
+ ## Missing values
+ Summary 3
+</summary>
 </member>
 <member name="">
 
@@ -1000,8 +1136,18 @@
  Create data frame containing a single column
 </summary>
 </member>
-<member name="">
-
+<member name="M:FSharp.DataFrame.FrameUtils.collapseRows``3(FSharp.DataFrame.Series{``0,FSharp.DataFrame.Frame{``1,``2}})">
+<summary>
+ Given a series of frames, build a frame with multi-level row index
+</summary>
+</member>
+<member name="T:FSharp.DataFrame.FrameUtils">
+<summary>
+ [omit]
+ Module with helper functions and operations that are needed by Frame&lt;R, C&gt;, but
+ are easier to write in a separate type (having them inside generic type 
+ can confuse the type inference in various ways).
+</summary>
 </member>
 <member name="">
 
@@ -1265,6 +1411,13 @@
 <member name="">
 
 </member>
+<member name="P:FSharp.DataFrame.Frame`2.Format">
+<summary>
+ Shows the data frame content in a human-readable format. The resulting string
+ shows all columns, but a limited number of rows. The property is used 
+ automatically by F# Interactive.
+</summary>
+</member>
 <member name="">
 
 </member>
@@ -1285,6 +1438,16 @@
 </member>
 <member name="">
 
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.Zip``3(FSharp.DataFrame.Frame{`0,`1},System.Func{``0,``1,``2})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.Zip``3(FSharp.DataFrame.Frame{`0,`1},FSharp.DataFrame.JoinKind,FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,System.Func{``0,``1,``2})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.Frame`2.TryGetRowAt(System.Int32)">
 <summary>
@@ -1327,8 +1490,40 @@
  [category:Series operations]
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Frame`2.RealignRows(System.Collections.Generic.IEnumerable{`0})">
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.Join(FSharp.DataFrame.Frame{`0,`1})">
 <summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.Join(FSharp.DataFrame.Frame{`0,`1},FSharp.DataFrame.JoinKind)">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.Join(FSharp.DataFrame.Frame{`0,`1},FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup)">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Frame`2.IndexRows``1(`1)">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. The generic type parameter is (typically) needed to specify the type of the 
+ values in the required index column.
+
+ ## Parameters
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
  [category:Indexing]
 </summary>
 </member>
@@ -1340,16 +1535,6 @@
 </member>
 <member name="">
 
-</member>
-<member name="M:FSharp.DataFrame.Frame`2.Join(FSharp.DataFrame.Frame{`0,`1},Microsoft.FSharp.Core.FSharpOption{FSharp.DataFrame.JoinKind},Microsoft.FSharp.Core.FSharpOption{FSharp.DataFrame.Lookup})">
-<summary>
- [category:Joining]
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Frame`2.IndexRowsWith``1(System.Collections.Generic.IEnumerable{``0})">
-<summary>
- [category:Indexing]
-</summary>
 </member>
 <member name="M:FSharp.DataFrame.Frame`2.GetSeriesAt``1(System.Int32)">
 <summary>
@@ -1429,9 +1614,6 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
 <member name="M:FSharp.DataFrame.Frame`2.DropSeries(`1)">
 <summary>
  [category:Series operations]
@@ -1442,7 +1624,7 @@
 </member>
 <member name="M:FSharp.DataFrame.Frame`2.Append(FSharp.DataFrame.Frame{`0,`1})">
 <summary>
- [category:Joining]
+ [category:Joining, zipping and appending]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Frame`2.AddSeries``1(`1,FSharp.DataFrame.ISeries{`0},FSharp.DataFrame.Lookup)">
@@ -1549,7 +1731,7 @@
 <summary>
  Returns all data of the vector in one of the supported formats. Depending
  on the vector, data may be returned as a continuous block of memory using
- `IReadOnlyList&lt;T&gt;` or as a lazy sequence `seq&lt;T&gt;`.
+ `ReadOnlyCollection&lt;T&gt;` or as a lazy sequence `seq&lt;T&gt;`.
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.IVector`1.SelectMissing``1(Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.OptionalValue{`0},FSharp.DataFrame.OptionalValue{``0}})">
@@ -1709,6 +1891,12 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="M:FSharp.DataFrame.OptionalValueExtensions.OrDefault``1(FSharp.DataFrame.OptionalValue{``0},``0)">
 <summary>
  Extension method that returns value in the specified optional value
@@ -1761,6 +1949,16 @@
 <summary>
  Prints the value or &quot;&lt;null&gt;&quot; when the value is present, but is `null`
  or &quot;&lt;missing&gt;&quot; when the value is not present (`HasValue = false`).
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.OptionalValue`1.GetHashCode">
+<summary>
+ Support structural equality      
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.OptionalValue`1.Equals(System.Object)">
+<summary>
+ Support structural equality      
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.OptionalValue`1.#ctor(`0)">
@@ -1875,20 +2073,116 @@
 <member name="">
 
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.SeriesExtensions.SumLevel``2(FSharp.DataFrame.Series{``0,System.Decimal},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the sum of each group. 
 
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the sums
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.SumLevel``2(FSharp.DataFrame.Series{``0,System.Int32},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the sum of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the sums
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.SumLevel``2(FSharp.DataFrame.Series{``0,System.Single},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the sum of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the sums
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.SumLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the sum of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the sums
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Sum``1(FSharp.DataFrame.Series{``0,System.Decimal})">
+<summary>
+ Returns the sum of the elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Sum``1(FSharp.DataFrame.Series{``0,System.Int32})">
+<summary>
+ Returns the sum of the elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Sum``1(FSharp.DataFrame.Series{``0,System.Single})">
+<summary>
+ Returns the sum of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Sum``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the sum of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
 </member>
 <member name="">
 
 </member>
-<member name="">
+<member name="M:FSharp.DataFrame.SeriesExtensions.StandardDeviationLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the standard deviation of each group. 
 
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the standard deviations
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
+<member name="M:FSharp.DataFrame.SeriesExtensions.StandardDeviation``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the standard deviation of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
 </member>
 <member name="">
 
@@ -2060,13 +2354,13 @@
  [category:Lookup, resampling and scaling]
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.SeriesExtensions.ResampleUniform``4(FSharp.DataFrame.Series{``0,``1},System.Func{``0,``2},System.Func{``2,``2},FSharp.DataFrame.Lookup,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``1},``3})">
+<member name="M:FSharp.DataFrame.SeriesExtensions.ResampleUniform``3(FSharp.DataFrame.Series{``0,``1},System.Func{``0,``2},System.Func{``2,``2},FSharp.DataFrame.Lookup)">
 <summary>
  Resample the series based on equivalence class on the keys and also generate values 
  for all keys of the target space that are between the minimal and maximal key of the
  specified series (e.g. generate value for all days in the range covered by the series).
  A specified function `keyProj` is used to project keys to another space and `nextKey`
- is used to generate all keys in the range. The chunk is then aggregated using `aggregate`.
+ is used to generate all keys in the range. The last value of each chunk is returned.
 
  When there are no values for a (generated) key, then the function attempts to get the
  greatest value from the previous smaller chunk (i.e. value for the previous date time).
@@ -2079,9 +2373,6 @@
   - `keyProj` - A function that transforms keys from original space to a new 
     space (which is then used for grouping based on equivalence)
   - `nextKey` - A function that gets the next key in the transformed space
-  - `aggregate` - A function that is used to collapse a generated chunk into a 
-    single value. The function may be called on empty series when `fillMode` is
-    `Lookup.Exact`.
     
  ## Remarks
  This operation is only supported on ordered series. The method throws
@@ -2158,6 +2449,265 @@
  series, similar functionality can be implemented using `GroupBy`.
  
  [category:Lookup, resampling and scaling]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MinLevel``2(FSharp.DataFrame.Series{``0,System.Decimal},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the smallest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the smallest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MinLevel``2(FSharp.DataFrame.Series{``0,System.Int32},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the smallest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the smallest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MinLevel``2(FSharp.DataFrame.Series{``0,System.Single},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the smallest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the smallest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MinLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the smallest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the smallest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Min``1(FSharp.DataFrame.Series{``0,System.Decimal})">
+<summary>
+ Returns the smallest of all elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Min``1(FSharp.DataFrame.Series{``0,System.Int32})">
+<summary>
+ Returns the smallest of all elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Min``1(FSharp.DataFrame.Series{``0,System.Single})">
+<summary>
+ Returns the smallest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Min``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the smallest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MedianLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the median of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the medians
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Median``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the median of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MeanLevel``2(FSharp.DataFrame.Series{``0,System.Decimal},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the mean of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the means
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MeanLevel``2(FSharp.DataFrame.Series{``0,System.Single},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the mean of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the means
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MeanLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the mean of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the means
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Mean``1(FSharp.DataFrame.Series{``0,System.Decimal})">
+<summary>
+ Returns the mean of the elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Mean``1(FSharp.DataFrame.Series{``0,System.Single})">
+<summary>
+ Returns the mean of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Mean``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the mean of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MaxLevel``2(FSharp.DataFrame.Series{``0,System.Decimal},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MaxLevel``2(FSharp.DataFrame.Series{``0,System.Int32},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MaxLevel``2(FSharp.DataFrame.Series{``0,System.Single},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.MaxLevel``2(FSharp.DataFrame.Series{``0,System.Double},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Max``1(FSharp.DataFrame.Series{``0,System.Decimal})">
+<summary>
+ Returns the greatest of all elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Max``1(FSharp.DataFrame.Series{``0,System.Int32})">
+<summary>
+ Returns the greatest of all elements of the series. 
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Max``1(FSharp.DataFrame.Series{``0,System.Single})">
+<summary>
+ Returns the greatest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.Max``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the greatest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
 </summary>
 </member>
 <member name="">
@@ -2285,6 +2835,21 @@
  Returns the total number of values in the specified series. This excludes
  missing values or not available values (such as values created from `null`,
  `Double.NaN`, or those that are missing due to outer join etc.).
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesExtensions.CountLevel``2(FSharp.DataFrame.Series{``0,System.Decimal},System.Func{``0,``1})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `groupSelector` and then returns a new series containing
+ the counts of elements in each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the counts
+  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.SeriesExtensions.CountKeys``2(FSharp.DataFrame.Series{``0,``1})">
@@ -2515,6 +3080,11 @@
  [category:Accessors and slicing]
 </summary>
 </member>
+<member name="P:FSharp.DataFrame.Series`2.IsOrdered">
+<summary>
+ [category:Series data]
+</summary>
+</member>
 <member name="P:FSharp.DataFrame.Series`2.IsEmpty">
 <summary>
  [category:Series data]
@@ -2534,6 +3104,33 @@
  [category:Series data]
 </summary>
 </member>
+<member name="P:FSharp.DataFrame.Series`2.Format">
+<summary>
+ Shows the data frame content in a human-readable format. The resulting string
+ shows all columns, but a limited number of rows. The property is used 
+ automatically by F# Interactive.
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.ZipInner``1(FSharp.DataFrame.Series{`0,``0})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.Zip``1(FSharp.DataFrame.Series{`0,``0},FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup)">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.Zip``1(FSharp.DataFrame.Series{`0,``0},FSharp.DataFrame.JoinKind)">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.Zip``1(FSharp.DataFrame.Series{`0,``0})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
 <member name="M:FSharp.DataFrame.Series`2.WhereOptional(System.Func{System.Collections.Generic.KeyValuePair{`0,FSharp.DataFrame.OptionalValue{`1}},System.Boolean})">
 <summary>
  [category:Projection and filtering]
@@ -2544,17 +3141,22 @@
  [category:Projection and filtering]
 </summary>
 </member>
+<member name="M:FSharp.DataFrame.Series`2.Where(System.Func{System.Collections.Generic.KeyValuePair{`0,`1},System.Int32,System.Boolean})">
+<summary>
+ [category:Projection and filtering]
+</summary>
+</member>
 <member name="">
 
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Union(FSharp.DataFrame.Series{`0,`1},FSharp.DataFrame.UnionBehavior)">
 <summary>
- [category:Appending and joining]
+ [category:Appending, joining and zipping]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Union(FSharp.DataFrame.Series{`0,`1})">
 <summary>
- [category:Appending and joining]
+ [category:Appending, joining and zipping]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.TryGetObservation(`0)">
@@ -2636,6 +3238,11 @@
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Select``1(System.Func{System.Collections.Generic.KeyValuePair{`0,`1},``0})">
+<summary>
+ [category:Projection and filtering]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Series`2.Select``1(System.Func{System.Collections.Generic.KeyValuePair{`0,`1},System.Int32,``0})">
 <summary>
  [category:Projection and filtering]
 </summary>
@@ -2801,26 +3408,6 @@
  [category:Operators]
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Series`2.JoinInner``1(FSharp.DataFrame.Series{`0,``0})">
-<summary>
- [category:Appending and joining]
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Series`2.Join``1(FSharp.DataFrame.Series{`0,``0},FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup)">
-<summary>
- [category:Appending and joining]
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Series`2.Join``1(FSharp.DataFrame.Series{`0,``0},FSharp.DataFrame.JoinKind)">
-<summary>
- [category:Appending and joining]
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Series`2.Join``1(FSharp.DataFrame.Series{`0,``0})">
-<summary>
- [category:Appending and joining]
-</summary>
-</member>
 <member name="M:FSharp.DataFrame.Series`2.IndexWith``1(System.Collections.Generic.IEnumerable{``0})">
 <summary>
  [category:Indexing]
@@ -2828,6 +3415,10 @@
 </member>
 <member name="M:FSharp.DataFrame.Series`2.IndexOrdinally">
 <summary>
+ Replace the index of the series with ordinarilly generated integers starting from zero.
+ The elements of the series are assigned index according to the current order, or in a
+ non-deterministic way, if the current index is not ordered.
+
  [category:Indexing]
 </summary>
 </member>
@@ -2927,9 +3518,6 @@
  [category:Accessors and slicing]
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:FSharp.DataFrame.Series`2.Floor(FSharp.DataFrame.Series{`0,System.Double})">
 <summary>
  [category:Operators]
@@ -2970,7 +3558,7 @@
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Append(FSharp.DataFrame.Series{`0,`1})">
 <summary>
- [category:Appending and joining]
+ [category:Appending, joining and zipping]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Series`2.Aggregate``2(FSharp.DataFrame.Aggregation{`0},System.Func{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{`0,`1}},``0},System.Func{FSharp.DataFrame.DataSegment{FSharp.DataFrame.Series{`0,`1}},``1})">
@@ -3042,35 +3630,6 @@
  This enumeration specifeis the behavior of `Union` operation on series when there are
  overlapping keys in two series that are being unioned. The options include prefering values
  from the left/right series or throwing an exception when both values are available.
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Vector.CreateMissing``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
-<summary>
- Creates a vector that stores the specified data in an array.
- Values such as `null` and `Double.NaN` are turned into missing values.
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Vector.CreateMissing``1(System.Collections.Generic.IEnumerable{FSharp.DataFrame.OptionalValue{``0}})">
-<summary>
- Creates a vector that stores the specified data in an array.
- Values such as `null` and `Double.NaN` are turned into missing values.
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Vector.Create``1(System.Collections.Generic.IEnumerable{``0})">
-<summary>
- Creates a vector that stores the specified data in an array.
- Values such as `null` and `Double.NaN` are turned into missing values.
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.Vector.Create``1(``0[])">
-<summary>
- Creates a vector that stores the specified data in an array.
- Values such as `null` and `Double.NaN` are turned into missing values.
-</summary>
-</member>
-<member name="T:FSharp.DataFrame.Vector">
-<summary>
- Type that provides access to creating vectors (represented as arrays)
 </summary>
 </member>
 <member name="T:FSharp.DataFrame.opt`1">
@@ -3441,22 +4000,7 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame`2.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,System.Collections.Generic.IEnumerable{System.String},Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame`2.SaveCsv``2(FSharp.DataFrame.Frame{``0,``1},System.String,System.Collections.Generic.IEnumerable{System.String})">
 <summary>
  Save data frame to a CSV file or to a `Stream`. When calling the operation,
  you can specify whether you want to save the row keys or not (and headers for the keys)
@@ -3540,7 +4084,7 @@
  columns, it will be successfully added, but there will be missing values.
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -3550,6 +4094,7 @@
  ## Parameters
 
   * `stream` - Specifies the input stream, opened at the beginning of CSV data
+  * `hasHeaders` - Specifies whether the input CSV file has header row
   * `inferTypes` - Specifies whether the method should attempt to infer types
     of columns automatically (set this to `false` if you want to specify schema)
   * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -3563,7 +4108,7 @@
     values in the CSV file (such as `&quot;en-US&quot;`). The default is invariant culture. 
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.String,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
+<member name="M:FSharp.DataFrame.FSharpFrameExtensions.Frame.ReadCsv.Static(System.String,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
  Load data frame from a CSV file. The operation automatically reads column names from the 
  CSV file (if they are present) and infers the type of values for each column. Columns
@@ -3573,6 +4118,7 @@
  ## Parameters
 
   * `path` - Specifies a file name or an web location of the resource.
+  * `hasHeaders` - Specifies whether the input CSV file has header row
   * `inferTypes` - Specifies whether the method should attempt to infer types
     of columns automatically (set this to `false` if you want to specify schema)
   * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -3742,6 +4288,33 @@
 </member>
 <member name="T:FSharp.DataFrame.FrameBuilder">
 
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.ZipInto``5(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},FSharp.DataFrame.Frame{``3,``4},FSharp.DataFrame.Frame{``3,``4})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.ZipAlignInto``5(FSharp.DataFrame.JoinKind,FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},FSharp.DataFrame.Frame{``3,``4},FSharp.DataFrame.Frame{``3,``4})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.JoinAlign``2(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,FSharp.DataFrame.Frame{``0,``1},FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Join two frames using the specified kind of join and 
+ the specified lookup semantics.
+
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.Join``2(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Frame{``0,``1},FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Join two frames using the specified kind of join. This function uses
+ exact matching on keys. If you want to align nearest smaller or greater
+ keys in left or outer join, use `joinAlign`. 
+
+ [category:Joining, zipping and appending]
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.FrameModule.rowsDense``2(FSharp.DataFrame.Frame{``0,``1})">
 <summary>
@@ -3953,56 +4526,180 @@
 <member name="">
 
 </member>
-<member name="M:FSharp.DataFrame.FrameModule.JoinAlign``2(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,FSharp.DataFrame.Frame{``0,``1},FSharp.DataFrame.Frame{``0,``1})">
-<summary>
- Join two frames using the specified kind of join and 
- the specified lookup semantics.
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.FrameModule.Join``2(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Frame{``0,``1},FSharp.DataFrame.Frame{``0,``1})">
-<summary>
- Join two frames using the specified kind of join. This function uses
- exact matching on keys. If you want to align nearest smaller or greater
- keys in left or outer join, use `joinAlign`. 
-</summary>
-</member>
-<member name="M:FSharp.DataFrame.FrameModule.renameCols``3(System.Collections.Generic.IEnumerable{``0},FSharp.DataFrame.Frame{``1,``2})">
-<summary>
- Creates a new data frame that uses the specified list of keys as a new column index.
-</summary>
-</member>
 <member name="">
 
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="M:FSharp.DataFrame.FrameModule.indexRows``3(``0,FSharp.DataFrame.Frame{``1,``0})">
-<summary>
- Creates a new data frame that uses the specified column as an row index.
-</summary>
 </member>
 <member name="M:FSharp.DataFrame.FrameModule.OrderColumns``2(FSharp.DataFrame.Frame{``0,``1})">
 <summary>
- Returns a data frame that contains the same data as the argument, 
- but whose columns are ordered series. This allows using inexact lookup
- for columns (e.g. using `lookupCol`) or inexact left/right joins.
+ Returns a data frame that contains the same data as the input, 
+ but whose columns are an ordered series. This allows using operations that are
+ only available on indexed series such as alignment and inexact lookup.
+
+ ## Parameters
+  - `frame` - Source data frame to be ordered.
+ 
+ [category:Index manipulation]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.FrameModule.OrderRows``2(FSharp.DataFrame.Frame{``0,``1})">
 <summary>
- Returns a data frame that contains the same data as the argument, 
- but whose rows are ordered series. This allows using inexact lookup
- for rows (e.g. using `lookupRow`) or inexact left/right joins.
+ Returns a data frame that contains the same data as the input, 
+ but whose rows are an ordered series. This allows using operations that are
+ only available on indexed series such as alignment and inexact lookup.
+
+ ## Parameters
+  - `frame` - Source data frame to be ordered.
+ 
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.Transpose``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Returns a transposed data frame. The rows of the original data frame are used as the
+ columns of the new one (and vice versa). Use this operation if you have a data frame
+ and you mostly need to access its rows as a series (because accessing columns as a 
+ series is more efficient).
+ 
+ ## Parameters
+  - `frame` - Source data frame to be transposed.
+ 
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsWith``3(System.Collections.Generic.IEnumerable{``0},FSharp.DataFrame.Frame{``1,``2})">
+<summary>
+ Replace the row index of the frame with the provided sequence of row keys.
+ The rows of the frame are assigned keys according to the current order, or in a
+ non-deterministic way, if the current row index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose row index are to be replaced.
+  - `keys` - A collection of new row keys.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexColumnsWith``3(System.Collections.Generic.IEnumerable{``0},FSharp.DataFrame.Frame{``1,``2})">
+<summary>
+ Replace the column index of the frame with the provided sequence of column keys.
+ The columns of the frame are assigned keys according to the current order, or in a
+ non-deterministic way, if the current column index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose column index are to be replaced.
+  - `keys` - A collection of new column keys.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsByString``2(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `string`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsByDateTimeOffset``2(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `DateTimeOffset`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsByDateTime``2(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `DateTime`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsByInt``2(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `int`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsByObject``2(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. This function casts (or converts) the column key to values of type `obj`
+ (a generic variant that may require some type annotation is `Frame.indexRows`)
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRows``3(``0,FSharp.DataFrame.Frame{``1,``0})">
+<summary>
+ Returns a data frame whose rows are indexed based on the specified column of the original
+ data frame. The generic type parameter is specifies the type of the values in the required 
+ index column (and usually needs to be specified using a type annotation).
+
+ ## Parameters
+  - `frame` - Source data frame whose row index is to be replaced.
+  - `column` - The name of a column in the original data frame that will be used for the new
+    index. Note that the values in the column need to be unique.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.IndexRowsOrdinally``2(FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Replace the row index of the frame with ordinarilly generated integers starting from zero.
+ The rows of the frame are assigned index according to the current order, or in a
+ non-deterministic way, if the current row index is not ordered.
+
+ ## Parameters
+  - `frame` - Source data frame whose row index are to be replaced.
+
+ [category:Index manipulation]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameModule.RealignRows``2(System.Collections.Generic.IEnumerable{``0},FSharp.DataFrame.Frame{``0,``1})">
+<summary>
+ Align the existing data to a specified collection of row keys. Values in the data frame
+ that do not match any new key are dropped, new keys (that were not in the original data 
+ frame) are assigned missing values.
+
+ ## Parameters
+  - `frame` - Source data frame that is to be realigned.
+  - `keys` - A sequence of new row keys. The keys must have the same type as the original
+    frame keys (because the rows are realigned).
+
+ [category:Index manipulation]
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.FrameModule.LookupRow``3(``0,FSharp.DataFrame.Lookup,FSharp.DataFrame.Frame{``0,``1})">
@@ -4141,12 +4838,35 @@
 </summary>
 </member>
 <member name="T:FSharp.DataFrame.FrameModule">
+<summary>
+ Frame module comment
 
+ ## Index manipulation
+ More documentation here
+
+ ## Missing values
+ More documentation here
+</summary>
 </member>
-<member name="M:FSharp.DataFrame.FrameUtilsModule.readCsv(System.IO.TextReader,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},System.String,Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
+<member name="M:FSharp.DataFrame.FrameUtilsModule.readCsv(System.IO.TextReader,Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Boolean},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.String},System.String,Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
  Load data from a CSV file using F# Data API
 </summary>
+</member>
+<member name="M:FSharp.DataFrame.FrameUtilsModule.readReader(System.Data.IDataReader)">
+<summary>
+ Load data frame from a data reader (and cast the values of columns
+ to their actual types to create IVector&lt;T&gt; with the right T)
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -4190,13 +4910,17 @@
  hold at the boundaries where values before/after the key may also be included)
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Indices.IIndexBuilder.Reindex``1(FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Lookup,FSharp.DataFrame.Vectors.VectorConstruction)">
+<member name="M:FSharp.DataFrame.Indices.IIndexBuilder.Reindex``1(FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Lookup,FSharp.DataFrame.Vectors.VectorConstruction,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Addressing.Address,System.Boolean})">
 <summary>
  Given an old index and a new index, build a vector transformation that reorders
  elements from a vector associated with the old index so that they match the new
  index. When finding element location in the new index, the provided `Lookup` strategy
  is used. This is used, for example, when doing left/right join (to align the new data
  with another index) or when selecting multiple keys (`Series.lookupAll`).
+
+ The proivded `condition` is used when searching for a value in the old index
+ (when lookup is not exact). It is called to check that the address contains an
+ appropriate value (e.g. when we need to skip over missing values).
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.Indices.IIndexBuilder.Project``1(FSharp.DataFrame.Indices.IIndex{``0})">
@@ -4303,11 +5027,6 @@
  Returns the minimal and maximal address used in the index.
 </summary>
 </member>
-<member name="P:FSharp.DataFrame.Indices.IIndex`1.Ordered">
-<summary>
- Returns `true` if the index is ordered and `false` otherwise
-</summary>
-</member>
 <member name="P:FSharp.DataFrame.Indices.IIndex`1.Mappings">
 <summary>
  Returns all key-address mappings in the index
@@ -4322,6 +5041,11 @@
 <summary>
  Returns the minimal and maximal key associated with the index.
  (the operation may fail for unordered indices)
+</summary>
+</member>
+<member name="P:FSharp.DataFrame.Indices.IIndex`1.IsOrdered">
+<summary>
+ Returns `true` if the index is ordered and `false` otherwise
 </summary>
 </member>
 <member name="P:FSharp.DataFrame.Indices.IIndex`1.IsEmpty">
@@ -4404,7 +5128,7 @@
  Create chunks based on the specified key sequence
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Indices.Linear.LinearIndexBuilder.FSharp-DataFrame-Indices-IIndexBuilder-Reindex``1(FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Lookup,FSharp.DataFrame.Vectors.VectorConstruction)">
+<member name="M:FSharp.DataFrame.Indices.Linear.LinearIndexBuilder.FSharp-DataFrame-Indices-IIndexBuilder-Reindex``1(FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Lookup,FSharp.DataFrame.Vectors.VectorConstruction,Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Addressing.Address,System.Boolean})">
 <summary>
  Reorder elements in the index to match with another index ordering
 </summary>
@@ -4501,11 +5225,6 @@
  Returns the range used by the index
 </summary>
 </member>
-<member name="P:FSharp.DataFrame.Indices.Linear.LinearIndex`1.Ordered">
-<summary>
- Are the keys of the index ordered?
-</summary>
-</member>
 <member name="P:FSharp.DataFrame.Indices.Linear.LinearIndex`1.Mappings">
 <summary>
  Returns all mappings of the index (key -&gt; address) 
@@ -4522,6 +5241,11 @@
 <member name="P:FSharp.DataFrame.Indices.Linear.LinearIndex`1.KeyRange">
 <summary>
  Returns the range of keys - makes sense only for ordered index
+</summary>
+</member>
+<member name="P:FSharp.DataFrame.Indices.Linear.LinearIndex`1.IsOrdered">
+<summary>
+ Are the keys of the index ordered?
 </summary>
 </member>
 <member name="P:FSharp.DataFrame.Indices.Linear.LinearIndex`1.IsEmpty">
@@ -4569,11 +5293,10 @@
 <member name="">
 
 </member>
-<member name="T:FSharp.DataFrame.Internal.IFsiFormattable">
+<member name="T:FSharp.DataFrame.Internal.ComparisonFailedException">
 <summary>
- [omit]
- An interface implemented by types that support nice formatting for F# Interactive
- (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
+ An internal exception that is used to handle the case when comparison fails
+ (even though the type implements IComparable and everything...)
 </summary>
 </member>
 <member name="">
@@ -4597,43 +5320,44 @@
 <member name="">
 
 </member>
+<member name="T:FSharp.DataFrame.Internal.DynamicExtensions.WrappedExpression">
+<summary>
+ A C# expression tree, embedded in a value (in a quotation)
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Internal.DynamicExtensions.createSetterFromFunc``1(System.Linq.Expressions.Expression,``0,Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{System.String,Microsoft.FSharp.Core.FSharpFunc{System.Object,Microsoft.FSharp.Core.Unit}}})">
+<summary>
+ This can be used when the setter is a simple non-generic function that 
+ takes the name as string &amp; argument as object (and returns nothing)
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Internal.DynamicExtensions.createPropertyMetaObject``1(System.Linq.Expressions.Expression,``0,Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Quotations.FSharpExpr,Microsoft.FSharp.Core.FSharpFunc{System.String,Microsoft.FSharp.Core.FSharpFunc{System.Type,Microsoft.FSharp.Quotations.FSharpExpr}}},Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Quotations.FSharpExpr,Microsoft.FSharp.Core.FSharpFunc{System.String,Microsoft.FSharp.Core.FSharpFunc{System.Type,Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Quotations.FSharpExpr,Microsoft.FSharp.Quotations.FSharpExpr}}}})">
+<summary>
+ This can be used when getter/setter are generic (in some way) - the caller
+ is responsible for generating the right expression tree (this cannot easily
+ be done using quotations)
+</summary>
+</member>
 <member name="">
 
+</member>
+<member name="M:FSharp.DataFrame.Internal.DynamicExtensions.asExpr(Microsoft.FSharp.Quotations.FSharpExpr)">
+<summary>
+ Translate simple F# quotation to C# expression &amp; handle wrapped values
+</summary>
 </member>
 <member name="">
 
 </member>
 <member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="T:FSharp.DataFrame.Internal.DynamicExtensions.Dynamic">
 
 </member>
 <member name="T:FSharp.DataFrame.Internal.DynamicExtensions">
 <summary>
  [omit]
- 
+ Module that implements various helpers for supporting C# dynamic type.
+ (this takes care of some of the complexity around building `DynamicMetaObject`
+ and it is used by `SeriesBuilder` and `Frame`)
 </summary>
 </member>
 <member name="">
@@ -4784,6 +5508,12 @@
  `FSharp.DataFrame.Internals` is opened, it extends the standard `Seq` module.
 </summary>
 </member>
+<member name="M:FSharp.DataFrame.Internal.Array.choosei``2(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpOption{``1}}},``0[])">
+<summary>
+ Returns a new array containing only the elements for which the specified function returns `Some`.
+ The predicate is called with the index in the source array and the element.
+</summary>
+</member>
 <member name="M:FSharp.DataFrame.Internal.Array.binarySearchNearestSmaller``1(``0,System.Collections.Generic.IComparer{``0},``0[])">
 <summary>
  Returns the index of &apos;key&apos; or the index of immediately preceeding value.
@@ -4796,8 +5526,10 @@
  If the specified key is greater than all keys in the array, None is returned.
 </summary>
 </member>
-<member name="">
-
+<member name="M:FSharp.DataFrame.Internal.Array.binarySearch``1(``0,System.Collections.Generic.IComparer{``0},``0[])">
+<summary>
+ Implementation of binary search
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.Internal.Array.dropRange``1(System.Int32,System.Int32,``0[])">
 <summary>
@@ -4811,62 +5543,81 @@
  `FSharp.DataFrame.Internals` is opened, it extends the standard `Array` module.
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.lengthOptional``1(System.Collections.Generic.IReadOnlyList{FSharp.DataFrame.OptionalValue{``0}})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.maxOptional``1(System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Count elements of the IReadOnlyList that are not missing
+ Return the greatest element, skipping over missing values
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.averageOptional``2(System.Collections.Generic.IReadOnlyList{FSharp.DataFrame.OptionalValue{``0}})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.minOptional``1(System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Average elements of the IReadOnlyList, skipping over missing values
+ Return the smallest element, skipping over missing values
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.reduceOptional``1(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,``0}},System.Collections.Generic.IReadOnlyList{FSharp.DataFrame.OptionalValue{``0}})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.lengthOptional``1(System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Reduce elements of the IReadOnlyList, skipping over missing values
+ Count elements of the ReadOnlyCollection that are not missing
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.sumOptional``2(System.Collections.Generic.IReadOnlyList{FSharp.DataFrame.OptionalValue{``0}})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.averageOptional``2(System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Sum elements of the IReadOnlyList, skipping over missing values
+ Average elements of the ReadOnlyCollection, skipping over missing values
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.average``2(System.Collections.Generic.IReadOnlyList{``0})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.reduceOptional``1(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,``0}},System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Average elements of the IReadOnlyList
+ Reduce elements of the ReadOnlyCollection, skipping over missing values
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.length``1(System.Collections.Generic.IReadOnlyList{``0})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.sumOptional``2(System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}})">
 <summary>
- Count elements of the IReadOnlyList
+ Sum elements of the ReadOnlyCollection, skipping over missing values
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.reduce``1(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,``0}},System.Collections.Generic.IReadOnlyList{``0})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.average``2(System.Collections.ObjectModel.ReadOnlyCollection{``0})">
 <summary>
- Reduce elements of the IReadOnlyList
+ Average elements of the ReadOnlyCollection
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.sum``2(System.Collections.Generic.IReadOnlyList{``0})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.length``1(System.Collections.ObjectModel.ReadOnlyCollection{``0})">
 <summary>
- Sum elements of the IReadOnlyList
+ Count elements of the ReadOnlyCollection
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.ofSeq``1(System.Collections.Generic.IEnumerable{``0})">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.reduce``1(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,``0}},System.Collections.ObjectModel.ReadOnlyCollection{``0})">
 <summary>
- Converts a lazy sequence to fully evaluated IReadOnlyList
+ Reduce elements of the ReadOnlyCollection
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.Internal.IReadOnlyList.ofArray``1(``0[])">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.max``1(System.Collections.ObjectModel.ReadOnlyCollection{``0})">
 <summary>
- Converts an array to IReadOnlyList. In F# 3.0, the language does not
- know that array implements IReadOnlyList, so this is just boxing/unboxing.
+ Return the greatest element of the ReadOnlyCollection
 </summary>
 </member>
-<member name="T:FSharp.DataFrame.Internal.IReadOnlyList">
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.min``1(System.Collections.ObjectModel.ReadOnlyCollection{``0})">
 <summary>
- Provides helper functions for working with `IReadOnlyList&lt;T&gt;` similar to those 
+ Return the smallest element of the ReadOnlyCollection
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.sum``2(System.Collections.ObjectModel.ReadOnlyCollection{``0})">
+<summary>
+ Sum elements of the ReadOnlyCollection
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.ofSeq``1(System.Collections.Generic.IEnumerable{``0})">
+<summary>
+ Converts a lazy sequence to fully evaluated ReadOnlyCollection
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Internal.ReadOnlyCollection.ofArray``1(``0[])">
+<summary>
+ Converts an array to ReadOnlyCollection. 
+</summary>
+</member>
+<member name="T:FSharp.DataFrame.Internal.ReadOnlyCollection">
+<summary>
+ Provides helper functions for working with `ReadOnlyCollection&lt;T&gt;` similar to those 
  in the `Array` module. Most importantly, F# 3.0 does not know that array implements
- `IReadOnlyList&lt;T&gt;`, so the `ofArray` function performs boxing &amp; unboxing to convert.
+ `IList&lt;T&gt;`.
 </summary>
 </member>
 <member name="">
@@ -4892,6 +5643,28 @@
  `Single.NaN` as well as `Double.NaN`.
 
  The functions in this module are not intended to be called directly.
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.JoinHelpers.createJoinTransformation``1(FSharp.DataFrame.Indices.IIndexBuilder,FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Vectors.VectorConstruction,FSharp.DataFrame.Vectors.VectorConstruction)">
+<summary>
+ Create transformation on indices/vectors representing the join operation
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.JoinHelpers.fillMissing(FSharp.DataFrame.Vectors.VectorConstruction,FSharp.DataFrame.Lookup)">
+<summary>
+ When using fancy lookup, first fill values in the vector, before doing the join
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.JoinHelpers.restrictToRowIndex``1(FSharp.DataFrame.Lookup,FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Indices.IIndex{``0},FSharp.DataFrame.Vectors.VectorConstruction)">
+<summary>
+ When doing exact join on ordered indices, restrict the new index
+ so that we do not have to load all data for lazy indices
+</summary>
+</member>
+<member name="T:FSharp.DataFrame.JoinHelpers">
+<summary>
+ [omit]
+ Implements various helpers that are used by Join operations
 </summary>
 </member>
 <member name="">
@@ -5037,6 +5810,12 @@
 <member name="T:FSharp.DataFrame.MultiKeyExtensions">
 <summary>
  F#-friendly functions for creating multi-level keys and lookups
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.OptionalValueModule.get``1(FSharp.DataFrame.OptionalValue{``0})">
+<summary>
+ Get the value stored in the specified optional value. If a value is not
+ available, throws an exception. (This is equivalent to the `Value` property)
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.OptionalValueModule.|Missing|Present|``1(FSharp.DataFrame.OptionalValue{``0})">
@@ -5192,8 +5971,57 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="T:FSharp.DataFrame.Reflection">
 
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.unionUsing``2(FSharp.DataFrame.UnionBehavior,FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.union``2(FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.zipInto``4(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},FSharp.DataFrame.Series{``3,``0},FSharp.DataFrame.Series{``3,``1})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.zipAlignInto``4(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``2}},FSharp.DataFrame.Series{``3,``0},FSharp.DataFrame.Series{``3,``1})">
+<summary>
+ [category:Joining, zipping and appending]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.zipInner``3(FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.zip``3(FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.zipAlign``3(FSharp.DataFrame.JoinKind,FSharp.DataFrame.Lookup,FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.append``2(FSharp.DataFrame.Series{``0,``1},FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ [category:Appending, joining and zipping]
+</summary>
 </member>
 <member name="M:FSharp.DataFrame.SeriesModule.lookupTimeAt``2(``0,System.TimeSpan,FSharp.DataFrame.Direction,FSharp.DataFrame.Lookup,FSharp.DataFrame.Series{``0,``1})">
 <summary>
@@ -5516,7 +6344,7 @@
  [category:Missing values]
 </summary>
 </member>
-<member name="M:FSharp.DataFrame.SeriesModule.fillMissingWith``2(``0,FSharp.DataFrame.Series{``1,``0})">
+<member name="M:FSharp.DataFrame.SeriesModule.fillMissingWith``3(``0,FSharp.DataFrame.Series{``1,``2})">
 <summary>
  Fill missing values in the series with a constant value.
 
@@ -5905,6 +6733,234 @@
  [category:Windowing, chunking and grouping]
 </summary>
 </member>
+<member name="M:FSharp.DataFrame.SeriesModule.ReduceLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},Microsoft.FSharp.Core.FSharpFunc{``2,Microsoft.FSharp.Core.FSharpFunc{``2,``2}},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then aggregates elements in each group
+ using the specified function `op`. The result is a new series containing
+ the aggregates of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - An input series to be aggregated
+  - `op` - A function that is used to aggregate elements of each group
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Reduce``2(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``0,``0}},FSharp.DataFrame.Series{``1,``0})">
+<summary>
+ Aggregates the values of the specified series using a function that can combine
+ individual values. 
+
+ ## Parameters
+  - `series` - An input series to be aggregated
+  - `op` - A function that is used to aggregate elements of the series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.CountLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the counts of elements in each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the counts
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.MaxLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.MinLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the greatest element of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the greatest elements
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.SumLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the sum of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the sums
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.MedianLevel``2(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the median of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the medians
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.StandardDeviationLevel``2(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the standard deviation of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the standard deviations
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.MeanLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then returns a new series containing
+ the mean of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - A series of values that are used to calculate the means
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.ApplyLevel``3(Microsoft.FSharp.Core.FSharpFunc{``0,``1},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``2},``2},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ Groups the elements of the input series in groups based on the keys
+ produced by `level` and then aggregates elements in each group
+ using the specified function `op`. The result is a new series containing
+ the aggregates of each group. 
+
+ This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+
+ ## Parameters
+  - `series` - An input series to be aggregated
+  - `op` - A function that takes a sequence and produces an aggregated result
+  - `level` - A delegate that returns a new group key, based on the key in the input series
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.InternalApplyLevel``4(Microsoft.FSharp.Core.FSharpFunc{``0,``1},Microsoft.FSharp.Core.FSharpFunc{System.Collections.ObjectModel.ReadOnlyCollection{``2},``3},Microsoft.FSharp.Core.FSharpFunc{System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``2}},``3},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``2},``3},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ [omit]
+ Applies `fastAggregation` to each group produced using the specified `keySelector`
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Min``2(FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Returns the greatest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Max``2(FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Returns the smallest of all elements of the series. The operation 
+ skips over missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Median``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the median of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.StandardDeviation``1(FSharp.DataFrame.Series{``0,System.Double})">
+<summary>
+ Returns the standard deviation of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Mean``2(FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Returns the mean of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Sum``2(FSharp.DataFrame.Series{``0,``1})">
+<summary>
+ Returns the sum of the elements of the series. The operation skips over
+ missing values and so the result will never be `NaN`.
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.Apply``3(Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``0},``1},FSharp.DataFrame.Series{``2,``0})">
+<summary>
+ Aggregates the values of the specified series using a function that operates on
+ sequence (`IEnumerable&lt;T&gt;`). This simply reads all non-missing values and passes
+ them to the specified operation.
+
+ ## Parameters
+  - `series` - An input series to be aggregated
+  - `op` - A function that takes a sequence and produces an aggregated result
+
+ [category:Statistics]
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.InternalFastAggregation``3(Microsoft.FSharp.Core.FSharpFunc{System.Collections.ObjectModel.ReadOnlyCollection{``0},``1},Microsoft.FSharp.Core.FSharpFunc{System.Collections.ObjectModel.ReadOnlyCollection{FSharp.DataFrame.OptionalValue{``0}},``1},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``0},``1},FSharp.DataFrame.Series{``2,``0})">
+<summary>
+ Aggregates non-missing values using the specified functions working 
+ on either ReadOnlyCollection&lt;&apos;T&gt;, ReadOnlyCollection&lt;OptionalValue&lt;&apos;T&gt;&gt; or seq&lt;&apos;T&gt;
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.InternalStreamingAggregation``3(Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``0},``1},FSharp.DataFrame.Series{``2,``0})">
+<summary>
+ Aggregates non-missing values using the specified function working on seq&lt;&apos;T&gt;
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.SeriesModule.FlattenLevel``4(Microsoft.FSharp.Core.FSharpFunc{``0,``1},Microsoft.FSharp.Core.FSharpFunc{FSharp.DataFrame.Series{``0,``2},``3},FSharp.DataFrame.Series{``0,``2})">
+<summary>
+ [category:Statistics]
+</summary>
+</member>
 <member name="">
 
 </member>
@@ -5963,12 +7019,6 @@
  missing values or not available values (such as values created from `null`,
  `Double.NaN`, or those that are missing due to outer join etc.).
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="M:FSharp.DataFrame.SeriesModule.diff``3(System.Int32,FSharp.DataFrame.Series{``0,``1})">
 <summary>
@@ -6053,57 +7103,6 @@
  `Double.NaN`, or those that are missing due to outer join etc.).
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="M:FSharp.DataFrame.SeriesModule.fastStatBy``4(Microsoft.FSharp.Core.FSharpFunc{``0,``1},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IReadOnlyList{``2},``3},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IReadOnlyList{FSharp.DataFrame.OptionalValue{``2}},``3},Microsoft.FSharp.Core.FSharpFunc{System.Collections.Generic.IEnumerable{``2},``3},FSharp.DataFrame.Series{``0,``2})">
-<summary>
- [omit]
- Does stuff
-</summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:FSharp.DataFrame.SeriesModule.Implementation.lookupTimeInternal``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{``1,``0}},Microsoft.FSharp.Core.FSharpOption{``0},``1,FSharp.DataFrame.Direction,FSharp.DataFrame.Lookup,FSharp.DataFrame.Series{``0,``2})">
 <summary>
  Given a specified starting time and time span, generates all keys that fit in the
@@ -6142,6 +7141,8 @@
  The functions with name starting with `windowed` take a series and generate floating 
  (overlapping) windows. The `chunk` functions 
 
+ ## Statistics
+ Here
 </summary>
 </member>
 <member name="M:FSharp.DataFrame.VectorExtensions.IVector`1.get_DataSequence``1(FSharp.DataFrame.IVector{``0})">
@@ -6332,6 +7333,35 @@
  is also untyped)
 </summary>
 </member>
+<member name="M:FSharp.DataFrame.Vectors.Vector.CreateMissing``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
+<summary>
+ Creates a vector that stores the specified data in an array.
+ Values such as `null` and `Double.NaN` are turned into missing values.
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Vectors.Vector.CreateMissing``1(System.Collections.Generic.IEnumerable{FSharp.DataFrame.OptionalValue{``0}})">
+<summary>
+ Creates a vector that stores the specified data in an array.
+ Values such as `null` and `Double.NaN` are turned into missing values.
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Vectors.Vector.Create``1(System.Collections.Generic.IEnumerable{``0})">
+<summary>
+ Creates a vector that stores the specified data in an array.
+ Values such as `null` and `Double.NaN` are turned into missing values.
+</summary>
+</member>
+<member name="M:FSharp.DataFrame.Vectors.Vector.Create``1(``0[])">
+<summary>
+ Creates a vector that stores the specified data in an array.
+ Values such as `null` and `Double.NaN` are turned into missing values.
+</summary>
+</member>
+<member name="T:FSharp.DataFrame.Vectors.Vector">
+<summary>
+ Type that provides access to creating vectors (represented as arrays)
+</summary>
+</member>
 <member name="T:FSharp.DataFrame.Vectors.VectorConstruction.CustomCommand">
 <summary>
  Apply a custom command to a vector - this can be used by special indices (e.g. index
@@ -6339,6 +7369,13 @@
  is a list of sub-vectors to be combined (if as in e.g. `Append`) and the
  second argument is a function that will be called with evaluated vectors and is
  supposed to create the new vector.
+</summary>
+</member>
+<member name="T:FSharp.DataFrame.Vectors.VectorConstruction.FillMissing">
+<summary>
+ Create a vector that has missing values filled using the specified direction
+ (forward means that n-th value will contain (n-i)-th value where (n-i) is the
+ first index that contains a value).
 </summary>
 </member>
 <member name="T:FSharp.DataFrame.Vectors.VectorConstruction.Combine">
@@ -6412,8 +7449,22 @@
 <summary>
  Provides a way to get the data of an arbitrary vector. This is a concrete type used 
  by functions that operate on vectors (like `Series.sum`, etc.). The vector may choose
- to return the data as `IReadOnlyList` (with or without N/A values) which is more
+ to return the data as `ReadOnlyCollection` (with or without N/A values) which is more
  efficient to use or as a lazy sequence (slower, but more general).
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:FSharp.DataFrame.Vectors.VectorFillMissing">
+<summary>
+ Specifies how to fill missing values in a vector (when using the 
+ `VectorConstruction.FillMissing` command). This can only fill missing
+ values using strategy that does not require access to index keys - 
+ either using constant or by propagating values.
 </summary>
 </member>
 <member name="T:FSharp.DataFrame.Vectors.VectorHole">
