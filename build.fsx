@@ -173,6 +173,18 @@ Target "NuGet" (fun _ ->
 Target "GenerateDocs" (fun _ ->
     executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 )
+Target "GenerateDocsJa" (fun _ ->
+    executeFSIWithArgs "docs/tools" "generate.ja.fsx" ["--define:RELEASE"] [] |> ignore
+)
+Target "GenerateDocsDebug" (fun _ ->
+    CleanDirs ["docs/output"]
+    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:R"] [] |> ignore
+)
+Target "GenerateDocsJaDebug" (fun _ ->
+    executeFSIWithArgs "docs/tools" "generate.ja.fsx" ["--define:R"] [] |> ignore
+)
+
+"GenerateDocsDebug" ==> "GenerateDocsJaDebug"
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -215,11 +227,12 @@ Target "AllCore" DoNothing
   ==> "BuildCore"
   ==> "AllCore"
 
-"RunTests" ==> "All"
-"RunTests" ==> "AllCore"
+//"RunTests" ==> "All"
+//"RunTests" ==> "AllCore"
 
 "All" 
   ==> "CleanDocs"
+  ==> "GenerateDocsJa"
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
   ==> "ReleaseBinaries"
