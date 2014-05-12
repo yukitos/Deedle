@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Deedle: Exploratory data library for .NET
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/Deedle/ja/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/Deedle/ja/../content/deedle.css" />
+    <script type="text/javascript" src="/Deedle/ja/../content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+        </ul>
+        <h3 class="muted"><a href="/Deedle/ja/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>Deedle: Exploratory data library for .NET</h1>
+
+<img src="http://www.bluemountaincapital.com/media/logo.gif" style="float:right;margin:10px" />
+
+<p>Deedleはデータおよび時系列操作、あるいは科学計算プログラミング用のライブラリで簡単に使用できます。
+このライブラリは構造的データフレーム処理、整列済みあるいは未成列データ処理、時系列データ処理を
+サポートしています。DeedleはF#やC#のインタラクティブコンソールを使用して行う
+手探りのプログラミングに適するよう設計されていますが、コンパイル済みの.NETコードにおいても
+活用できます。</p>
+
+<p>ライブラリには複雑なインデクシングやスライシング、データの連結やアライメント、
+値の無いデータに対する処理、グループ化や集計、統計など、多岐にわたるデータ操作が実装されています。</p>
+
+<h3>タイタニック号の生存者を20行のコードで分析する</h3>
+
+<p><a href="http://www.kaggle.com/c/titanic-gettingStarted">タイタニック号のデータセット</a> を
+<code>titanic</code> という名前のデータフレームとして読み込んであるとします
+(このデータフレームにはint型の<code>Pclass</code>やbool型の<code>Survived</code>といった多数の列があります)。
+そして乗船券の階級別に生存者の比率を計算してみましょう：</p>
+
+<div id="hp-snippeta">
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// タイタニック号のデータを読み込み、「性別」でグループ化します</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">titanic</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)<span class="o">.</span><span class="i">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">int</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>)
+
+<span class="c">// &#39;Survived&#39;列を取得して階級毎の生存者集を計算します</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">byClass</span> <span class="o">=</span>
+  <span onmouseout="hideTip(event, 'fs1', 7)" onmouseover="showTip(event, 'fs1', 7)" class="i">titanic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">GetColumn</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">fst</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="i">s</span> <span class="k">-&gt;</span>
+      <span class="c">// &#39;Survived&#39;が&#39;True&#39;と&#39;False&#39;のデータを取得します</span>
+      <span onmouseout="hideTip(event, 'fs13', 14)" onmouseover="showTip(event, 'fs13', 14)" class="i">series</span> (<span onmouseout="hideTip(event, 'fs14', 15)" onmouseover="showTip(event, 'fs14', 15)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 16)" onmouseover="showTip(event, 'fs15', 16)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs16', 17)" onmouseover="showTip(event, 'fs16', 17)" class="i">id</span> <span onmouseout="hideTip(event, 'fs12', 18)" onmouseover="showTip(event, 'fs12', 18)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 19)" onmouseover="showTip(event, 'fs17', 19)" class="i">Values</span>))
+  <span class="c">// &#39;Pclass&#39;を行、&#39;Died&#39; と &#39;Survived&#39; を列に持つようなフレームを作成します</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 20)" onmouseover="showTip(event, 'fs2', 20)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 21)" onmouseover="showTip(event, 'fs18', 21)" class="i">ofRows</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 22)" onmouseover="showTip(event, 'fs2', 22)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 23)" onmouseover="showTip(event, 'fs19', 23)" class="i">sortRowsByKey</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 24)" onmouseover="showTip(event, 'fs2', 24)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 25)" onmouseover="showTip(event, 'fs20', 25)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">Died</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>]
+
+<span class="c">// タイタニック号の男性および女性の総数を持つ列を追加します</span>
+<span onmouseout="hideTip(event, 'fs6', 26)" onmouseover="showTip(event, 'fs6', 26)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs6', 27)" onmouseover="showTip(event, 'fs6', 27)" class="i">byClass</span><span class="o">?</span><span class="i">Died</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs6', 28)" onmouseover="showTip(event, 'fs6', 28)" class="i">byClass</span><span class="o">?</span><span class="i">Survived</span>
+
+<span class="c">// 結果をいい感じにパーセント表示するようなデータフレームを組み立てます</span>
+<span onmouseout="hideTip(event, 'fs21', 29)" onmouseover="showTip(event, 'fs21', 29)" class="i">frame</span> [ <span class="s">&quot;</span><span class="s">死者</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs22', 30)" onmouseover="showTip(event, 'fs22', 30)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs6', 31)" onmouseover="showTip(event, 'fs6', 31)" class="i">byClass</span><span class="o">?</span><span class="i">Died</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 32)" onmouseover="showTip(event, 'fs6', 32)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>)
+        <span class="s">&quot;</span><span class="s">生存者</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs22', 33)" onmouseover="showTip(event, 'fs22', 33)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs6', 34)" onmouseover="showTip(event, 'fs6', 34)" class="i">byClass</span><span class="o">?</span><span class="i">Survived</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 35)" onmouseover="showTip(event, 'fs6', 35)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>) ]</pre>
+</td>
+</tr>
+</table>
+
+</div>
+
+<style type="text/css">
+.hp-table th, .hp-table td { width: 140px; }
+.hp-table th:first-child, .hp-table td:first-child { width: 90px; }
+</style>
+<div class="hp-table">
+
+<div class="deedleframe">
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>死者 (%)</p></th>
+<th><p>生存者 (%)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>1</p></td>
+<td><p>37</p></td>
+<td><p>63</p></td>
+</tr>
+<tr class="even">
+<td><p>2</p></td>
+<td><p>53</p></td>
+<td><p>47</p></td>
+</tr>
+<tr class="odd">
+<td><p>3</p></td>
+<td><p>76</p></td>
+<td><p>24</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+
+</div>
+
+<p>ここではまずデータを<code>Pclass</code>でグループ化して、<code>Survived</code>列をブール値のシリーズとして取得しています。
+そして<code>applyLevel</code>を使用して各グループにまとめています。
+この関数は旅行者の階級毎に特定の関数を呼び出します。
+今回は生存者数と死者数をカウントしています。
+そして適切なラベルを付けてフレームをソートし、
+いい感じのまとめとなるような新しいデータフレームを組み立てています。</p>
+
+<h3>Deedleの取得方法</h3>
+
+<ul>
+<li><p>ライブラリは <a href="https://www.nuget.org/packages/Deedle">NuGetのDeedleサイト</a> からダウンロードできます。
+また <a href="https://github.com/BlueMountainCapital/Deedle/">GitHub上のソースコード</a> を取得したり、
+<a href="https://github.com/BlueMountainCapital/Deedle/zipball/master">ソースコードをZIPファイルとしてダウンロード</a>
+することもできます。
+コンパイル済みのバイナリを<a href="https://github.com/BlueMountainCapital/Deedle/zipball/release">ZIPファイルとしてダウンロード</a>
+することもできます。</p></li>
+<li><p>DeedleとF# Data、R 型プロバイダー、あるいはその他のF#製データサイエンスコンポーネントとを組み合わせたいのであれば、
+<a href="https://www.nuget.org/packages/FsLab">FsLab パッケージ</a> を検討してみるとよいでしょう。
+Visual Studioを使用しているのであれば
+<a href="http://visualstudiogallery.msdn.microsoft.com/45373b36-2a4c-4b6a-b427-93c7a8effddb">FsLab プロジェクトテンプレート</a>
+をインストールすることもおすすめです。</p></li>
+</ul>
+
+<h2>サンプルとドキュメント</h2>
+
+<p>ライブラリには包括的なドキュメントが欠かせません。
+チュートリアルや記事はいずれも <a href="https://github.com/blueMountainCapital/Deedle/tree/master/samples">samplesフォルダ</a> 内の
+<code>*.fsx</code> ファイルから自動生成されています。
+また、ライブラリの実装コードに記述されたMarkdownコメントを元にして、
+APIリファレンスも自動生成されています。</p>
+
+<ul>
+<li><p><a href="tutorial.html">クイックスタートチュートリアル</a> ではF#データライブラリの
+主要な機能の用法を紹介しています。
+まずはこちらから始めましょう。
+10分ほどでライブラリの用法を学習できます。</p></li>
+<li><p><a href="frame.html">データフレームの機能</a> には一般的に使用されるデータフレームの機能について、
+さらに多くの例があります。
+たとえばスライシングや連結、グループ化、集計といった機能があります。</p></li>
+<li><p><a href="series.html">シリーズの機能</a> では(株価のような)時系列データを処理する際に
+使用される機能について詳しく説明します。
+たとえばスライディングウィンドウやチャンク化、サンプリングや統計といった機能があります。</p></li>
+<li><p><a href="stats.html">フレームおよびシリーズ統計の計算</a> では平均や分散、歪度などの統計指針を
+計算する方法について説明します。
+またこのチュートリアルではウィンドウの移動やウィンドウ統計の拡張も行います。</p></li>
+<li><p>DeedleライブラリはF#とC#いずれにおいても使用できます。
+なるべくそれぞれの言語に倣ったAPIとなるようにしています。
+C#フレンドリーなAPIについては <a href="csharpintro.html">DeedleをC#から使用する</a> の
+ページを参照してください。</p></li>
+</ul>
+
+<p>ライブラリ内にあるすべての型やモジュール、関数から自動生成されたドキュメントが
+<a href="../reference/index.html">APIリファレンス</a> にあります。
+また、すべてがドキュメント化されている主要なモジュールは以下の3つです：</p>
+
+<ul>
+<li><a href="../reference/deedle-seriesmodule.html"><code>Series</code> モジュール</a> には
+各データシリーズや時系列の値を処理するための機能があります。</li>
+<li><a href="../reference/deedle-framemodule.html"><code>Frame</code> モジュール</a> には
+<code>Series</code> モジュールと似た機能が多数ありますが、いずれもデータフレーム全体を対象とするものです。</li>
+<li><a href="../reference/deedle-stats.html"><code>Stats</code> モジュール</a> には
+標準的な統計関数やウィンドウの移動など、多数の機能があります。
+このモジュールにはシリーズとフレーム両方を対象とする関数があります。</li>
+</ul>
+
+<h2>貢献方法および著作権</h2>
+
+<p>プロジェクトは<a href="https://github.com/blueMountainCapital/Deedle">GitHub</a> 上でホストされており、
+<a href="https://github.com/blueMountainCapital/Deedle/issues">Issuesの報告</a> やプロジェクトのフォーク、プルリクエストの送信などを行うことができます。
+公開用のAPIを新規に追加する場合はドキュメントとなるような <a href="https://github.com/blueMountainCapital/Deedle/tree/master/samples">サンプル</a> も
+合わせて追加するようにしてください。
+ライブラリの動作については <a href="design.html">ライブラリの設計メモ</a> を参照されるとよいでしょう。</p>
+
+<p>F# とデータサイエンスに関する一般的な話題に興味があるのであれば、
+<a href="http://fsharp.org/technical-groups/">F# data science and machine learning</a> ワーキンググループに参加してみるとよいでしょう。
+ここではF#用のデータサイエンスプロジェクトに関する活動を行っています。</p>
+
+<p>ライブラリは <a href="https://www.bluemountaincapital.com/">BlueMountain Capital</a> ならびに
+共著者によって開発されています。
+ライセンスはBSD ライセンスを採用しているため、
+商用非商用問わず、変更および再配布することができます。
+詳細についてはGitHubレポジトリの <a href="https://github.com/blueMountainCapital/Deedle/blob/master/LICENSE.md">ライセンスファイル</a> を参照してください。</p>
+
+<div class="tip" id="fs1">val titanic : Frame&lt;(int * int),string&gt;<br /><br />Full name: Index.titanic</div>
+<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs3">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;</div>
+<div class="tip" id="fs4">val root : string<br /><br />Full name: Index.root</div>
+<div class="tip" id="fs5">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs6">val byClass : Frame&lt;int,string&gt;<br /><br />Full name: Index.byClass</div>
+<div class="tip" id="fs7">member Frame.GetColumn : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetColumn : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
+<div class="tip" id="fs8">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
+<div class="tip" id="fs9">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;member Before : upperExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs10">val applyLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.applyLevel</div>
+<div class="tip" id="fs11">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs12">val s : Series&lt;(int * int),bool&gt;</div>
+<div class="tip" id="fs13">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs14">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs15">val countBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * int&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.countBy</div>
+<div class="tip" id="fs16">val id : x:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.id</div>
+<div class="tip" id="fs17">property Series.Values: seq&lt;bool&gt;</div>
+<div class="tip" id="fs18">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
+<div class="tip" id="fs19">val sortRowsByKey : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.sortRowsByKey</div>
+<div class="tip" id="fs20">val indexColsWith : keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexColsWith</div>
+<div class="tip" id="fs21">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs22">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
+
+        </div>
+        <div class="span3">
+          <a href="/Deedle/ja/index.html">
+            <img src="/Deedle/ja/../images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="/Deedle/ja/index.html">ホームページ</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">NuGet経由でライブラリを取得</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">GitHub上のソースコード</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">ライセンス</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><a href="/Deedle/ja/design.html">デザインノート</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">質問する！</a></li>
+            
+            <li class="nav-header">F#で使用する</li>
+            <li>
+              <a href="/Deedle/ja/tutorial.html">クイックスタートチュートリアル</a>
+            </li>
+            <li>
+              <a href="/Deedle/ja/series.html">時系列の処理</a>
+            </li>
+            <li>
+              <a href="/Deedle/ja/frame.html">データフレームの処理</a>
+            </li>
+            <li>
+              <a href="/Deedle/ja/stats.html">統計および計算</a>
+            </li>
+            <li>
+              <a href="/Deedle/ja/rinterop.html">RとDeedleを組み合わせる</a>
+            </li>
+
+            <li class="nav-header">C#で使用する</li>
+            <li><a href="/Deedle/ja/csharpintro.html">はじめに</a></li>
+            <li>
+              <a href="/Deedle/ja/csharpseries.html">時系列データの処理</a>
+            </li>
+            <li>
+              <a href="/Deedle/ja/csharpframe.html">データフレームの処理</a>
+            </li>
+
+            <li class="nav-header">ドキュメント</li>
+            <li><a href="/Deedle/ja/reference/index.html">APIリファレンス(En)</a></li>
+            <li class="divider"></li>
+            <li><a href="/Deedle/ja/reference/deedle-seriesmodule.html">Series モジュール</a></li>
+            <li><a href="/Deedle/ja/reference/deedle-framemodule.html">Frame モジュール</a></li>
+            <li><a href="/Deedle/ja/reference/deedle-stats.html">Stats モジュール</a></li>
+
+            <li class="nav-header">サンプル</li>
+            <li><a href="/Deedle/ja/lazysource.html">遅延データ読み込み</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
