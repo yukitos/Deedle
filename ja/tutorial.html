@@ -232,15 +232,15 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.76</p></td>
 <td><p>0.63</p></td>
-<td><p>0.4</p></td>
-<td><p>0.57</p></td>
-<td><p>0.86</p></td>
+<td><p>0.48</p></td>
+<td><p>0.27</p></td>
+<td><p>0.76</p></td>
+<td><p>0.49</p></td>
 <td><p> ... </p></td>
-<td><p>0.11</p></td>
-<td><p>0.41</p></td>
-<td><p>0.6</p></td>
+<td><p>0.86</p></td>
+<td><p>0.63</p></td>
+<td><p>0.94</p></td>
 </tr>
 </tbody>
 </table>
@@ -276,52 +276,52 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 <tr class="odd">
 <td><p>2013/01/01 0:00:00</p></td>
 <td><p>10</p></td>
-<td><p>0.763682000694648</p></td>
+<td><p>0.631408576216273</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/02 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.630418953313687</p></td>
+<td><p>0.483324155436514</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/03 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.397507203927965</p></td>
+<td><p>0.274524586868717</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/04 0:00:00</p></td>
 <td><p>20</p></td>
-<td><p>0.571296163169339</p></td>
+<td><p>0.757793978209511</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/05 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.863454983040437</p></td>
+<td><p>0.486711083206679</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/06 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.72259687014045</p></td>
+<td><p>0.163536361494817</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/07 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.56063765313506</p></td>
+<td><p>0.216074891954695</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/08 0:00:00</p></td>
 <td><p>30</p></td>
-<td><p>0.110509560960582</p></td>
+<td><p>0.862768309592627</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/09 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.407427864804598</p></td>
+<td><p>0.633615231436498</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/10 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.597062758448097</p></td>
+<td><p>0.941118826130926</p></td>
 </tr>
 </tbody>
 </table>
@@ -339,8 +339,8 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 この場合にはデータフレームからデータを取得する際に型を指定する必要があります。</p>
 
 <p>出力結果からわかるように、フレームを作成すると2つのシリーズのインデックスが
-自動的に連結されます(すべてのシリーズに含まれるすべての日付が結果に含まれるよう、
-「外部連結(outer join)」が行われます)。
+自動的に結合されます(すべてのシリーズに含まれるすべての日付が結果に含まれるよう、
+「外部結合(outer join)」が行われます)。
 データフレームの <code>first</code> 列にはいくつか値無しのデータが含まれています。</p>
 
 <p>また、さらに手軽なシンタックスを使って行データから、あるいは個別のデータから
@@ -581,7 +581,7 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 
 <a name="reindexing-and-joins"></a>
 
-<h2>インデックスと連結を指定する</h2>
+<h2>インデックスと結合を指定する</h2>
 
 <p>ここまでで株価を含んだ <code>fbCsv</code> と <code>msftCsv</code> フレームを用意出来ましたが、
 これらは数値順にインデックスされています。
@@ -892,15 +892,15 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.11</p></td>
-<td><p>0.34</p></td>
-<td><p>0.01</p></td>
-<td><p>0.71</p></td>
-<td><p>0.02</p></td>
-<td><p> ... </p></td>
+<td><p>0.89</p></td>
 <td><p>0.77</p></td>
-<td><p>0.21</p></td>
-<td><p>0.48</p></td>
+<td><p>0.09</p></td>
+<td><p>0.53</p></td>
+<td><p>0.82</p></td>
+<td><p> ... </p></td>
+<td><p>0.18</p></td>
+<td><p>0.43</p></td>
+<td><p>0.15</p></td>
 </tr>
 </tbody>
 </table>
@@ -914,29 +914,29 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>2014/05/15 13:08:59</p></th>
-<th><p>2014/05/16 13:08:59</p></th>
-<th><p>2014/05/17 13:08:59</p></th>
-<th><p>2014/05/18 13:08:59</p></th>
-<th><p>2014/05/19 13:08:59</p></th>
+<th><p>2014/05/15 13:37:21</p></th>
+<th><p>2014/05/16 13:37:21</p></th>
+<th><p>2014/05/17 13:37:21</p></th>
+<th><p>2014/05/18 13:37:21</p></th>
+<th><p>2014/05/19 13:37:21</p></th>
 <th><p> ... </p></th>
-<th><p>2014/05/22 13:08:59</p></th>
-<th><p>2014/05/23 13:08:59</p></th>
-<th><p>2014/05/24 13:08:59</p></th>
+<th><p>2014/05/22 13:37:21</p></th>
+<th><p>2014/05/23 13:37:21</p></th>
+<th><p>2014/05/24 13:37:21</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.11</p></td>
-<td><p>0.34</p></td>
-<td><p>0.01</p></td>
-<td><p>0.71</p></td>
-<td><p>0.02</p></td>
-<td><p> ... </p></td>
+<td><p>0.89</p></td>
 <td><p>0.77</p></td>
-<td><p>0.21</p></td>
-<td><p>0.48</p></td>
+<td><p>0.09</p></td>
+<td><p>0.53</p></td>
+<td><p>0.82</p></td>
+<td><p> ... </p></td>
+<td><p>0.18</p></td>
+<td><p>0.43</p></td>
+<td><p>0.15</p></td>
 </tr>
 </tbody>
 </table>
@@ -1396,11 +1396,11 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
               <a href="/Deedle/ja/tutorial.html">クイックスタートチュートリアル</a>
               <ul class="nav nav-list">
                 <li><a href="/Deedle/ja/tutorial.html#creating">データフレームの作成</a></li>
-                <li><a href="/Deedle/ja/tutorial.html#reindexing-and-joins">インデックスとジョインを使用する</a></li>
-                <li><a href="/Deedle/ja/tutorial.html#selecting">値の読み取りとスライシング</a></li>
+                <li><a href="/Deedle/ja/tutorial.html#reindexing-and-joins">インデックスと結合を使用する</a></li>
+                <li><a href="/Deedle/ja/tutorial.html#selecting">値の選択とスライシング</a></li>
                 <li><a href="/Deedle/ja/tutorial.html#timeseries">時系列データ</a></li>
-                <li><a href="/Deedle/ja/tutorial.html#projections">投影およびフィルタ</a></li>
-                <li><a href="/Deedle/ja/tutorial.html#grouping">グループ集計</a></li>
+                <li><a href="/Deedle/ja/tutorial.html#projections">射影とフィルタリング</a></li>
+                <li><a href="/Deedle/ja/tutorial.html#grouping">グループ化と集計</a></li>
               </ul>
             </li>
             <li>
