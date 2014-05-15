@@ -5,8 +5,8 @@ open Deedle
 let root = __SOURCE_DIRECTORY__ + "/../data/"
 
 (**
-Deedle: Exploratory data library for .NET
-=========================================
+Deedle: .NET用の探索的データライブラリ
+======================================
 
 <img src="http://www.bluemountaincapital.com/media/logo.gif" style="float:right;margin:10px" />
 

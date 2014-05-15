@@ -2,19 +2,19 @@
 #I "../../../bin/"
 
 (**
-Deedle in 10 minutes using F#
-=============================
+F#を使用して10分で学ぶDeedle
+============================
 
-This document is a quick overview of the most important features of F# data frame library.
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/tutorial.fsx)
-from GitHub and run the samples interactively.
+このドキュメントでは、F#のデータフレームライブラリにおける主要な機能の概要を説明します。
+なおこのページをGitHubから [F# スクリプトファイル](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/tutorial.fsx)
+としてダウンロードすれば、サンプルをインタラクティブに実行することもできます。
 
-The first step is to install `Deedle.dll` [from NuGet](https://www.nuget.org/packages/Deedle).
-Next, we need to load the library - in F# Interactive, this is done by loading 
-an `.fsx` file that loads the actual `.dll` with the library and registers 
-pretty printers for types representing data frame and series. In this sample, 
-we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which 
-works similarly:
+最初の手順として、 [NuGet経由で](https://www.nuget.org/packages/Deedle) `Deedle.dll` をインストールします。
+次にライブラリをロードします。
+F# Interactive上でライブラリの `.dll` をロードしている `.fsx` ファイルをロードし、
+データフレームやシリーズデータを表す型に対するプリンターを適宜登録します。
+今回のサンプルでは [F# Charting](http://fsharp.github.io/FSharp.Charting) も必要になるため、
+以下のような感じになります：
 
 *)
 #I "../../../packages/FSharp.Charting.0.90.6"
@@ -29,16 +29,16 @@ open FSharp.Charting
 (**
 <a name="creating"></a>
 
-Creating series and frames
---------------------------
+シリーズおよびフレームの作成
+----------------------------
 
-A data frame is a collection of series with unique column names (although these
-do not actually have to be strings). So, to create a data frame, we first need
-to create a series:
+データフレームは一意な列名を持ったシリーズのコレクションです
+(列名は実際には文字列である必要はありません)。
+したがってデータフレームを作成するには、まず1つのシリーズを作成することになります：
 *)
 
 (*** define-output: create1 ***)
-// Create from sequence of keys and sequence of values
+// キーとなるシーケンスと値のシーケンスを作成します
 let dates  = 
   [ DateTime(2013,1,1); 
     DateTime(2013,1,4); 
@@ -47,7 +47,7 @@ let values =
   [ 10.0; 20.0; 30.0 ]
 let first = Series(dates, values)
 
-// Create from a single list of observations
+// 観測対象となる1つのリストからシリーズを作成します
 Series.ofObservations
   [ DateTime(2013,1,1) => 10.0
     DateTime(2013,1,4) => 20.0
@@ -56,36 +56,37 @@ Series.ofObservations
 (*** include-it: create1 ***)
 
 (*** define-output: create2 ***)
-// Shorter alternative to 'Series.ofObservations'
+// 'Series.ofObservations' の省略バージョンです
 series [ 1 => 1.0; 2 => 2.0 ]
 
-// Create series with implicit (ordinal) keys
+// キーを明示的(かつ順番通り)に指定してシリーズを作成します
 Series.ofValues [ 10.0; 20.0; 30.0 ]
 (*** include-it: create2 ***)
 
 (**
-Note that the series type is generic. `Series<K, T>` represents a series
-with keys of type `K` and values of type `T`. Let's now generate series
-with 10 day value range and random values:
+シリーズの型はジェネリックである点に注意してください。
+`Series<K, T>` はキーの型が `K` で、値の型が `T` です。
+ではランダムな値を持った10日分のシリーズデータを生成してみましょう：
 *)
 
-/// Generate date range from 'first' with 'count' days
+/// 'first' から 'count' 日分の日付を生成します
 let dateRange (first:System.DateTime) count = (*[omit:(...)]*)
   seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }(*[/omit]*)
 
-/// Generate 'count' number of random doubles
+/// ランダムなdouble値を 'count' 個生成します
 let rand count = (*[omit:(...)]*)
   let rnd = System.Random()
   seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }(*[/omit]*)
 
-// A series with values for 10 days 
+// 10日分の値を持ったシリーズ
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
 
 (*** include-value: (round (second*100.0))/100.0 ***)
 
 (**
-Now we can easily construct a data frame that has two columns - one representing
-the `first` series and another representing the `second` series:
+そうすると `first` と `second` という2つの列を持ち、
+それぞれが列と同名の値を持つような
+データフレームを簡単に作成できるようになります：
 *)
 
 let df1 = Frame(["first"; "second"], [first; second])
@@ -93,112 +94,118 @@ let df1 = Frame(["first"; "second"], [first; second])
 (*** include-value: df1 ***)
 
 (** 
-The type representing a data frame has two generic parameters:
-`Frame<TRowKey, TColumnKey>`. The first parameter is represents the type of
-row keys - this can be `int` if we do not give the keys explicitly or `DateTime`
-like in the example above. The second parameter is the type of column keys.
-This is typically `string`, but sometimes it is useful to can create a 
-transposed frame with dates as column keys. Because a data frame can contain
-heterogeneous data, there is no type of values - this needs to be specified
-when getting data from the data frame.
+データフレームを表す型 `Frame<TRowKey, TColumnKey>` には2つのジェネリック引数があります。
+1つめの引数は行キーを表す型で、先ほどの例では `DateTime` を明示的に指定しましたが、
+指定しない場合には`int` 型になります。
+2つめの引数は列キーの型です。
+一般的には `string` ですが、日付を列キーにした転置バージョンのフレームを作成すると
+便利な場合もあるでしょう。
+データフレームには異種データを同梱させることができるため、値の型がない場合もあります。
+この場合にはデータフレームからデータを取得する際に型を指定する必要があります。
 
-As the output shows, creating a frame automatically combines the indices of 
-the two series (using "outer join" so the result has all the dates that appear 
-in any of the series). The data frame now contains `first` column with some 
-missing values.
+出力結果からわかるように、フレームを作成すると2つのシリーズのインデックスが
+自動的に連結されます(すべてのシリーズに含まれるすべての日付が結果に含まれるよう、
+「外部連結(outer join)」が行われます)。
+データフレームの `first` 列にはいくつか値無しのデータが含まれています。
 
-You can also use the following nicer syntax and create frame from rows as well as 
-individual values:
+また、さらに手軽なシンタックスを使って行データから、あるいは個別のデータから
+フレームを作成することもできます：
 *)
 
-// The same as previously
+// 先と同じ
 let df2 = Frame.ofColumns ["first" => first; "second" => second]
 
-// Transposed - here, rows are "first" and "second" & columns are dates
+// 転置バージョン。ここでは行に"first"と"second"、列に日付が設定されます
 let df3 = Frame.ofRows ["first" => first; "second" => second]
 
-// Create from individual observations (row * column * value)
+// 個別の値 (行 * 列 * 値) を指定してフレームを作成します
 let df4 = 
   [ ("Monday", "Tomas", 1.0); ("Tuesday", "Adam", 2.1)
     ("Tuesday", "Tomas", 4.0); ("Wednesday", "Tomas", -5.4) ]
   |> Frame.ofValues
 
 (**
-Data frame can be also easily created from a collection of F# record types (or of any classes
-with public readable properties). The `Frame.ofRecords` function uses reflection to find the 
-names and types of properties of a record and creates a data frame with the same structure.
+データフレームはF#のレコード型(あるいはpublicで読み取り可能なプロパティを持った任意のクラス)の
+コレクションからも簡単に作成できます。
+`Frame.ofRecords` 関数を使用すると、レコードの名前とプロパティの型をリフレクションで探し出して、
+同じ構造を持ったデータフレームを作成することができます。
 
 *)
-// Assuming we have a record 'Price' and a collection 'values'
+// 'Price' というレコードと 'prices' コレクションがあるとします
 type Price = { Day : DateTime; Open : float }
 let prices = 
   [ { Day = DateTime.Now; Open = 10.1 }
     { Day = DateTime.Now.AddDays(1.0); Open = 15.1 }
     { Day = DateTime.Now.AddDays(2.0); Open = 9.1 } ]
 
-// Creates a data frame with columns 'Day' and 'Open'
+// 'Day' と 'Open' という列を持ったデータフレームを作成します
 let df5 = Frame.ofRecords prices
 
 (**
-Finally, we can also load data frame from CSV:
+最後に、データフレームはCSVから読み取ることもできます：
 *)
-let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/MSFT.csv")
-let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/FB.csv")
+let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/stocks/MSFT.csv")
+let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/stocks/FB.csv")
 
 (*** include-value: fbCsv ***)
 
 (**
-When loading the data, the data frame analyses the values and automatically converts
-them to the most appropriate type. However, no conversion is automatically performed
-for dates and times - the user needs to decide what is the desirable representation
-of dates (e.g. `DateTime`, `DateTimeOffset` or some custom type).
+データフレームはデータのロード時に値を解析して、
+その値に最適な型を自動判別します。
+しかし日付と時刻については自動変換は行われません。
+どの日付型(`DateTime` や `DateTimeOffset` あるいは他のカスタム型)による表現が適切なのかを
+ユーザーが決める必要があります。
 
 <a name="reindexing-and-joins"></a>
 
-Specifying index and joining
+インデックスと連結を指定する
 ----------------------------
 
-Now we have `fbCsv` and `msftCsv` frames containing stock prices, but they are
-indexed with ordinal numbers. This means that we can get e.g. 4th price. 
-However, we would like to align them using their dates (in case there are some 
-values missing). This can be done by setting the row index to the "Date" column.
-Once we set the date as the index, we also need to order the index. The Yahoo 
-Finance prices are ordered from the newest to the oldest, but our data-frame 
-requires ascending ordering.
+ここまでで株価を含んだ `fbCsv` と `msftCsv` フレームを用意出来ましたが、
+これらは数値順にインデックスされています。
+つまりたとえば4番目の価格を取得するといったことができます。
+しかしここでは日付順で並び替えようと思っています
+(いくつか値無しのものが出てくるでしょう)。
+そのためには行のインデックスを "Date" 列に設定します。
+日付をインデックスに設定した後はインデックス順に並び替える必要があります。
+Yahoo Financeの価格情報は新しいものから古いものの順で表示されていますが、
+今回のデータフレームでは古いものから新しいものの昇順で表示させることにします。
 
-When a frame has ordered index, we can use additional functionality that will 
-be needed later (for example, we can select sub-range by specifying dates that 
-are not explicitly included in the index).
+フレームには順序付きインデックスがあるため、後で必要になる機能を追加しておきます
+(たとえばインデックスとして明示的に含まれていないような日付を指定して
+部分範囲を選択できるようにします)。
+
 *)
 
-// Use the Date column as the index & order rows
+// インデックスならびに行の順番としてDate列を使用します
 let msftOrd = 
   msftCsv
   |> Frame.indexRowsDate "Date"
   |> Frame.sortRowsByKey
 
 (**
-The `indexRowsDate` function uses a column of type `DateTime` as a new index.
-The library provides other functions for common types of indices (like `indexRowsInt`)
-and you can also use a generic function - when using the generic function, some 
-type annotations may be needed, so it is better to use a specific function.
-Next, we sort the rows using another function from the `Frame` module. The module
-contains a large number of useful functions that you'll use all the time - it
-is a good idea to go through the list to get an idea of what is supported.
+`indexRowsDate` 関数は `DateTime` 型の行を新しいインデックスとして使用します。
+ライブラリには他にも一般的な型のインデックスに対する関数(たとえば `indexRowsInt`)や、
+ジェネリック関数もあります。
+ジェネリック関数を使用する場合、型アノテーションが必要になるため、
+特定の型に対する関数を使用したほうがよいでしょう。
+次は `Frame` モジュールにある別の関数を使用して行をソートします。
+このモジュールにはどのような状況でも使用できるような、便利な関数が多数定義されています。
+サポートされている機能を確認するために、関数のリストに目を通しておくことをおすすめします。
 
-Now that we have properly indexed stock prices, we can create a new data frame that
-only has the data we're interested (Open & Close) prices and we add a new column 
-that shows their difference:
+さてこれで正しくインデックスが付けられた株価が用意できたので、
+関心のあるデータ(始値と終値)だけを含む新しいデータフレームを作成して、
+それらの差分を表す新しい列を追加します：
 *)
 
 (*** define-output: plot1 ***)
-// Create data frame with just Open and Close prices
+// 始値(Open)と終値(Close)だけを含んだデータフレームを作成します
 let msft = msftOrd.Columns.[ ["Open"; "Close"] ]
 
-// Add new column with the difference between Open & Close
+// 始値と終値の差分を含む新しい列を作成します
 msft?Difference <- msft?Open - msft?Close
 
-// Do the same thing for Facebook
+// Facebookデータに対しても同じ処理を行います
 let fb = 
   fbCsv
   |> Frame.indexRowsDate "Date"
@@ -206,7 +213,7 @@ let fb =
   |> Frame.sliceCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
 
-// Now we can easily plot the differences
+// これで差分を簡単にプロットできるようになります
 Chart.Combine
   [ Chart.Line(msft?Difference |> Series.observations) 
     Chart.Line(fb?Difference |> Series.observations) ]
@@ -214,32 +221,35 @@ Chart.Combine
 (*** include-it:plot1 ***)
 
 (**
-When selecting columns using `f.Columns.[ .. ]` it is possible to use a list of columns
-(as we did), a single column key, or a range (if the associated index is ordered). 
-Then we use the `df?Column <- (...)` syntax to add a new column to the data frame. 
-This is the only mutating operation that is supported on data frames - all other 
-operations create a new data frame and return it as the result.
+`f.Columns.[ .. ]` として列を選択すると、(既に行ったように)列のリスト、
+あるいは単一の列キー、あるいは(関連づけられたインデックスが順序を持つのであれば)
+単一の範囲として扱うことができます。
+そして `df?Column <- (...)` というシンタックスを使用すると、
+データフレームに新しい列を追加できます。
+これはデータフレームでサポートされている唯一の可変操作です。
+その他の操作では新規作成されたデータフレームが結果として返されます。
 
-Next we would like to create a single data frame that contains (properly aligned) data
-for both Microsoft and Facebook. This is done using the `Join` method - but before we
-can do this, we need to rename their columns, because duplicate keys are not allowed:
+次にMicrosoftとFacebook両方の(適切にアラインされた)データを含む
+単一のデータフレームを作成します。
+そのためには `Join` メソッドを使用します。
+ただしその前に、キーの重複は許容されていないため、それぞれの列名を変更します：
 *)
 
 (*** define-output:msfb ***)
-// Change the column names so that they are unique
+// 列名が一意になるように変更します
 let msftNames = ["MsftOpen"; "MsftClose"; "MsftDiff"]
 let msftRen = msft |> Frame.indexColsWith msftNames
 
 let fbNames = ["FbOpen"; "FbClose"; "FbDiff"]
 let fbRen = fb |> Frame.indexColsWith fbNames
 
-// Outer join (align & fill with missing values)
+// 外部結合 (値無しを含みつつ、アラインおよびフィルを行います)
 let joinedOut = msftRen.Join(fbRen, kind=JoinKind.Outer)
 
-// Inner join (remove rows with missing values)
+// 内部結合 (値無しの行を削除します)
 let joinedIn = msftRen.Join(fbRen, kind=JoinKind.Inner)
 
-// Visualize daily differences on available values only
+// 有効な値だけを対象にして、日ごとの差分を可視化します
 Chart.Rows
   [ Chart.Line(joinedIn?MsftDiff |> Series.observations) 
     Chart.Line(joinedIn?FbDiff |> Series.observations) ]
@@ -249,86 +259,92 @@ Chart.Rows
 (**
 <a name="selecting"></a>
 
-Selecting values and slicing
-----------------------------
+値の選択とスライシング
+----------------------
 
-The data frame provides two key properties that we can use to access the data. The 
-`Rows` property returns a series containing individual rows (as a series) and `Columns`
-returns a series containing columns (as a series). We can then use various indexing and
-slicing operators on the series:
+データフレームにはデータアクセス時に使用できる主要なプロパティが2つあります。
+`Rows` プロパティはそれぞれの行を(シリーズとして)含んだシリーズを返し、
+`Columns` プロパティはそれぞれの列を(シリーズとして)含んだシリーズを返します。
+これらのシリーズに対して様々な方法でインデックス化
+あるいはスライシングを行うことができます：
 *)
 
-// Look for a row at a specific date
+// 特定の日付の行を確認します
 joinedIn.Rows.[DateTime(2013, 1, 2)]
 // [fsi:val it : ObjectSeries<string> =]
-// [fsi:  FbOpen    -> 28.00            ]  
-// [fsi:  FbClose   -> 27.44   ]           
+// [fsi:  FbOpen    -> 28.00   ]
+// [fsi:  FbClose   -> 27.44   ]
 // [fsi:  FbDiff    -> -0.5599 ]
-// [fsi:  MsftOpen  -> 27.62   ]           
-// [fsi:  MsftClose -> 27.25    ]          
+// [fsi:  MsftOpen  -> 27.62   ]
+// [fsi:  MsftClose -> 27.25   ]
 // [fsi:  MsftDiff  -> -0.3700 ]
 
-// Get opening Facebook price for 2 Jan 2013
+// 2013年1月2日のFacebookの始値を取得します
 joinedIn.Rows.[DateTime(2013, 1, 2)]?FbOpen
 // [fsi:val it : float = 28.0]
 
 (**
 
-The return type of the first expression is `ObjectSeries<string>` which is inherited from
-`Series<string, obj>` and represents an untyped series. We can use `GetAs<int>("FbOpen")` to
-get a value for a specifed key and convert it to a required type (or `TryGetAs`). The untyped
-series also hides the default `?` operator (which returns the value using the statically known
-value type) and provides `?` that automatically converts anything to `float`.
+最初の式における返り値の型は `ObjectSeries<string>` で、
+この型は `Series<string, obj>` から派生したもので、
+型無しのシリーズを表します。
+特定のキーに対する値を取得して、必要になる型に変換するためには
+`GetAs<int>("FbOpen")` メソッド(または `TryGetAs` )を使用します。
+型無しシリーズではデフォルトの `?` 演算子
+(静的に既知の値型を使用して値を返す演算子)が隠ぺいされて、
+代わりに任意の値を `float` へと自動変換する `?` 演算子が用意されます。
 
-In the previous example, we used an indexer with a single key. You can also specify multiple
-keys (using a list) or a range (using the slicing syntax):
+先の例では単一キーのインデクサを使用しました。
+しかし複数キーを(リストとして)指定したり、
+(スライシングの文法を使用して)範囲を指定したりすることもできます：
 *)
 
-// Get values for the first three days of January 2013
+// 2013年1月の月初め3日の値を取得します
 let janDates = [ for d in 2 .. 4 -> DateTime(2013, 1, d) ]
 let jan234 = joinedIn.Rows.[janDates]
 
-// Calculate mean of Open price for 3 days
+// 3日間の始値の平均を計算します
 jan234?MsftOpen |> Stats.mean
 
-// Get values corresponding to entire January 2013
+// 2013年1月全体の値を取得します
 let jan = joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] 
 
 (*** include-value: Frame.map(round (jan*100.0))/100.0 |> Frame.mapRowKeys (fun dt -> dt.ToShortDateString()) ***)
 
-// Calculate means over the period
+// 月全体の平均を計算します
 jan?FbOpen |> Stats.mean
 jan?MsftOpen |> Stats.mean
 
 (**
-The result of the indexing operation is a single data series when you use just a single
-date (the previous example) or a new data frame when you specify multiple indices or a 
-range (this example). 
+(先の例のように)単一の日付を指定した場合のインデックス演算子の結果は単一のデータシリーズ、
+複数のインデックスや(今回の例のように)範囲を指定した場合の結果は新しいデータフレームになります。
 
-The `Series` module used here includes more useful functions for working
-with data series, including (but not limited to) statistical functions like `mean`,
-`sdv` and `sum`.
+今回使用した `Series` モジュールには、 `mean` `sdv` `sum` など、
+データシリーズに対する便利な統計用関数が定義されています。
 
-Note that the slicing using range (the second case) does not actually generate a sequence
-of dates from 1 January to 31 January - it passes these to the index. Because our data frame
-has an ordered index, the index looks for all keys that are greater than 1 January and smaller
-than 31 January (this matters here, because the data frame does not contain 1 January - the 
-first day is 2 January)
+なお範囲を指定したスライシング(2番目の例)では
+1月1日から31日までの日付シーケンスが実際に生成されているわけではない点に注意してください。
+これら2つの日付がインデックスとして渡されているだけです。
+データフレームには順序付きインデックスがあるため、
+1月1日よりも大きく、1月31日よりも小さいすべてのキーがインデックスによって検索されるというわけです
+(ただしここには問題があります。
+返されたデータフレームには1月1日のデータが含まれておらず、1月2日から始まっています。)
 
 <a name="timeseries"></a>
 
-Using ordered time series
--------------------------
+時系列データを使用する
+----------------------
 
-As already mentioned, if we have an ordered series or an ordered data frame, then we can
-leverage the ordering in a number of ways. In the previous example, slicing used lower
-and upper bounds rather than exact matching. Similarly, it is possible to get nearest
-smaller (or greater) element when using direct lookup.
+既に説明したように、順序付きのシリーズまたはデータフレームがあれば、
+様々な方法でデータを並び替えることができます。
+先の例では厳密一致ではなく、下限上限を指定してスライシングしました。
+同様に、ダイレクトルックアップを行う場合には
+指定した値に最も近い小さな(あるいは大きな)要素を取得することもできます。
 
-For example, let's create two series with 10 values for 10 days. The `daysSeries` 
-contains keys starting from `DateTime.Today` (12:00 AM) and `obsSeries` has dates
-with time component set to the current time (this is wrong representation, but it 
-can be used to ilustrate the idea):
+たとえば10日分10個のデータを持った2つのシリーズを用意します。
+`daysSeries` は `DateTime.Today` (午前 12:00) を始点とするキーを持ち、
+`obsSeries` は 現在の時刻が設定された日付をキーに持つようにします
+(これは間違った表現ですが、アイディアとしては伝わるはずです)：
 *)
 
 let daysSeries = Series(dateRange DateTime.Today 10, rand 10)
@@ -338,95 +354,108 @@ let obsSeries = Series(dateRange DateTime.Now 10, rand 10)
 (*** include-value: (round (obsSeries*100.0))/100.0 ***)
 
 (**
-The indexing operation written as `daysSeries.[date]` uses _exact_ semantics so it will 
-fail if the exact date is not available. When using `Get` method, we can provide an
-additional parameter to specify the required behaviour:
+`daysSeries.[date]` というインデックス演算子は **厳密な** 意味を持つため、
+正確な日付が参照できない場合にはエラーになります。
+一方、 `Get` メソッドには要求された動作を指定するための引数があります：
 *)
 
-// Fails, because current time is not present
+// 現在の時刻に対応するデータは無いのでエラーになります。
 try daysSeries.[DateTime.Now] with _ -> nan
 try obsSeries.[DateTime.Now] with _ -> nan
 
-// This works - we get the value for DateTime.Today (12:00 AM)
+// 動作します。DateTime.Today (12:00 AM)に対応する値が取得できます。
 daysSeries.Get(DateTime.Now, Lookup.ExactOrSmaller)
-// This does not - there is no nearest key <= Today 12:00 AM
+// 動作しません。Today (12:00 AM) 以前で最も近いキーは存在しません。
 try obsSeries.Get(DateTime.Today, Lookup.ExactOrSmaller)
 with _ -> nan
 
 (**
-Similarly, you can specify the semantics when calling `TryGet` (to get an optional value)
-or when using `GetItems` (to lookup multiple keys at once). Note that this behaviour is
-only supported for series or frames with ordered index. For unordered, all operations use
-the exact semantics.
+(option値を取得する) `TryGet` あるいは
+(1度に複数のキーを指定してルックアップを行う) `GetItems` を呼ぶ場合にも、
+同じように動作を指定できます。
+なおこの動作は順序付きインデックスを持ったシリーズまたはフレームに対してのみ
+有効である点に注意してください。
+順序が無い場合はすべての操作が厳密一致になります。
 
-The semantics can be also specified when using left or right join on data frames. To 
-demonstrate this, let's create two data frames with columns indexed by 1 and 2, respectively:
+データフレームをleft joinまたはright joinする場合にも指定できます。
+デモとして、1と2というインデックスをそれぞれ持った
+2つのデータフレームを用意してみます：
 *)
 
 let daysFrame = [ 1 => daysSeries ] |> Frame.ofColumns
 let obsFrame = [ 2 => obsSeries ] |> Frame.ofColumns
 
-// All values in column 2 are missing (because the times do not match)
+// 列2にあるすべての値は(一致する時間が無いため)値無しです
 let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 
-// All values are available - for each day, we find the nearest smaller
-// time in the frame indexed by later times in the day
+// すべての値が有効です。
+// 各日付において、やや経過した時間に対して最も近い小さな値をキーとする値を取得しています。
 let obsDaysPrev = 
   (daysFrame, obsFrame) 
   ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller
 
-// The first value is missing (because there is no nearest 
-// value with greater key - the first one has the smallest 
-// key) but the rest is available
+// 1番目の値は値無しですが、2番目以降は有効な値です
+// (1番目のデータは最も小さなキーであるため、
+// それよりも最も近くて大きい値は存在しません)。
 let obsDaysNext =
   (daysFrame, obsFrame) 
   ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrGreater
 
 (**
-In general, the same operation can usually be achieved using a function from the 
-`Series` or `Frame` module and using a member (or an extension member) on the object.
-The previous sample shows both options - it uses `Join` as a member with optional
-argument first, and then it uses `joinAlign` function. Choosing between the two is
-a matter of preference - here, we are using `joinAlign` so that we can write code
-using pipelining (rather than long expression that would not fit on the page).
+一般的に、 `Series` や `Frame` モジュール内の関数を使用して行えることは
+いずれもオブジェクトのメンバー(あるいは拡張メンバー)を使用しても
+行うことができるようになっています。
+先の例では両方を使用しました。
+まずオプション引数を指定した `Join` をメンバーメソッドとして呼び出した後、
+`joinAlign` 関数を呼び出しました。
+好みに応じてどちらを使用しても構いません。
+今回は(ページに収まらないような長い式を記述するのではなく)
+コードをパイプライン化したかったので `joinAlign` を使用しました
 
-The `Join` method takes two optional parameters - the parameter `?lookup` is ignored 
-when the join `?kind` is other than `Left` or `Right`. Also, if the data frame is not 
-ordered, the behaviour defaults to exact matching. The `joinAlign` function behaves
-the same way.
+`Join` メソッドには2つのオプション引数を指定できます。
+引数 `?lookup` は `?kind` が `Left` と `Right` の
+いずれでもない場合には無視されます。
+また、データフレームに順序が無い場合には厳密一致のデフォルト動作になります。
+`joinAlign` 関数も同様です。
 
 <a name="projections"></a>
 
-Projection and filtering
-------------------------
+射影とフィルタリング
+--------------------
 
-For filtering and projection, series provides `Where` and `Select` methods and 
-corresponding `Series.map` and `Series.filter` functions (there is also `Series.mapValues`
-and `Series.mapKeys` if you only want to transform one aspect). 
+シリーズに対するフィルタリング(filtering)と射影(projection)は
+それぞれ `Where` と `Select` メソッドで行うことができます。
+またこれらのメソッドには `Series.map` と `Series.filter` 関数が対応します。
+(値またはキーのいずれか一方だけを対象に変換したい場合には
+`Series.mapValues` や `Series.mapKeys` 関数も使用できます)。
 
-The methods are not available directly on data frame, so you always need to write `df.Rows` 
-or `df.Columns` (depending on which one you want). Correspondingly, the `Frame` module
-provides functions such as `Frame.mapRows`. The following adds a new column that contains
-the name of the stock with greater price ("FB" or "MSFT"):
+これらのメソッドは直接データフレームに対して呼び出せないため、
+(対象に応じて) `df.Rows` または `df.Columns` と記述する必要があります。
+なお `Frame` モジュールにも `Frame.mapRows` という同じような関数があります。
+以下のコードでは株価の高い方の名前
+("FB"または"MSFT")を含んだ新しい列を追加しています：
 *)
 
 joinedOut?Comparison <- joinedOut |> Frame.mapRowValues (fun row -> 
   if row?MsftOpen > row?FbOpen then "MSFT" else "FB")
 
 (**
-When projecting or filtering rows, we need to be careful about missing data. The row
-accessor `row?MsftOpen` reads the specified column (and converts it to `float`), but when
-the column is not available, it throws the `MissingValueException` exception. Projection
-functions such as `mapRowValues` automatically catch this exception (but no other types
-of exceptions) and mark the corresponding series value as missing.
+行を射影またはフィルタリングする場合、値無しのデータに注意する必要があります。
+行に対するアクセサー `row?MsftOpen` は特定の列の値を読み取ります
+(そしてその値を`float`に変換します)が、列の値が無効な場合には
+`MissingValueException` 例外がすろーされます。
+`mapRowValues` のような射影関数ではこの例外が自動的にキャッチされて、
+対応するシリーズの値が値無しだとマークされます
+(ただしこれ以外の型の例外はキャッチされません)。
 
-To make the missing value handling more explicit, you could use `Series.hasAll ["MsftOpen"; "FbOpen"]`
-to check that the series has all the values we need. If no, the lambda function could return
-`null`, which is automatically treated as a missing value (and it will be skipped by future
-operations).
+値無しに対する処理をより明示的に行う場合には `Series.hasAll ["MsfOpen"; "FbOpen"]`
+として、必要な値がすべてシリーズにあるかどうかをチェックするようにします。
+もし値が無いのであればラムダ関数で `null` を返すようにします。
+そうするとそれが自動的に値無しだとみなされるようになります
+(そして以降の操作で処理対象から外されることになるでしょう)。
 
-Now we can get the number of days when Microsoft stock prices were above Facebook and the
-other way round:
+さてこれでMicrosoftの株価がFacebookを上回った日数、
+あるいはその逆の日数を取得できるようになりました：
 *)
 
 joinedOut.GetColumn<string>("Comparison")
@@ -438,45 +467,51 @@ joinedOut.GetColumn<string>("Comparison")
 // [fsi:val it : int = 103]
 
 (**
-In this case, we should probably have used `joinedIn` which only has rows where the 
-values are always available. But you often want to work with data frame that has missing values, 
-so it is useful to see how this work. Here is another alternative:
+この場合には、有効な行しか含まれなくなる
+`joinedIn` を使用したほうがよかったかもしれません。
+しかし値無しを含むデータフレームを処理することも多いため、
+この方法を確認しておくことには意味があります。
+別の方法も紹介しましょう：
 *)
 
-// Get data frame with only 'Open' columns
+// 'Open'列だけを含むデータフレームを取得します
 let joinedOpens = joinedOut.Columns.[ ["MsftOpen"; "FbOpen"] ]
 
-// Get only rows that don't have any missing values
-// and then we can safely filter & count
+// 値無しを含まない行だけを取得すれば
+// 安全にフィルタおよびカウントできます
 joinedOpens.RowsDense
 |> Series.filterValues (fun row -> row?MsftOpen > row?FbOpen)
 |> Series.countValues
 
 (**
-The key is the use of `RowsDense` on line 6. It behaves similarly to `Rows`, but
-only returns rows that have no missing values. This means that we can then perform
-the filtering safely without any checks.
+ポイントは6行目にある `RowsDense` の部分です。
+これは `Rows` と同じような動作をしますが、
+値無しを含まない行だけを返すという違いがあります。
+したがって、チェックせずとも安全にフィルタリングを実行できるというわけです。
 
-However, we do not mind if there are missing values in `FbClose`, because we do not
-need this column. For this reason, we first create `joinedOpens`, which projects
-just the two columns we need from the original data frame.
+しかし `FbClose` 列は必要としていないため、
+この列に値無しが含まれていても問題にはなりません。
+そのため、元のデータフレームから必要な2つの列だけを射影して、
+最初に `joinedOpens` を作成しているというわけです。
 
 <a name="grouping"></a>
 
-Grouping and aggregation
-------------------------
+グループ化と集計
+----------------
 
-As a last thing, we briefly look at grouping and aggregation. For more information
-about grouping of time series data, see [the time series features tutorial](series.html)
-and [the data frame features](frame.html) contains more about grouping of unordered
-frames.
+最後にグループ化(grouping)と集計(aggregation)について簡単に紹介します。
+時系列データのグループ化に関する詳細については
+[時系列機能のチュートリアル](series.html) を参照してください。
+また、 [データフレームの機能](frame.html) には
+順序無しのフレームに対するグループ化に関する説明があります。
 
-We'll use the simplest option which is the `Frame.groupRowsUsing` function (also available
-as `GroupRowsUsing` member). This allows us to specify key selector that selects new key
-for each row. If you want to group data using a value in a column, you can use 
-`Frame.groupRowsBy column`.
+ここでは `Frame.groupRowsUsing` という一番単純な機能を紹介します
+(`GroupRowsUsing` メンバーメソッドもあります)。
+この関数には各行における新しいキーを選択するキーセレクタを指定できます。
+列内の値を使用してデータをグループ化したい場合には
+`Frame.groupRowsBy column` というようにします。
 
-The following snippet groups rows by month and year:
+以下のスニペットでは行を月および年でグループ化しています：
 *)
 let monthly =
   joinedIn
@@ -494,29 +529,36 @@ let monthly =
 // [fsi:           8/14/2013 -> 36.65   32.35    ]
 
 (**
-The output is trimmed to fit on the page. As you can see, we get back a frame that has
-a tuple `DateTime * DateTime` as the row key. This is treated in a special way as a 
-_hierarchical_ (or multi-level) index. For example, the output automatically shows the 
-rows in groups (assuming they are correctly ordered).
+出力結果はページに収まるように省略してあります。
+見ての通り、 `DateTime * DateTime` のタプルを行のキーとするような
+データフレームが返されます。
+このデータフレームは **階層的** (あるいはマルチレベル) インデックスとして
+扱うことができます。
+たとえば出力結果では(正しく順序づけられているとすれば)
+自動的に複数行がグループとして表示されます
 
-A number of operations can be used on hierarchical indices. For example, we can get
-rows in a specified group (say, May 2013) and calculate means of columns in the group:
+階層的インデックスに対しては様々な操作が可能です。
+たとえば特定のグループ(2013年5月)に含まれる行を取得して、
+グループ内の列の平均を計算することができます：
 *)
 monthly.Rows.[DateTime(2013,5,1), *] |> Stats.mean
 // [fsi:val it : Series<string,float> =]
 // [fsi:  FbOpen    -> 26.14 ]
 // [fsi:  FbClose   -> 26.35 ]
-// [fsi:  FbDiff    -> 0.20 ]
+// [fsi:  FbDiff    -> 0.20  ]
 // [fsi:  MsftOpen  -> 33.95 ]
 // [fsi:  MsftClose -> 33.76 ]
 // [fsi:  MsftDiff  -> -0.19 ]
 
 (**
-The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
-In earlier versions, you can get the same thing using `monthly.Rows.[Lookup1Of2 (DateTime(2013,5,1))]`.
-The syntax indicates that we only want to specify the first part of the key and do not match
-on the second component. We can also use `Frame.getNumericColumns` in combination with 
-`Stats.levelMean` to get means for all first-level groups:
+このスニペットではF# 3.1 (Visual Studio 2013)以降で
+利用可能なスライシング記法を使用しています。
+以前のバージョンであれば
+`monthly.Rows.[Lookup1Of2 (DateTime(2013,5,1))]` とすれば同じ動作になります。
+これはキーの1番目だけを指定して、
+2番目のコンポーネントは任意のものでよいということを示しています。
+`Frame.getNumericColumns` と `Stats.levelMean` を組み合わせて
+第1レベルの全グループの平均を取得することもできます：
 *)
 monthly 
 |> Frame.getNumericColumns
@@ -524,8 +566,8 @@ monthly
 |> Frame.ofColumns
 
 (**
-Here, we simply use the fact that the key is a tuple. The `fst` function projects the first 
-date from the key (month and year) and the result is a frame that contains the first-level keys,
-together with means for all available numeric columns.
+ここでは単にキーがタプルであることを利用しました。
+`fst` 関数はキー(月および年)の1番目の日付を射影するため、
+第1レベルのキーを含み、有効な数値列すべての平均値を持ったフレームが結果として返されます。
 *)
 

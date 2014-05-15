@@ -70,7 +70,7 @@ let copyFiles () =
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
-  let fsiEvaluator = Formatters.createFsiEvaluator root output
+  let fsiEvaluator = Formatters.createFsiEvaluator (root @@ "..") output
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
                 |> Seq.filter (fun x -> x.Contains "ja")
   for dir in Seq.append [content] subdirs do
