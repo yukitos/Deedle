@@ -8,84 +8,95 @@ open FSharp.Data
 open Deedle
 open FSharp.Charting
 
-let root = __SOURCE_DIRECTORY__ + "/data/"
+let root = __SOURCE_DIRECTORY__ + "/../data/"
 
 (**
-Working with data frames in F#
-==============================
+データフレームを F# で扱う
+==========================
 
-In this section, we look at various features of the F# data frame library (using both
-`Series` and `Frame` types and modules). Feel free to jump to the section you are interested
-in, but note that some sections refer back to values built in "Creating & loading".
+このセクションではF#データフレームライブラリの様々な機能を紹介します
+(`Series` と `Frame` 型およびモジュールを使用します)。
+任意のセクションに読み飛ばしてもらって構いませんが、
+一部のセクションでは「作成および読み取り」で組み立てた値を参照している点に
+注意してください。
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx)
-from GitHub and run the samples interactively.
+また、このページをGitHubから
+[F# スクリプトファイル](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx)
+としてダウンロードすれば、インタラクティブにサンプルを実行することもできます。
 
 <a name="creating"></a>
-Creating frames & loading data
-------------------------------
+フレームの作成とデータの読み取り
+--------------------------------
 
 <a name="creating-csv"></a>
-### Loading and saving CSV files
+### CSVファイルのロードとセーブ
 
-The easiest way to get data into data frame is to use a CSV file. The `Frame.ReadCsv`
-function exposes this functionality:
+データをデータフレームとして取得する一番簡単な方法は
+CVSファイルを使用することです。
+この機能は `Frame.ReadCsv` 関数として用意されています：
 *)
 
-// Assuming 'root' is a directory containing the file
+// 'root' ディレクトリにファイルが置かれているものとします
 let titanic = Frame.ReadCsv(root + "Titanic.csv")
 
-// Read data and set the index column & order rows
+// データを読み取ってインデックス列を設定し、行を並び替えます
 let msft = 
   Frame.ReadCsv(root + "stocks/msft.csv") 
   |> Frame.indexRowsDate "Date"
   |> Frame.sortRowsByKey
 
-// Specify column separator
+// 列区切り文字を指定します
 let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
 (**
-The `ReadCsv` method has a number of optional arguments that you can use to control 
-the loading. It supports both CSV files, TSV files and other formats. If the file name
-ends with `tsv`, the Tab is used automatically, but you can set `separator` explicitly.
-The following parameters can be used:
+`ReadCsv` メソッドにはロード時の動作を制御するためのオプションが多数あります。
+このメソッドはCSVファイルやTSVファイル、その他の形式のファイルをサポートします。
+ファイル名が`tsv`で終わる場合には自動的にタブ文字が処理されますが、
+`separator` 引数を明示的に指定して区切り文字を設定することもできます。
+以下の引数が有効です：
 
- * `path` - Specifies a file name or an web location of the resource.
- * `inferTypes` - Specifies whether the method should attempt to infer types
-   of columns automatically (set this to `false` if you want to specify schema)
- * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-   rows to use for type inference. The default value is 0, meaninig all rows.
- * `schema` - A string that specifies CSV schema. See the documentation for 
-   information about the schema format.
- * `separators` - A string that specifies one or more (single character) separators
-   that are used to separate columns in the CSV file. Use for example `";"` to 
-   parse semicolon separated files.
- * `culture` - Specifies the name of the culture that is used when parsing 
-   values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+ * `path` - リソースのファイル名またはWeb上の位置を指定します。
+ * `inferTypes` - メソッドが列の型を推測すべきかどうかを指定します。
+   (スキーマを指定する場合には`false`を指定します)
+ * `inferRows` - `interTypes=true` の場合、この引数には
+   型の推論に使用する行数を指定します。
+   デフォルトは0で、すべての行が使用されます。
+ * `schema` - CSVスキーマを指定する文字列です。
+   スキーマの形式については別途ドキュメントを参照してください。
+ * `separators` - CSVファイルの行を区切る1つ以上の(単一)文字を文字列として
+   指定します。
+   たとえば `";"` とするとセミコロン区切りのファイルとしてパースされます。
+ * `culture` - CVSファイルの値をパースする際に使用される
+   カルチャ(たとえば `"en-US"` )を指定します。
+   デフォルトはインバリアントカルチャです。
 
-The parameters are the same as those used by the [CSV type provider in F# Data](http://fsharp.github.io/FSharp.Data/library/CsvProvider.html),
-so you can find additional documentation there.
+これらの引数は
+[F# DataのCSV型プロバイダー](http://fsharp.github.io/FSharp.Data/library/CsvProvider.html)
+([日本語](http://fsharp.github.io/FSharp.Data/ja/library/CsvProvider.html))
+で使用されるものと同じものなので、そちらのドキュメントも参照してください。
 
-Once you have a data frame, you can also save it to a CSV file using the 
-`SaveCsv` method. For example:
+データフレームを取得した後は、 `SaveCsv` メソッドを使用して
+CSVファイルとして保存できます。
+たとえば以下のようにします：
 *)
-// Save CSV with semicolon separator
+// セミコロン区切りでCSVを保存します
 air.SaveCsv(Path.GetTempFileName(), separator=';')
-// Save as CSV and include row key as "Date" column
+// 行キーを"Date"列として含むようなCSVファイルとして保存します
 msft.SaveCsv(Path.GetTempFileName(), keyNames=["Date"], separator='\t')
 
 (**
-By default, the `SaveCsv` method does not include the key from the data frame. This can be
-overriden by calling `SaveCsv` with the optional argument `includeRowKeys=true`, or with an
-additional argument `keyNames` (demonstrated above) which sets the headers for the key columns(s)
-in the CSV file. Usually, there is just a single row key, but there may be multiple when 
-[hierarchical indexing](#indexing) is used.
+デフォルトでは `SaveCsv` メソッドはデータフレームのキーを含めません。
+この動作は `SaveCsv` メソッドのオプション引数に `includeRowKeys=true` を指定するか、
+(上の例のように) `keyNames` 引数に(複数の)キー列となるヘッダを設定します。
+通常、行キーは1つだけですが、 [階層的インデックシング](#indexing)
+が使用されている場合には複数になることもあります。
 
 <a name="creating-recd"></a>
-### Loading F# records or .NET objects
+### F#レコードまたは.NETオブジェクトのロード
 
-If you have another .NET or F# components that returns data as a sequence of F# records,
-C# anonymous types or other .NET objects, you can use `Frame.ofRecords` to turn them
-into a data frame. Assume we have:
+データをF#のレコード、C#の匿名型、あるいはその他の.NETオブジェクトとして返すような
+.NETあるいはF#のコンポーネントを使用している場合には、
+`Frame.ofRecords` を使用すればこれらをデータフレームに変換できます。
+たとえば以下のデータがあるとします：
 *)
 type Person = 
   { Name:string; Age:int; Countries:string list; }
@@ -96,332 +107,358 @@ let peopleRecds =
     { Name = "Eve"; Age = 2; Countries = [ "FR" ] }
     { Name = "Suzanne"; Age = 15; Countries = [ "US" ] } ]
 (**
-Now we can easily create a data frame that contains three columns 
-(`Name`, `Age` and `Countries`) containing data of the same type as 
-the properties of `Person`:
+そうすると `Person` のプロパティと同じ型のデータを持った
+3つの列(`Name` `Age` `Countries`)を含んだデータフレームを
+簡単に作成できます：
 *)
-// Turn the list of records into data frame 
+// レコードのリストをデータフレームに変換します
 let peopleList = Frame.ofRecords peopleRecds
-// Use the 'Name' column as a key (of type string)
+// 'Name' 列を(文字列型の)キーとして使用します
 let people = peopleList |> Frame.indexRowsString "Name"
 
 (**
-Note that this does not perform any conversion on the column data. Numerical series
-can be accessed using the `?` operator. For other types, we need to explicitly call
-`GetColumn` with the right type arguments:
+なおここでは列データに対する変換は何も行われないことに注意してください。
+数値的なシリーズは `?` 演算子を使用してアクセスできます。
+その他の型の場合には適切な型引数を指定して
+`GetColumn` を明示的に呼び出す必要があります：
 *)
 people?Age
 people.GetColumn<string list>("Countries")
 
 (**
 <a name="creating-wb"></a>
-### F# Data providers
+### F#データプロバイダ
 
-In general, you can use any data source that exposes data as series of tuples. This
-means that we can easily load data using, for example, the World Bank type provider 
-from [F# Data library](https://github.com/fsharp/FSharp.Data).
+一般的にはデータをタプルのシリーズとして公開するような
+任意のデータソースを使用できます。
+つまり、[F# Dataライブラリ](https://github.com/fsharp/FSharp.Data)
+のWorld Bank型プロバイダーのような機能を使用すれば、
+簡単にデータをロードできるというわけです。
 *)
-// Connect to the World Bank
+// World Bankに接続します
 let wb = WorldBankData.GetDataContext()
 
-/// Given a region, load GDP in current US$ and return data as 
-/// a frame with two-level column key (region and country name)
+/// 特定の地域に対して、GDPを現在のUSドルでロードし、
+/// 2レベルの列キー(地域と国名)を持ったフレームとしてデータを返します
 let loadRegion (region:WorldBankData.ServiceTypes.Region) =
   [ for country in region.Countries -> 
-      // Create two-level column key using tuple
+      // タプルを使用して、2レベルの列キーを作成します
       (region.Name, country.Name) => 
-        // Create series from tuples returned by WorldBank
+        // WorldBankから返された複数のタプルからシリーズを作成します
         Series.ofObservations country.Indicators.``GDP (current US$)`` ]
   |> frame
 
 (**
-To make data manipulation more convenient, we read country information per region
-and create data frame with a hierarchical index (for more information, see the
-[advanced indexing section](#indexing)). Now we can easily read data for OECD and
-Euro area:
+データ処理をもっと簡単にするために、
+地域毎の国情報を読み取って階層的インデックスを持ったデータフレームを作成しています
+(詳細については[高度なインデックシングの節](#indexing)を参照)。
+これでOECDとユーロエリアのデータを簡単に読み取ることができるようになりました：
 *)
-// Load Euro and OECD regions
+// ユーロとOECD地域をロード
 let eu = loadRegion wb.Regions.``Euro area``
 let oecd = loadRegion wb.Regions.``OECD members``
 
-// Join and convert to in billions of USD
+// これらをジョインして、10億USドル単位に変換します
 let world = eu.Join(oecd) / 1e9
 
 (*** include-value:(round (world*100.0))/100.0 ***)
 
 (**
-The loaded data look something like the sample above. As you can see, the columns
-are grouped by the region and some data are not available.
+読み取ったデータはおよそ上のようになります。
+見ての通り、列は地域によってグループ化され、一部のデータが値無しになっています。
 
-### Expanding objects in columns
+### オブジェクトを列に展開する
 
-It is possible to create data frames that contain other .NET objects as members in a 
-series. This might be useful, for example, when you get multiple data sources producing
-objects and you want to align or join them before working with them. However, working
-with frames that contain complex .NET objects is less conveninet.
+シリーズ内のメンバーとして他の.NETオブジェクトを含むようなデータフレームを
+作成することもできます。
+これはたとえば複数のデータソースから生成されたオブジェクトを取得して、
+これらを処理する前にアラインまたは連結したいような場合に便利なことがあります。
+しかし複雑な.NETオブジェクトを含むフレームの場合には、
+逆に利便性が損なわれる場合もあります。
 
-For this reason, the data frame supports _expansion_. Given a data frame with some object
-in a column, you can use `Frame.expandCols` to create a new frame that contains properties
-of the object as new columns. For example: 
+そのため、データフレームは**展開(expansion)**機能をサポートしています。
+列に何かしらのオブジェクトを含んだデータフレームに対して
+`Frame.expandCols`を使用すると、オブジェクトのプロパティそれぞれを新しい列として
+含むような新しいフレームを作成できます。
+たとえば以下のようにします：
 *)
 
 (*** define-output:ppl ***)
-// Create frame with single column 'People'
+// 'People'という1列だけを持ったフレームを作成します
 let peopleNested = 
   [ "People" => Series.ofValues peopleRecds ] |> frame
 
-// Expand the 'People' column
+// 'People'列を展開します
 peopleNested |> Frame.expandCols ["People"]
 
 (*** include-it:ppl ***)
 
 (**
-As you can see, the operation generates columns based on the properties of the original 
-column type and generates new names by prefixing the property names with the name of the
-original column.
+見ての通り、この操作では元の列の型に含まれるプロパティを元にして
+複数の列が生成されて、それぞれの列の名前は
+元の列の名前に各プロパティの名前を続けたものになります。
 
-Aside from properties of .NET objects, the expansion can also handle values of type
-`IDictionary<K, V>` and series that contain nested series with `string` keys 
-(i.e. `Series<string, T>`). If you have more complex structure, you can use
-`Frame.expandAllCols` to expand columns to a specified level recursively:
+.NETオブジェクトだけでなく、`IDictionary<K, V>`型の値や
+`string`をキーとするネストされたシリーズ(つまり`Series<string, T>`)
+について展開することができます。
+さらに複雑な構造をしている場合には、
+`Frame.expandAllCols` を使用して特定のレベルまで再帰的に列を展開することもできます：
 
 *)
-// Series that contains dictionaries, containing tuples
+// タプルを含むディクショナリを含んだシリーズ
 let tuples = 
   [ dict ["A", box 1; "C", box (2, 3)]
     dict ["B", box 1; "C", box (3, 4)] ] 
   |> Series.ofValues
 
-// Expand dictionary keys (level 1) and tuple items (level 2)
+// ディクショナリのキー(レベル1)とタプルのアイテム(レベル2)を展開
 frame ["Tuples" => tuples]
 |> Frame.expandAllCols 2
+
 (**
-Here, the resulting data frame will have 4 columns including
-`Tuples.A` and `Tuples.B` (for the first keys) and `Tuples.C.Item1`
-together with `Tuples.C.Item2` representing the two items of the tuple
-nested in a dictionary.
+この場合、結果のデータフレームには `Tuples.A` と `Tuples.B`、
+さらにディレクトリ内にネストされたタプルの2つの項目を表す
+`Tuples.C.Item1` と `Tuples.C.Item2` の列が含まれることになります。
 
 <a name="dataframe"></a>
-Manipulating data frames
-------------------------
+データフレームの操作
+--------------------
 
-The series type `Series<K, V>` represents a series with keys of type `K` and values
-of type `V`. This means that when working with series, the type of values is known 
-statically. When working with data frames, this is not the case - a frame is represented
-as `Frame<R, C>` where `R` and `C` are the types of row and column indices, respectively
-(typically, `R` will be an `int` or `DateTime` and `C` will be `string` representing 
-different column/series names. 
+シリーズ型 `Series<K, V>` はシリーズのキーの型が `K` で
+値の型が `V` であることを表しています。
+つまりシリーズを処理する場合には、値の型があらかじめわかっているということです。
+一方、データフレームの場合にはそうはいきません。
+`Frame<R, C>` の `R` と `C` はそれぞれ行と列のインデックスの型を表します
+(一般的に `R` は `int` または `DateTime` で、`C` は異なる行または列名を表す
+`string` になります)。
 
-A frame can contain heterogeneous data. One column may contain integers, another may
-contain floating point values and yet another can contain strings, dates or other objects
-like lists of strings. This information is not captured statically - and so when working
-with frames, you may need to specify the type explicitly, for example, when reading
-a series from a frame.
+フレームには多様なデータが含まれます。
+ある列には整数、別の列には浮動小数点数、さらに別の列には文字列や日付、
+あるいは文字列のリストのような別のオブジェクトが含まれることがあります。
+これらの情報は静的にキャプチャされません。
+したがってシリーズの読み取りなど、フレームを操作する場合には、
+明示的に型を指定しなければいけないことがあります。
 
-### Getting data from a frame
+### フレームからデータを取得する
 
-We'll use the data frame `people` which contains three columns - `Name` of type `string`,
-`Age` of type `int` and `Countries` of type `string list` (we created it from F# records
-in [the previous section](#creating-recd)):
+ここでは `string` 型の `Name` と、`int` 型の `Age`、`string list` 型の `Countries`
+という3つの列を持った `people` データフレームを使用します
+(これは [先の節で](#creating-recd) F#のレコードから作成したものです)：
 
-               Name    Age Countries          
-    Joe     -> Joe     51  [UK; US; UK]       
-    Tomas   -> Tomas   28  [CZ; UK; US; ... ] 
-    Eve     -> Eve     2   [FR]               
-    Suzanne -> Suzanne 15  [US]   
+               Name    Age Countries
+    Joe     -> Joe     51  [UK; US; UK]
+    Tomas   -> Tomas   28  [CZ; UK; US; ... ]
+    Eve     -> Eve     2   [FR]
+    Suzanne -> Suzanne 15  [US]
 
-To get a column (series) from a frame `df`, you can use operations that are exposed directly
-by the data frame, or you can use `df.Columns` which returns all columns of the frame as a
-series of series.
+フレーム `df` から列(シリーズ)を取得するには
+データフレームで直接公開されている操作を使用するか、
+`df.Columns` を使用してフレームのすべての列を
+シリーズのシリーズとして取得することもできます。
 *)
 
-// Get the 'Age' column as a series of 'float' values
-// (the '?' operator converts values automatically)
+// 'Age' 列を 'float' 値のシリーズとして取得します
+// ('?' 演算子が値を自動的に変換します)
 people?Age
-// Get the 'Name' column as a series of 'string' values
+// 'Name' 列を 'string' 値のシリーズとして取得します
 people.GetColumn<string>("Name")
-// Get all frame columns as a series of series
+// フレームのすべての列をシリーズのシリーズとして取得します
 people.Columns
 
 (**
-A series `s` of type `Series<string, V>` supports the question mark operator `s?Foo` to get
-a value of type `V` associated with the key `Foo`. For other key types, you can sue the `Get` 
-method. Note that, unlike with frames, there is no implicit conversion:
+`Series<string, V>` 型 は疑問符演算子をサポートしているため、
+この型の `s` に対して `s?Foo` とすると、
+キー `Foo` に関連づけられた型 `V` の値を取得できます。
+それ以外の型を取得する場合には `Get` メソッドを使用します。
+なおフレームの場合と異なり、明示的な変換は行われないことに注意してください：
 *)
-// Get Series<string, float> 
+// Series<string, float> を取得します
 let numAges = people?Age
 
-// Get value using question mark
+// 疑問符演算子を使用して値を取得します
 numAges?Tomas
-// Get value using 'Get' method
+// 'Get' メソッドを使用して値を取得します
 numAges.Get("Tomas")
-// Returns missing when key is not found
+// キーが見つからない場合には値無しを返します
 numAges.TryGet("Fridrich")
 
 (**
-The question mark operator and `Get` method can be used on the `Columns` property of data frame.
-The return type of `df?Columns` is `ColumnSeries<string, string>` which is just a thin wrapper
-over `Series<C, ObjectSeries<R>>`. This means that you get back a series indexed by column names
-where the values are `ObjectSeries<R>` representing individual columns. The type
-`ObjectSeries<R>` is a thin wrapper over `Series<R, obj>` which adds several functions 
-for getting the values as values of specified type.
+疑問符演算子と `Get` メソッドはデータフレームの
+`Columns` プロパティに対しても使用できます。
+`df?Columns` の返り値の型は ｀ColumnSeries<string, string>` で、
+これは単に `Series<C, ObjectSeries<R>>` の薄いラッパーです。
+つまり各列を表す `ObjectSeries<R>` を値に持つような列の名前で
+インデックスされたシリーズを取得しなおすことができるというわけです。
+`ObjectSeries<R>` 型は `Series<R, obj>` の薄いラッパーで、
+これは値を特定の型として取得できるような機能がいくつか追加されたものです。
 
-In our case, the returned values are individual columns represented as `ObjectSeries<string>`:
+今回の場合、返される値は `ObjectSeries<string>`
+として表されるそれぞれの列になります：
 *)
-// Get column as an object series
+// ObjectSeriesとして列を取得します
 people.Columns?Age
 people.Columns?Countries
 // [fsi:val it : ObjectSeries<string> =]
 // [fsi:  Joe     -> [UK; US; UK]       ]
 // [fsi:  Tomas   -> [CZ; UK; US; ... ] ]
 // [fsi:  Eve     -> [FR]               ]
-// [fsi:  Suzanne -> [US]]
+// [fsi:  Suzanne -> [US]               ]
 
-// Get column & try get column using members
+// メンバーを使用して列の取得を試みます
 people.Columns.Get("Name")
 people.Columns.TryGet("CreditCard")
-// Get column at a specified offset
+// 特定のオフセットにある列を取得します
 people.Columns.GetAt(0)
 
-// Get column as object series and convert it
-// to a typed Series<string, string>
+// 列をObjectSeriesとして取得し、
+// それを型付きの Series<string, string> に変換します
 people.Columns?Name.As<string>()
-// Try converting column to Series<string, int>
+// 列をSeries<string, int>として変換するよう試みます
 people.Columns?Name.TryAs<int>()
 
 (**
-The type `ObjectSeries<string>` has a few methods in addition to ordinary `Series<K, V>` type.
-On the lines 18 and 20, we use `As<T>` and `TryAs<T>` that can be used to convert object series
-to a series with statically known type of values. The expression on line 18 is equivalent to
-`people.GetColumn<string>("Name")`, but it is not specific to frame columns - you can use the
-same approach to work with frame rows (using `people.Rows`) if your data set has rows of 
-homogeneous types.
+`ObjectSeries<string>` 型には元の `Series<K, V>` 型に
+若干のメソッドが追加されています。
+18行目と20行目では `As<T>` と `TryAs<T>` を使用して、ObjectSeriesを
+静的に既知の型を持った値のシリーズに変換しています。
+18行目の式は `people.GetColumn<string>("Name")` という式と同じものですが、
+`As<T>` の対象はフレームの行だけではありません。
+データセットの行がいずれも同じ型の場合には、フレームの行に対して
+(`people.Rows`を使用して)同じ操作ができます。
 
-Another case where you'll need to work with `ObjectSeries<T>` is when mapping over rows:
+`ObjectSeries<T>` を扱わなければならないケースはもう1つ、
+行をマッピングする場合です：
 *)
-// Iterate over rows and get the length of country list
+// 行を走査して、国リストの長さを取得します
 people.Rows |> Series.mapValues (fun row ->
   row.GetAs<string list>("Countries").Length)
 
 (**
-The rows that you get as a result of `people.Rows` are heterogeneous (they contain values
-of different types), so we cannot use `row.As<T>()` to convert all values of the series
-to some type. Instead, we use `GetAs<T>(...)` which is similar to `Get(...)` but converts
-the value to a given type. You could also achieve the same thing by writing `row?Countries` 
-and then casting the result to `string list`, but the `GetAs` method provides a more convenient
-syntax.
+`people.Rows` から返された行は混種である(つまり異なる型の値が含まれている)ため、
+シリーズのすべての値を `row.As<T>()` で何かしらの型に変換することはできません。
+その代わり、 `Get(...)` と同じような `GetAs<T>(...)` を使用すると、
+値を特定の型に変換して取得することができます。
+`row?Countries` とすれば結果が `string list` にキャストされた状態で取得できますが、
+`GetAs` メソッドにはもう1つ便利な文法があります。
 
-### Adding rows and columns
+### 行および列の追加
 
-The series type is _immutable_ and so it is not possible to add new values to a series or 
-change the values stored in an existing series. However, you can use operations that return
-a new series as the result such as `Merge`.
+シリーズ型は **不変** なので、シリーズに新しい値を追加したり、
+既存のシリーズに含まれる値を変更したりすることはできません。
+しかし `Merge` のような機能を使用して、新しいシリーズを含むような結果を
+返す操作を行うことはできます。
 *)
 
-// Create series with more value
+// さらに値を含んだシリーズを作成します
 let more = series [ "John" => 48.0 ]
-// Create a new, concatenated series
+// シリーズが連結された新しいシリーズを作成します
 people?Age.Merge(more)
 
 (**
-Data frame allows a very limited form of mutation. It is possible to add new series (as a column)
-to an existing data frame, drop a series or replace a series. However, individual series
-are still immutable.
+データフレームは非常に限定的に変更をサポートしています。
+既存のデータフレームには(列として)新しいシリーズを追加したり、
+削除あるいは置き換えたりすることもできます。
+しかしシリーズそれぞれはやはり不変です。
 *)
-// Calculate age + 1 for all people
+// すべての人物の年齢を1つ増やします
 let add1 = people?Age |> Series.mapValues ((+) 1.0)
 
-// Add as a new series to the frame
+// 新しいシリーズとしてフレームに追加します
 people?AgePlusOne <- add1
 
-// Add new series from a list of values
+// 値のリストを使用して新しいシリーズを追加します
 people?Siblings <- [0; 2; 1; 3]
 
-// Replace existing series with new values
-// (Equivalent to people?Siblings <- ...)
+// 既存のシリーズを新しい値に置き換えます
+// (people?Siblings <- ... と同じです)
 people.ReplaceColumn("Siblings", [3; 2; 1; 0])
 
 (**
-Finally, it is also possible to append one data frame or a single row to an existing data
-frame. The operation is immutable, so the result is a new data frame with the added
-rows. To create a new row for the data frame, we can use standard ways of constructing
-series from key-value pairs, or we can use the `SeriesBuilder` type:
+最後に、既存のデータフレームに1つのデータフレーム、
+あるいは1つの行を追加することも可能です。
+この操作も不変なので、行が追加された新しいデータフレームが返されることになります。
+データフレーム用の新しい行を作成するには、
+キー値ペアからシリーズを作成する標準的な方法か、
+あるいは `SeriesBuilder` 型を使用することもできます：
 *)
 
-// Create new object series with values for required columns
+// 必須の列に対応する値を持った新しいシリーズオブジェクトを作成します
 let newRow = 
   [ "Name" => box "Jim"; "Age" => box 51;
     "Countries" => box ["US"]; "Siblings" => box 5 ]
   |> series
-// Create a new data frame, containing the new series
+// 新しいシリーズを含んだ新しいデータフレームを作成します
 people.Merge("Jim", newRow)
 
-// Another option is to use mutable SeriesBuilder
+// 可変なSeriesBuilderオブジェクトを使用することもできます
 let otherRow = SeriesBuilder<string>()
 otherRow?Name <- "Jim"
 otherRow?Age <- 51
 otherRow?Countries <- ["US"]
 otherRow?Siblings <- 5
-// The Series property returns the built series
+// 組み立てたシリーズはSeriesプロパティで取得できます
 people.Merge("Jim", otherRow.Series)
-
 
 (**
 
 <a name="slicing"></a>
-Advanced slicing and lookup
----------------------------
+高度なスライシングおよびルックアップ
+------------------------------------
 
-Given a series, we have a number of options for getting one or more values or 
-observations (keys and an associated values) from the series. First, let's look
-at different lookup operations that are available on any (even unordered series).
+特定のシリーズからは多数の方法で1つ以上の値を取得したり、
+(複数キーや関連する複数の値などの)観測データを取得したりできます。
+まず(順序づけられていないシリーズも含む)任意のデータを
+対象にできる差分ルックアップ操作について説明します。
 *)
 
-// Sample series with different keys & values
+// 異なるキーと値を持ったサンプル用のシリーズ
 let nums = series [ 1 => 10.0; 2 => 20.0 ]
 let strs = series [ "en" => "Hi"; "cz" => "Ahoj" ]
 
-// Lookup values using keys
+// キーを使用して値を検索します
 nums.[1]
 strs.["en"]
-// Supported when key is string
-strs?en      
+// キーが文字列の場合には以下のようにアクセスできます
+strs?en
 
 (**
-For more examples, we use the `Age` column from [earlier data set](#creating-recd) as example:
+さらなる例として、[前の例で作成したデータセット](#creating-recd) 
+の `Age` 列を使用します：
 *)
 
-// Get an unordered sample series 
+// 順序づけられていないサンプルのシリーズを取得します
 let ages = people?Age
 
-// Returns value for a given key
+// 特定のキーに対応する値を取得します
 ages.["Tomas"]
-// Returns series with two keys from the source
+// データソースから2つのキーを指定してシリーズを取得します
 ages.[ ["Tomas"; "Joe"] ]
 
 (**
-The `Series` module provides another set of useful functions (many of those
-are also available as members, for example via `ages.TryGet`):
+`Series` モジュールには便利な関数が他にも用意されています
+(たとえば `ages.TryGet` のように、多くはメンバーメソッドとしても
+呼び出すことが出来ます)：
 *)
 
-// Fails when key is not present
+// キーが存在しない場合には失敗します
 try ages |> Series.get "John" with _ -> nan
-// Returns 'None' when key is not present
+// キーが存在志ない場合には'None'が返ります
 ages |> Series.tryGet "John"
-// Returns series with missing value for 'John'
-// (equivalent to 'ages.[ ["Tomas"; "John"] ]')
+// 'John' の値を除いたシリーズが返ります
+// ('ages.[ ["Tomas"; "John"] ]' と同じです)
 ages |> Series.getAll [ "Tomas"; "John" ]
 
 (**
-We can also obtain all data from the series. The data frame library uses the
-term _observations_ for all key-value pairs
+シリーズからすべてのデータを取得することもできます。
+データフレームライブラリではすべてのキー値ペアのことを
+**observations(観測値)** と呼んでいます。
 *)
 
-// Get all observations as a sequence of 'KeyValuePair'
+// すべてのobservationsを'KeyValuePair'のシーケンスとして取得します
 ages.Observations
-// Get all observations as a sequence of tuples
+// すべてのobservationsをタプルのシーケンスとして取得します
 ages |> Series.observations
-// Get all observations, with 'None' for missing values
+// 値無しに対しては'None'となるようにしてすべてのobservationsを取得します
 ages |> Series.observationsAll
 
 (**
