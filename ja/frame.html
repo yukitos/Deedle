@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>Working with data frames in F#
+    <title>データフレームを F# で扱う
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
@@ -37,25 +37,29 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Working with data frames in F#</h1>
+<h1>データフレームを F# で扱う</h1>
 
-<p>In this section, we look at various features of the F# data frame library (using both
-<code>Series</code> and <code>Frame</code> types and modules). Feel free to jump to the section you are interested
-in, but note that some sections refer back to values built in "Creating &amp; loading".</p>
+<p>このセクションではF#データフレームライブラリの様々な機能を紹介します
+(<code>Series</code> と <code>Frame</code> 型およびモジュールを使用します)。
+任意のセクションに読み飛ばしてもらって構いませんが、
+一部のセクションでは「作成および読み取り」で組み立てた値を参照している点に
+注意してください。</p>
 
-<p>You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx">F# script file</a>
-from GitHub and run the samples interactively.</p>
+<p>また、このページをGitHubから
+<a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx">F# スクリプトファイル</a>
+としてダウンロードすれば、インタラクティブにサンプルを実行することもできます。</p>
 
 <a name="creating"></a>
 
-<h2>Creating frames &amp; loading data</h2>
+<h2>フレームの作成とデータの読み取り</h2>
 
 <a name="creating-csv"></a>
 
-<h3>Loading and saving CSV files</h3>
+<h3>CSVファイルのロードとセーブ</h3>
 
-<p>The easiest way to get data into data frame is to use a CSV file. The <code>Frame.ReadCsv</code>
-function exposes this functionality:</p>
+<p>データをデータフレームとして取得する一番簡単な方法は
+CVSファイルを使用することです。
+この機能は <code>Frame.ReadCsv</code> 関数として用意されています：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -72,46 +76,52 @@ function exposes this functionality:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Assuming &#39;root&#39; is a directory containing the file</span>
+<span class="c">// &#39;root&#39; ディレクトリにファイルが置かれているものとします</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">Titanic</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
 
-<span class="c">// Read data and set the index column &amp; order rows</span>
+<span class="c">// データを読み取ってインデックス列を設定し、行を並び替えます</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msft</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs2', 6)" onmouseover="showTip(event, 'fs2', 6)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 8)" onmouseover="showTip(event, 'fs4', 8)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">stocks</span><span class="s">/</span><span class="s">msft</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>) 
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 9)" onmouseover="showTip(event, 'fs2', 9)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="i">indexRowsDate</span> <span class="s">&quot;</span><span class="s">Date</span><span class="s">&quot;</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 11)" onmouseover="showTip(event, 'fs2', 11)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 12)" onmouseover="showTip(event, 'fs7', 12)" class="i">sortRowsByKey</span>
 
-<span class="c">// Specify column separator</span>
+<span class="c">// 列区切り文字を指定します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 14)" onmouseover="showTip(event, 'fs2', 14)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 15)" onmouseover="showTip(event, 'fs3', 15)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 16)" onmouseover="showTip(event, 'fs4', 16)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>The <code>ReadCsv</code> method has a number of optional arguments that you can use to control 
-the loading. It supports both CSV files, TSV files and other formats. If the file name
-ends with <code>tsv</code>, the Tab is used automatically, but you can set <code>separator</code> explicitly.
-The following parameters can be used:</p>
+<p><code>ReadCsv</code> メソッドにはロード時の動作を制御するためのオプションが多数あります。
+このメソッドはCSVファイルやTSVファイル、その他の形式のファイルをサポートします。
+ファイル名が<code>tsv</code>で終わる場合には自動的にタブ文字が処理されますが、
+<code>separator</code> 引数を明示的に指定して区切り文字を設定することもできます。
+以下の引数が有効です：</p>
 
 <ul>
-<li><code>path</code> - Specifies a file name or an web location of the resource.</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 0, meaninig all rows.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
-that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+<li><code>path</code> - リソースのファイル名またはWeb上の位置を指定します。</li>
+<li><code>inferTypes</code> - メソッドが列の型を推測すべきかどうかを指定します。
+(スキーマを指定する場合には<code>false</code>を指定します)</li>
+<li><code>inferRows</code> - <code>interTypes=true</code> の場合、この引数には
+型の推論に使用する行数を指定します。
+デフォルトは0で、すべての行が使用されます。</li>
+<li><code>schema</code> - CSVスキーマを指定する文字列です。
+スキーマの形式については別途ドキュメントを参照してください。</li>
+<li><code>separators</code> - CSVファイルの行を区切る1つ以上の(単一)文字を文字列として
+指定します。
+たとえば <code>";"</code> とするとセミコロン区切りのファイルとしてパースされます。</li>
+<li><code>culture</code> - CVSファイルの値をパースする際に使用される
+カルチャ(たとえば <code>"en-US"</code> )を指定します。
+デフォルトはインバリアントカルチャです。</li>
 </ul>
 
-<p>The parameters are the same as those used by the <a href="http://fsharp.github.io/FSharp.Data/library/CsvProvider.html">CSV type provider in F# Data</a>,
-so you can find additional documentation there.</p>
+<p>これらの引数は
+<a href="http://fsharp.github.io/FSharp.Data/library/CsvProvider.html">F# DataのCSV型プロバイダー</a>
+(<a href="http://fsharp.github.io/FSharp.Data/ja/library/CsvProvider.html">日本語</a>)
+で使用されるものと同じものなので、そちらのドキュメントも参照してください。</p>
 
-<p>Once you have a data frame, you can also save it to a CSV file using the 
-<code>SaveCsv</code> method. For example:</p>
+<p>データフレームを取得した後は、 <code>SaveCsv</code> メソッドを使用して
+CSVファイルとして保存できます。
+たとえば以下のようにします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -121,27 +131,28 @@ so you can find additional documentation there.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Save CSV with semicolon separator</span>
+<span class="c">// セミコロン区切りでCSVを保存します</span>
 <span onmouseout="hideTip(event, 'fs8', 17)" onmouseover="showTip(event, 'fs8', 17)" class="i">air</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 18)" onmouseover="showTip(event, 'fs9', 18)" class="i">SaveCsv</span>(<span onmouseout="hideTip(event, 'fs10', 19)" onmouseover="showTip(event, 'fs10', 19)" class="i">Path</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 20)" onmouseover="showTip(event, 'fs11', 20)" class="i">GetTempFileName</span>(), <span class="i">separator</span><span class="o">=</span><span class="s">&#39;;&#39;</span>)
-<span class="c">// Save as CSV and include row key as &quot;Date&quot; column</span>
+<span class="c">// 行キーを&quot;Date&quot;列として含むようなCSVファイルとして保存します</span>
 <span onmouseout="hideTip(event, 'fs5', 21)" onmouseover="showTip(event, 'fs5', 21)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 22)" onmouseover="showTip(event, 'fs9', 22)" class="i">SaveCsv</span>(<span onmouseout="hideTip(event, 'fs10', 23)" onmouseover="showTip(event, 'fs10', 23)" class="i">Path</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 24)" onmouseover="showTip(event, 'fs11', 24)" class="i">GetTempFileName</span>(), <span class="i">keyNames</span><span class="o">=</span>[<span class="s">&quot;</span><span class="s">Date</span><span class="s">&quot;</span>], <span class="i">separator</span><span class="o">=</span><span class="s">&#39;\t&#39;</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>By default, the <code>SaveCsv</code> method does not include the key from the data frame. This can be
-overriden by calling <code>SaveCsv</code> with the optional argument <code>includeRowKeys=true</code>, or with an
-additional argument <code>keyNames</code> (demonstrated above) which sets the headers for the key columns(s)
-in the CSV file. Usually, there is just a single row key, but there may be multiple when 
-<a href="#indexing">hierarchical indexing</a> is used.</p>
+<p>デフォルトでは <code>SaveCsv</code> メソッドはデータフレームのキーを含めません。
+この動作は <code>SaveCsv</code> メソッドのオプション引数に <code>includeRowKeys=true</code> を指定するか、
+(上の例のように) <code>keyNames</code> 引数に(複数の)キー列となるヘッダを設定します。
+通常、行キーは1つだけですが、 <a href="#indexing">階層的インデックシング</a>
+が使用されている場合には複数になることもあります。</p>
 
 <a name="creating-recd"></a>
 
-<h3>Loading F# records or .NET objects</h3>
+<h3>F#レコードまたは.NETオブジェクトのロード</h3>
 
-<p>If you have another .NET or F# components that returns data as a sequence of F# records,
-C# anonymous types or other .NET objects, you can use <code>Frame.ofRecords</code> to turn them
-into a data frame. Assume we have:</p>
+<p>データをF#のレコード、C#の匿名型、あるいはその他の.NETオブジェクトとして返すような
+.NETあるいはF#のコンポーネントを使用している場合には、
+<code>Frame.ofRecords</code> を使用すればこれらをデータフレームに変換できます。
+たとえば以下のデータがあるとします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -167,9 +178,9 @@ into a data frame. Assume we have:</p>
 </tr>
 </table>
 
-<p>Now we can easily create a data frame that contains three columns 
-(<code>Name</code>, <code>Age</code> and <code>Countries</code>) containing data of the same type as 
-the properties of <code>Person</code>:</p>
+<p>そうすると <code>Person</code> のプロパティと同じ型のデータを持った
+3つの列(<code>Name</code> <code>Age</code> <code>Countries</code>)を含んだデータフレームを
+簡単に作成できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -179,17 +190,18 @@ the properties of <code>Person</code>:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Turn the list of records into data frame </span>
+<span class="c">// レコードのリストをデータフレームに変換します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 34)" onmouseover="showTip(event, 'fs20', 34)" class="i">peopleList</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 35)" onmouseover="showTip(event, 'fs2', 35)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="i">ofRecords</span> <span onmouseout="hideTip(event, 'fs19', 37)" onmouseover="showTip(event, 'fs19', 37)" class="i">peopleRecds</span>
-<span class="c">// Use the &#39;Name&#39; column as a key (of type string)</span>
+<span class="c">// &#39;Name&#39; 列を(文字列型の)キーとして使用します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 38)" onmouseover="showTip(event, 'fs22', 38)" class="i">people</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs20', 39)" onmouseover="showTip(event, 'fs20', 39)" class="i">peopleList</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 40)" onmouseover="showTip(event, 'fs2', 40)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="i">indexRowsString</span> <span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span></pre>
 </td>
 </tr>
 </table>
 
-<p>Note that this does not perform any conversion on the column data. Numerical series
-can be accessed using the <code>?</code> operator. For other types, we need to explicitly call
-<code>GetColumn</code> with the right type arguments:</p>
+<p>なおここでは列データに対する変換は何も行われないことに注意してください。
+数値的なシリーズは <code>?</code> 演算子を使用してアクセスできます。
+その他の型の場合には適切な型引数を指定して
+<code>GetColumn</code> を明示的に呼び出す必要があります：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -205,11 +217,13 @@ can be accessed using the <code>?</code> operator. For other types, we need to e
 
 <a name="creating-wb"></a>
 
-<h3>F# Data providers</h3>
+<h3>F#データプロバイダ</h3>
 
-<p>In general, you can use any data source that exposes data as series of tuples. This
-means that we can easily load data using, for example, the World Bank type provider 
-from <a href="https://github.com/fsharp/FSharp.Data">F# Data library</a>.</p>
+<p>一般的にはデータをタプルのシリーズとして公開するような
+任意のデータソースを使用できます。
+つまり、<a href="https://github.com/fsharp/FSharp.Data">F# Dataライブラリ</a>
+のWorld Bank型プロバイダーのような機能を使用すれば、
+簡単にデータをロードできるというわけです。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -227,26 +241,26 @@ from <a href="https://github.com/fsharp/FSharp.Data">F# Data library</a>.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Connect to the World Bank</span>
+<span class="c">// World Bankに接続します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 47)" onmouseover="showTip(event, 'fs25', 47)" class="i">wb</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 48)" onmouseover="showTip(event, 'fs26', 48)" class="i">WorldBankData</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 49)" onmouseover="showTip(event, 'fs27', 49)" class="i">GetDataContext</span>()
 
-<span class="c">/// Given a region, load GDP in current US$ and return data as </span>
-<span class="c">/// a frame with two-level column key (region and country name)</span>
+<span class="c">/// 特定の地域に対して、GDPを現在のUSドルでロードし、</span>
+<span class="c">/// 2レベルの列キー(地域と国名)を持ったフレームとしてデータを返します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 50)" onmouseover="showTip(event, 'fs28', 50)" class="i">loadRegion</span> (<span onmouseout="hideTip(event, 'fs29', 51)" onmouseover="showTip(event, 'fs29', 51)" class="i">region</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs26', 52)" onmouseover="showTip(event, 'fs26', 52)" class="i">WorldBankData</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 53)" onmouseover="showTip(event, 'fs30', 53)" class="i">ServiceTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 54)" onmouseover="showTip(event, 'fs31', 54)" class="i">Region</span>) <span class="o">=</span>
   [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs32', 55)" onmouseover="showTip(event, 'fs32', 55)" class="i">country</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">region</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 57)" onmouseover="showTip(event, 'fs33', 57)" class="i">Countries</span> <span class="k">-&gt;</span> 
-      <span class="c">// Create two-level column key using tuple</span>
+      <span class="c">// タプルを使用して、2レベルの列キーを作成します</span>
       (<span onmouseout="hideTip(event, 'fs29', 58)" onmouseover="showTip(event, 'fs29', 58)" class="i">region</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 59)" onmouseover="showTip(event, 'fs34', 59)" class="i">Name</span>, <span onmouseout="hideTip(event, 'fs32', 60)" onmouseover="showTip(event, 'fs32', 60)" class="i">country</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 61)" onmouseover="showTip(event, 'fs35', 61)" class="i">Name</span>) <span class="o">=&gt;</span> 
-        <span class="c">// Create series from tuples returned by WorldBank</span>
+        <span class="c">// WorldBankから返された複数のタプルからシリーズを作成します</span>
         <span onmouseout="hideTip(event, 'fs36', 62)" onmouseover="showTip(event, 'fs36', 62)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 63)" onmouseover="showTip(event, 'fs37', 63)" class="i">ofObservations</span> <span onmouseout="hideTip(event, 'fs32', 64)" onmouseover="showTip(event, 'fs32', 64)" class="i">country</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 65)" onmouseover="showTip(event, 'fs38', 65)" class="i">Indicators</span><span class="o">.</span><span class="i">``GDP (current US$)``</span> ]
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs39', 66)" onmouseover="showTip(event, 'fs39', 66)" class="i">frame</span></pre>
 </td>
 </tr>
 </table>
 
-<p>To make data manipulation more convenient, we read country information per region
-and create data frame with a hierarchical index (for more information, see the
-<a href="#indexing">advanced indexing section</a>). Now we can easily read data for OECD and
-Euro area:</p>
+<p>データ処理をもっと簡単にするために、
+地域毎の国情報を読み取って階層的インデックスを持ったデータフレームを作成しています
+(詳細については<a href="#indexing">高度なインデックシングの節</a>を参照)。
+これでOECDとユーロエリアのデータを簡単に読み取ることができるようになりました：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -258,11 +272,11 @@ Euro area:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Load Euro and OECD regions</span>
+<span class="c">// ユーロとOECD地域をロード</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 67)" onmouseover="showTip(event, 'fs40', 67)" class="i">eu</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs28', 68)" onmouseover="showTip(event, 'fs28', 68)" class="i">loadRegion</span> <span onmouseout="hideTip(event, 'fs25', 69)" onmouseover="showTip(event, 'fs25', 69)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 70)" onmouseover="showTip(event, 'fs41', 70)" class="i">Regions</span><span class="o">.</span><span class="i">``Euro area``</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs42', 71)" onmouseover="showTip(event, 'fs42', 71)" class="i">oecd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs28', 72)" onmouseover="showTip(event, 'fs28', 72)" class="i">loadRegion</span> <span onmouseout="hideTip(event, 'fs25', 73)" onmouseover="showTip(event, 'fs25', 73)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 74)" onmouseover="showTip(event, 'fs41', 74)" class="i">Regions</span><span class="o">.</span><span class="i">``OECD members``</span>
 
-<span class="c">// Join and convert to in billions of USD</span>
+<span class="c">// これらをジョインして、10億USドル単位に変換します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 75)" onmouseover="showTip(event, 'fs43', 75)" class="i">world</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 76)" onmouseover="showTip(event, 'fs40', 76)" class="i">eu</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 77)" onmouseover="showTip(event, 'fs44', 77)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs42', 78)" onmouseover="showTip(event, 'fs42', 78)" class="i">oecd</span>) <span class="o">/</span> <span class="n">1e9</span></pre>
 </td>
 </tr>
@@ -420,19 +434,23 @@ Euro area:</p>
 
 </div>
 
-<p>The loaded data look something like the sample above. As you can see, the columns
-are grouped by the region and some data are not available.</p>
+<p>読み取ったデータはおよそ上のようになります。
+見ての通り、列は地域によってグループ化され、一部のデータが値無しになっています。</p>
 
-<h3>Expanding objects in columns</h3>
+<h3>オブジェクトを列に展開する</h3>
 
-<p>It is possible to create data frames that contain other .NET objects as members in a 
-series. This might be useful, for example, when you get multiple data sources producing
-objects and you want to align or join them before working with them. However, working
-with frames that contain complex .NET objects is less conveninet.</p>
+<p>シリーズ内のメンバーとして他の.NETオブジェクトを含むようなデータフレームを
+作成することもできます。
+これはたとえば複数のデータソースから生成されたオブジェクトを取得して、
+これらを処理する前にアラインまたは連結したいような場合に便利なことがあります。
+しかし複雑な.NETオブジェクトを含むフレームの場合には、
+逆に利便性が損なわれる場合もあります。</p>
 
-<p>For this reason, the data frame supports <em>expansion</em>. Given a data frame with some object
-in a column, you can use <code>Frame.expandCols</code> to create a new frame that contains properties
-of the object as new columns. For example:</p>
+<p>そのため、データフレームは<strong>展開(expansion)</strong>機能をサポートしています。
+列に何かしらのオブジェクトを含んだデータフレームに対して
+<code>Frame.expandCols</code>を使用すると、オブジェクトのプロパティそれぞれを新しい列として
+含むような新しいフレームを作成できます。
+たとえば以下のようにします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -444,11 +462,11 @@ of the object as new columns. For example:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Create frame with single column &#39;People&#39;</span>
+<span class="c">// &#39;People&#39;という1列だけを持ったフレームを作成します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs45', 79)" onmouseover="showTip(event, 'fs45', 79)" class="i">peopleNested</span> <span class="o">=</span> 
   [ <span class="s">&quot;</span><span class="s">People</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs36', 80)" onmouseover="showTip(event, 'fs36', 80)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 81)" onmouseover="showTip(event, 'fs46', 81)" class="i">ofValues</span> <span onmouseout="hideTip(event, 'fs19', 82)" onmouseover="showTip(event, 'fs19', 82)" class="i">peopleRecds</span> ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs39', 83)" onmouseover="showTip(event, 'fs39', 83)" class="i">frame</span>
 
-<span class="c">// Expand the &#39;People&#39; column</span>
+<span class="c">// &#39;People&#39;列を展開します</span>
 <span onmouseout="hideTip(event, 'fs45', 84)" onmouseover="showTip(event, 'fs45', 84)" class="i">peopleNested</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 85)" onmouseover="showTip(event, 'fs2', 85)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 86)" onmouseover="showTip(event, 'fs47', 86)" class="i">expandCols</span> [<span class="s">&quot;</span><span class="s">People</span><span class="s">&quot;</span>]</pre>
 </td>
 </tr>
@@ -496,14 +514,15 @@ of the object as new columns. For example:</p>
 
 </div>
 
-<p>As you can see, the operation generates columns based on the properties of the original 
-column type and generates new names by prefixing the property names with the name of the
-original column.</p>
+<p>見ての通り、この操作では元の列の型に含まれるプロパティを元にして
+複数の列が生成されて、それぞれの列の名前は
+元の列の名前に各プロパティの名前を続けたものになります。</p>
 
-<p>Aside from properties of .NET objects, the expansion can also handle values of type
-<code>IDictionary&lt;K, V&gt;</code> and series that contain nested series with <code>string</code> keys 
-(i.e. <code>Series&lt;string, T&gt;</code>). If you have more complex structure, you can use
-<code>Frame.expandAllCols</code> to expand columns to a specified level recursively:</p>
+<p>.NETオブジェクトだけでなく、<code>IDictionary&lt;K, V&gt;</code>型の値や
+<code>string</code>をキーとするネストされたシリーズ(つまり<code>Series&lt;string, T&gt;</code>)
+について展開することができます。
+さらに複雑な構造をしている場合には、
+<code>Frame.expandAllCols</code> を使用して特定のレベルまで再帰的に列を展開することもできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -518,46 +537,47 @@ original column.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Series that contains dictionaries, containing tuples</span>
+<span class="c">// タプルを含むディクショナリを含んだシリーズ</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 87)" onmouseover="showTip(event, 'fs48', 87)" class="i">tuples</span> <span class="o">=</span> 
   [ <span onmouseout="hideTip(event, 'fs49', 88)" onmouseover="showTip(event, 'fs49', 88)" class="i">dict</span> [<span class="s">&quot;</span><span class="s">A</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs50', 89)" onmouseover="showTip(event, 'fs50', 89)" class="i">box</span> <span class="n">1</span>; <span class="s">&quot;</span><span class="s">C</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs50', 90)" onmouseover="showTip(event, 'fs50', 90)" class="i">box</span> (<span class="n">2</span>, <span class="n">3</span>)]
     <span onmouseout="hideTip(event, 'fs49', 91)" onmouseover="showTip(event, 'fs49', 91)" class="i">dict</span> [<span class="s">&quot;</span><span class="s">B</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs50', 92)" onmouseover="showTip(event, 'fs50', 92)" class="i">box</span> <span class="n">1</span>; <span class="s">&quot;</span><span class="s">C</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs50', 93)" onmouseover="showTip(event, 'fs50', 93)" class="i">box</span> (<span class="n">3</span>, <span class="n">4</span>)] ] 
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 94)" onmouseover="showTip(event, 'fs36', 94)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 95)" onmouseover="showTip(event, 'fs46', 95)" class="i">ofValues</span>
 
-<span class="c">// Expand dictionary keys (level 1) and tuple items (level 2)</span>
+<span class="c">// ディクショナリのキー(レベル1)とタプルのアイテム(レベル2)を展開</span>
 <span onmouseout="hideTip(event, 'fs39', 96)" onmouseover="showTip(event, 'fs39', 96)" class="i">frame</span> [<span class="s">&quot;</span><span class="s">Tuples</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs48', 97)" onmouseover="showTip(event, 'fs48', 97)" class="i">tuples</span>]
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 98)" onmouseover="showTip(event, 'fs2', 98)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 99)" onmouseover="showTip(event, 'fs51', 99)" class="i">expandAllCols</span> <span class="n">2</span></pre>
 </td>
 </tr>
 </table>
 
-<p>Here, the resulting data frame will have 4 columns including
-<code>Tuples.A</code> and <code>Tuples.B</code> (for the first keys) and <code>Tuples.C.Item1</code>
-together with <code>Tuples.C.Item2</code> representing the two items of the tuple
-nested in a dictionary.</p>
+<p>この場合、結果のデータフレームには <code>Tuples.A</code> と <code>Tuples.B</code>、
+さらにディレクトリ内にネストされたタプルの2つの項目を表す
+<code>Tuples.C.Item1</code> と <code>Tuples.C.Item2</code> の列が含まれることになります。</p>
 
 <a name="dataframe"></a>
 
-<h2>Manipulating data frames</h2>
+<h2>データフレームの操作</h2>
 
-<p>The series type <code>Series&lt;K, V&gt;</code> represents a series with keys of type <code>K</code> and values
-of type <code>V</code>. This means that when working with series, the type of values is known 
-statically. When working with data frames, this is not the case - a frame is represented
-as <code>Frame&lt;R, C&gt;</code> where <code>R</code> and <code>C</code> are the types of row and column indices, respectively
-(typically, <code>R</code> will be an <code>int</code> or <code>DateTime</code> and <code>C</code> will be <code>string</code> representing 
-different column/series names.</p>
+<p>シリーズ型 <code>Series&lt;K, V&gt;</code> はシリーズのキーの型が <code>K</code> で
+値の型が <code>V</code> であることを表しています。
+つまりシリーズを処理する場合には、値の型があらかじめわかっているということです。
+一方、データフレームの場合にはそうはいきません。
+<code>Frame&lt;R, C&gt;</code> の <code>R</code> と <code>C</code> はそれぞれ行と列のインデックスの型を表します
+(一般的に <code>R</code> は <code>int</code> または <code>DateTime</code> で、<code>C</code> は異なる行または列名を表す
+<code>string</code> になります)。</p>
 
-<p>A frame can contain heterogeneous data. One column may contain integers, another may
-contain floating point values and yet another can contain strings, dates or other objects
-like lists of strings. This information is not captured statically - and so when working
-with frames, you may need to specify the type explicitly, for example, when reading
-a series from a frame.</p>
+<p>フレームには多様なデータが含まれます。
+ある列には整数、別の列には浮動小数点数、さらに別の列には文字列や日付、
+あるいは文字列のリストのような別のオブジェクトが含まれることがあります。
+これらの情報は静的にキャプチャされません。
+したがってシリーズの読み取りなど、フレームを操作する場合には、
+明示的に型を指定しなければいけないことがあります。</p>
 
-<h3>Getting data from a frame</h3>
+<h3>フレームからデータを取得する</h3>
 
-<p>We'll use the data frame <code>people</code> which contains three columns - <code>Name</code> of type <code>string</code>,
-<code>Age</code> of type <code>int</code> and <code>Countries</code> of type <code>string list</code> (we created it from F# records
-in <a href="#creating-recd">the previous section</a>):</p>
+<p>ここでは <code>string</code> 型の <code>Name</code> と、<code>int</code> 型の <code>Age</code>、<code>string list</code> 型の <code>Countries</code>
+という3つの列を持った <code>people</code> データフレームを使用します
+(これは <a href="#creating-recd">先の節で</a> F#のレコードから作成したものです)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -568,18 +588,19 @@ in <a href="#creating-recd">the previous section</a>):</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-           <span class="i">Name</span>    <span class="i">Age</span> <span class="i">Countries</span>          
-<span class="i">Joe</span>     <span class="k">-&gt;</span> <span class="i">Joe</span>     <span class="n">51</span>  [<span class="i">UK</span>; <span class="i">US</span>; <span class="i">UK</span>]       
-<span class="i">Tomas</span>   <span class="k">-&gt;</span> <span class="i">Tomas</span>   <span class="n">28</span>  [<span class="i">CZ</span>; <span class="i">UK</span>; <span class="i">US</span>; <span class="o">..</span><span class="o">.</span> ] 
-<span class="i">Eve</span>     <span class="k">-&gt;</span> <span class="i">Eve</span>     <span class="n">2</span>   [<span class="i">FR</span>]               
-<span class="i">Suzanne</span> <span class="k">-&gt;</span> <span class="i">Suzanne</span> <span class="n">15</span>  [<span class="i">US</span>]   </pre>
+           <span class="i">Name</span>    <span class="i">Age</span> <span class="i">Countries</span>
+<span class="i">Joe</span>     <span class="k">-&gt;</span> <span class="i">Joe</span>     <span class="n">51</span>  [<span class="i">UK</span>; <span class="i">US</span>; <span class="i">UK</span>]
+<span class="i">Tomas</span>   <span class="k">-&gt;</span> <span class="i">Tomas</span>   <span class="n">28</span>  [<span class="i">CZ</span>; <span class="i">UK</span>; <span class="i">US</span>; <span class="o">..</span><span class="o">.</span> ]
+<span class="i">Eve</span>     <span class="k">-&gt;</span> <span class="i">Eve</span>     <span class="n">2</span>   [<span class="i">FR</span>]
+<span class="i">Suzanne</span> <span class="k">-&gt;</span> <span class="i">Suzanne</span> <span class="n">15</span>  [<span class="i">US</span>]</pre>
 </td>
 </tr>
 </table>
 
-<p>To get a column (series) from a frame <code>df</code>, you can use operations that are exposed directly
-by the data frame, or you can use <code>df.Columns</code> which returns all columns of the frame as a
-series of series.</p>
+<p>フレーム <code>df</code> から列(シリーズ)を取得するには
+データフレームで直接公開されている操作を使用するか、
+<code>df.Columns</code> を使用してフレームのすべての列を
+シリーズのシリーズとして取得することもできます。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -592,20 +613,22 @@ series of series.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get the &#39;Age&#39; column as a series of &#39;float&#39; values</span>
-<span class="c">// (the &#39;?&#39; operator converts values automatically)</span>
+<span class="c">// &#39;Age&#39; 列を &#39;float&#39; 値のシリーズとして取得します</span>
+<span class="c">// (&#39;?&#39; 演算子が値を自動的に変換します)</span>
 <span onmouseout="hideTip(event, 'fs22', 100)" onmouseover="showTip(event, 'fs22', 100)" class="i">people</span><span class="o">?</span><span class="i">Age</span>
-<span class="c">// Get the &#39;Name&#39; column as a series of &#39;string&#39; values</span>
+<span class="c">// &#39;Name&#39; 列を &#39;string&#39; 値のシリーズとして取得します</span>
 <span onmouseout="hideTip(event, 'fs22', 101)" onmouseover="showTip(event, 'fs22', 101)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 102)" onmouseover="showTip(event, 'fs24', 102)" class="i">GetColumn</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 103)" onmouseover="showTip(event, 'fs14', 103)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span>)
-<span class="c">// Get all frame columns as a series of series</span>
+<span class="c">// フレームのすべての列をシリーズのシリーズとして取得します</span>
 <span onmouseout="hideTip(event, 'fs22', 104)" onmouseover="showTip(event, 'fs22', 104)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 105)" onmouseover="showTip(event, 'fs52', 105)" class="i">Columns</span></pre>
 </td>
 </tr>
 </table>
 
-<p>A series <code>s</code> of type <code>Series&lt;string, V&gt;</code> supports the question mark operator <code>s?Foo</code> to get
-a value of type <code>V</code> associated with the key <code>Foo</code>. For other key types, you can sue the <code>Get</code> 
-method. Note that, unlike with frames, there is no implicit conversion:</p>
+<p><code>Series&lt;string, V&gt;</code> 型 は疑問符演算子をサポートしているため、
+この型の <code>s</code> に対して <code>s?Foo</code> とすると、
+キー <code>Foo</code> に関連づけられた型 <code>V</code> の値を取得できます。
+それ以外の型を取得する場合には <code>Get</code> メソッドを使用します。
+なおフレームの場合と異なり、明示的な変換は行われないことに注意してください：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -620,27 +643,30 @@ method. Note that, unlike with frames, there is no implicit conversion:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get Series&lt;string, float&gt; </span>
+<span class="c">// Series&lt;string, float&gt; を取得します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 106)" onmouseover="showTip(event, 'fs53', 106)" class="i">numAges</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 107)" onmouseover="showTip(event, 'fs22', 107)" class="i">people</span><span class="o">?</span><span class="i">Age</span>
 
-<span class="c">// Get value using question mark</span>
+<span class="c">// 疑問符演算子を使用して値を取得します</span>
 <span onmouseout="hideTip(event, 'fs53', 108)" onmouseover="showTip(event, 'fs53', 108)" class="i">numAges</span><span class="o">?</span><span class="i">Tomas</span>
-<span class="c">// Get value using &#39;Get&#39; method</span>
+<span class="c">// &#39;Get&#39; メソッドを使用して値を取得します</span>
 <span onmouseout="hideTip(event, 'fs53', 109)" onmouseover="showTip(event, 'fs53', 109)" class="i">numAges</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 110)" onmouseover="showTip(event, 'fs54', 110)" class="i">Get</span>(<span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span>)
-<span class="c">// Returns missing when key is not found</span>
+<span class="c">// キーが見つからない場合には値無しを返します</span>
 <span onmouseout="hideTip(event, 'fs53', 111)" onmouseover="showTip(event, 'fs53', 111)" class="i">numAges</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 112)" onmouseover="showTip(event, 'fs55', 112)" class="i">TryGet</span>(<span class="s">&quot;</span><span class="s">Fridrich</span><span class="s">&quot;</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>The question mark operator and <code>Get</code> method can be used on the <code>Columns</code> property of data frame.
-The return type of <code>df?Columns</code> is <code>ColumnSeries&lt;string, string&gt;</code> which is just a thin wrapper
-over <code>Series&lt;C, ObjectSeries&lt;R&gt;&gt;</code>. This means that you get back a series indexed by column names
-where the values are <code>ObjectSeries&lt;R&gt;</code> representing individual columns. The type
-<code>ObjectSeries&lt;R&gt;</code> is a thin wrapper over <code>Series&lt;R, obj&gt;</code> which adds several functions 
-for getting the values as values of specified type.</p>
+<p>疑問符演算子と <code>Get</code> メソッドはデータフレームの
+<code>Columns</code> プロパティに対しても使用できます。
+<code>df?Columns</code> の返り値の型は ｀ColumnSeries<string, string><code>で、
+これは単に</code>Series<C, ObjectSeries<R>><code>の薄いラッパーです。
+つまり各列を表す</code>ObjectSeries<R><code>を値に持つような列の名前で
+インデックスされたシリーズを取得しなおすことができるというわけです。
+`ObjectSeries&lt;R&gt;` 型は</code>Series<R, obj>` の薄いラッパーで、
+これは値を特定の型として取得できるような機能がいくつか追加されたものです。</p>
 
-<p>In our case, the returned values are individual columns represented as <code>ObjectSeries&lt;string&gt;</code>:</p>
+<p>今回の場合、返される値は <code>ObjectSeries&lt;string&gt;</code>
+として表されるそれぞれの列になります：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -666,38 +692,41 @@ for getting the values as values of specified type.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get column as an object series</span>
+<span class="c">// ObjectSeriesとして列を取得します</span>
 <span onmouseout="hideTip(event, 'fs22', 113)" onmouseover="showTip(event, 'fs22', 113)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 114)" onmouseover="showTip(event, 'fs52', 114)" class="i">Columns</span><span class="o">?</span><span class="i">Age</span>
 <span onmouseout="hideTip(event, 'fs22', 115)" onmouseover="showTip(event, 'fs22', 115)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 116)" onmouseover="showTip(event, 'fs52', 116)" class="i">Columns</span><span class="o">?</span><span class="i">Countries</span>
 <span class="fsi">val it : ObjectSeries&lt;string&gt; =</span>
 <span class="fsi">  Joe     -&gt; [UK; US; UK]       </span>
 <span class="fsi">  Tomas   -&gt; [CZ; UK; US; ... ] </span>
 <span class="fsi">  Eve     -&gt; [FR]               </span>
-<span class="fsi">  Suzanne -&gt; [US]</span>
+<span class="fsi">  Suzanne -&gt; [US]               </span>
 
-<span class="c">// Get column &amp; try get column using members</span>
+<span class="c">// メンバーを使用して列の取得を試みます</span>
 <span onmouseout="hideTip(event, 'fs22', 117)" onmouseover="showTip(event, 'fs22', 117)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 118)" onmouseover="showTip(event, 'fs52', 118)" class="i">Columns</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 119)" onmouseover="showTip(event, 'fs54', 119)" class="i">Get</span>(<span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span>)
 <span onmouseout="hideTip(event, 'fs22', 120)" onmouseover="showTip(event, 'fs22', 120)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 121)" onmouseover="showTip(event, 'fs52', 121)" class="i">Columns</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 122)" onmouseover="showTip(event, 'fs55', 122)" class="i">TryGet</span>(<span class="s">&quot;</span><span class="s">CreditCard</span><span class="s">&quot;</span>)
-<span class="c">// Get column at a specified offset</span>
+<span class="c">// 特定のオフセットにある列を取得します</span>
 <span onmouseout="hideTip(event, 'fs22', 123)" onmouseover="showTip(event, 'fs22', 123)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 124)" onmouseover="showTip(event, 'fs52', 124)" class="i">Columns</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 125)" onmouseover="showTip(event, 'fs56', 125)" class="i">GetAt</span>(<span class="n">0</span>)
 
-<span class="c">// Get column as object series and convert it</span>
-<span class="c">// to a typed Series&lt;string, string&gt;</span>
+<span class="c">// 列をObjectSeriesとして取得し、</span>
+<span class="c">// それを型付きの Series&lt;string, string&gt; に変換します</span>
 <span onmouseout="hideTip(event, 'fs22', 126)" onmouseover="showTip(event, 'fs22', 126)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 127)" onmouseover="showTip(event, 'fs52', 127)" class="i">Columns</span><span class="o">?</span><span class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 128)" onmouseover="showTip(event, 'fs57', 128)" class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 129)" onmouseover="showTip(event, 'fs14', 129)" class="i">string</span><span class="o">&gt;</span>()
-<span class="c">// Try converting column to Series&lt;string, int&gt;</span>
+<span class="c">// 列をSeries&lt;string, int&gt;として変換するよう試みます</span>
 <span onmouseout="hideTip(event, 'fs22', 130)" onmouseover="showTip(event, 'fs22', 130)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 131)" onmouseover="showTip(event, 'fs52', 131)" class="i">Columns</span><span class="o">?</span><span class="i">Name</span><span class="o">.</span><span class="i">TryAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 132)" onmouseover="showTip(event, 'fs16', 132)" class="i">int</span><span class="o">&gt;</span>()</pre>
 </td>
 </tr>
 </table>
 
-<p>The type <code>ObjectSeries&lt;string&gt;</code> has a few methods in addition to ordinary <code>Series&lt;K, V&gt;</code> type.
-On the lines 18 and 20, we use <code>As&lt;T&gt;</code> and <code>TryAs&lt;T&gt;</code> that can be used to convert object series
-to a series with statically known type of values. The expression on line 18 is equivalent to
-<code>people.GetColumn&lt;string&gt;("Name")</code>, but it is not specific to frame columns - you can use the
-same approach to work with frame rows (using <code>people.Rows</code>) if your data set has rows of 
-homogeneous types.</p>
+<p><code>ObjectSeries&lt;string&gt;</code> 型には元の <code>Series&lt;K, V&gt;</code> 型に
+若干のメソッドが追加されています。
+18行目と20行目では <code>As&lt;T&gt;</code> と <code>TryAs&lt;T&gt;</code> を使用して、ObjectSeriesを
+静的に既知の型を持った値のシリーズに変換しています。
+18行目の式は <code>people.GetColumn&lt;string&gt;("Name")</code> という式と同じものですが、
+<code>As&lt;T&gt;</code> の対象はフレームの行だけではありません。
+データセットの行がいずれも同じ型の場合には、フレームの行に対して
+(<code>people.Rows</code>を使用して)同じ操作ができます。</p>
 
-<p>Another case where you'll need to work with <code>ObjectSeries&lt;T&gt;</code> is when mapping over rows:</p>
+<p><code>ObjectSeries&lt;T&gt;</code> を扱わなければならないケースはもう1つ、
+行をマッピングする場合です：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -706,25 +735,26 @@ homogeneous types.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Iterate over rows and get the length of country list</span>
+<span class="c">// 行を走査して、国リストの長さを取得します</span>
 <span onmouseout="hideTip(event, 'fs22', 133)" onmouseover="showTip(event, 'fs22', 133)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 134)" onmouseover="showTip(event, 'fs58', 134)" class="i">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 135)" onmouseover="showTip(event, 'fs36', 135)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 136)" onmouseover="showTip(event, 'fs59', 136)" class="i">mapValues</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs60', 137)" onmouseover="showTip(event, 'fs60', 137)" class="i">row</span> <span class="k">-&gt;</span>
   <span onmouseout="hideTip(event, 'fs60', 138)" onmouseover="showTip(event, 'fs60', 138)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 139)" onmouseover="showTip(event, 'fs61', 139)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 140)" onmouseover="showTip(event, 'fs14', 140)" class="i">string</span> <span onmouseout="hideTip(event, 'fs18', 141)" onmouseover="showTip(event, 'fs18', 141)" class="i">list</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Countries</span><span class="s">&quot;</span>)<span class="o">.</span><span class="i">Length</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>The rows that you get as a result of <code>people.Rows</code> are heterogeneous (they contain values
-of different types), so we cannot use <code>row.As&lt;T&gt;()</code> to convert all values of the series
-to some type. Instead, we use <code>GetAs&lt;T&gt;(...)</code> which is similar to <code>Get(...)</code> but converts
-the value to a given type. You could also achieve the same thing by writing <code>row?Countries</code> 
-and then casting the result to <code>string list</code>, but the <code>GetAs</code> method provides a more convenient
-syntax.</p>
+<p><code>people.Rows</code> から返された行は混種である(つまり異なる型の値が含まれている)ため、
+シリーズのすべての値を <code>row.As&lt;T&gt;()</code> で何かしらの型に変換することはできません。
+その代わり、 <code>Get(...)</code> と同じような <code>GetAs&lt;T&gt;(...)</code> を使用すると、
+値を特定の型に変換して取得することができます。
+<code>row?Countries</code> とすれば結果が <code>string list</code> にキャストされた状態で取得できますが、
+<code>GetAs</code> メソッドにはもう1つ便利な文法があります。</p>
 
-<h3>Adding rows and columns</h3>
+<h3>行および列の追加</h3>
 
-<p>The series type is <em>immutable</em> and so it is not possible to add new values to a series or 
-change the values stored in an existing series. However, you can use operations that return
-a new series as the result such as <code>Merge</code>.</p>
+<p>シリーズ型は <strong>不変</strong> なので、シリーズに新しい値を追加したり、
+既存のシリーズに含まれる値を変更したりすることはできません。
+しかし <code>Merge</code> のような機能を使用して、新しいシリーズを含むような結果を
+返す操作を行うことはできます。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -734,17 +764,18 @@ a new series as the result such as <code>Merge</code>.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Create series with more value</span>
+<span class="c">// さらに値を含んだシリーズを作成します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs62', 142)" onmouseover="showTip(event, 'fs62', 142)" class="i">more</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs63', 143)" onmouseover="showTip(event, 'fs63', 143)" class="i">series</span> [ <span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span class="n">48.0</span> ]
-<span class="c">// Create a new, concatenated series</span>
+<span class="c">// シリーズが連結された新しいシリーズを作成します</span>
 <span onmouseout="hideTip(event, 'fs22', 144)" onmouseover="showTip(event, 'fs22', 144)" class="i">people</span><span class="o">?</span><span class="i">Age</span><span class="o">.</span><span class="i">Merge</span>(<span onmouseout="hideTip(event, 'fs62', 145)" onmouseover="showTip(event, 'fs62', 145)" class="i">more</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>Data frame allows a very limited form of mutation. It is possible to add new series (as a column)
-to an existing data frame, drop a series or replace a series. However, individual series
-are still immutable.</p>
+<p>データフレームは非常に限定的に変更をサポートしています。
+既存のデータフレームには(列として)新しいシリーズを追加したり、
+削除あるいは置き換えたりすることもできます。
+しかしシリーズそれぞれはやはり不変です。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -762,26 +793,28 @@ are still immutable.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Calculate age + 1 for all people</span>
+<span class="c">// すべての人物の年齢を1つ増やします</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs64', 146)" onmouseover="showTip(event, 'fs64', 146)" class="i">add1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 147)" onmouseover="showTip(event, 'fs22', 147)" class="i">people</span><span class="o">?</span><span class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 148)" onmouseover="showTip(event, 'fs36', 148)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 149)" onmouseover="showTip(event, 'fs59', 149)" class="i">mapValues</span> ((<span class="o">+</span>) <span class="n">1.0</span>)
 
-<span class="c">// Add as a new series to the frame</span>
+<span class="c">// 新しいシリーズとしてフレームに追加します</span>
 <span onmouseout="hideTip(event, 'fs22', 150)" onmouseover="showTip(event, 'fs22', 150)" class="i">people</span><span class="o">?</span><span class="i">AgePlusOne</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs64', 151)" onmouseover="showTip(event, 'fs64', 151)" class="i">add1</span>
 
-<span class="c">// Add new series from a list of values</span>
+<span class="c">// 値のリストを使用して新しいシリーズを追加します</span>
 <span onmouseout="hideTip(event, 'fs22', 152)" onmouseover="showTip(event, 'fs22', 152)" class="i">people</span><span class="o">?</span><span class="i">Siblings</span> <span class="o">&lt;-</span> [<span class="n">0</span>; <span class="n">2</span>; <span class="n">1</span>; <span class="n">3</span>]
 
-<span class="c">// Replace existing series with new values</span>
-<span class="c">// (Equivalent to people?Siblings &lt;- ...)</span>
+<span class="c">// 既存のシリーズを新しい値に置き換えます</span>
+<span class="c">// (people?Siblings &lt;- ... と同じです)</span>
 <span onmouseout="hideTip(event, 'fs22', 153)" onmouseover="showTip(event, 'fs22', 153)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 154)" onmouseover="showTip(event, 'fs65', 154)" class="i">ReplaceColumn</span>(<span class="s">&quot;</span><span class="s">Siblings</span><span class="s">&quot;</span>, [<span class="n">3</span>; <span class="n">2</span>; <span class="n">1</span>; <span class="n">0</span>])</pre>
 </td>
 </tr>
 </table>
 
-<p>Finally, it is also possible to append one data frame or a single row to an existing data
-frame. The operation is immutable, so the result is a new data frame with the added
-rows. To create a new row for the data frame, we can use standard ways of constructing
-series from key-value pairs, or we can use the <code>SeriesBuilder</code> type:</p>
+<p>最後に、既存のデータフレームに1つのデータフレーム、
+あるいは1つの行を追加することも可能です。
+この操作も不変なので、行が追加された新しいデータフレームが返されることになります。
+データフレーム用の新しい行を作成するには、
+キー値ペアからシリーズを作成する標準的な方法か、
+あるいは <code>SeriesBuilder</code> 型を使用することもできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -803,21 +836,21 @@ series from key-value pairs, or we can use the <code>SeriesBuilder</code> type:<
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Create new object series with values for required columns</span>
+<span class="c">// 必須の列に対応する値を持った新しいシリーズオブジェクトを作成します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs66', 155)" onmouseover="showTip(event, 'fs66', 155)" class="i">newRow</span> <span class="o">=</span> 
   [ <span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 156)" onmouseover="showTip(event, 'fs50', 156)" class="i">box</span> <span class="s">&quot;</span><span class="s">Jim</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Age</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 157)" onmouseover="showTip(event, 'fs50', 157)" class="i">box</span> <span class="n">51</span>;
     <span class="s">&quot;</span><span class="s">Countries</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 158)" onmouseover="showTip(event, 'fs50', 158)" class="i">box</span> [<span class="s">&quot;</span><span class="s">US</span><span class="s">&quot;</span>]; <span class="s">&quot;</span><span class="s">Siblings</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 159)" onmouseover="showTip(event, 'fs50', 159)" class="i">box</span> <span class="n">5</span> ]
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs63', 160)" onmouseover="showTip(event, 'fs63', 160)" class="i">series</span>
-<span class="c">// Create a new data frame, containing the new series</span>
+<span class="c">// 新しいシリーズを含んだ新しいデータフレームを作成します</span>
 <span onmouseout="hideTip(event, 'fs22', 161)" onmouseover="showTip(event, 'fs22', 161)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 162)" onmouseover="showTip(event, 'fs67', 162)" class="i">Merge</span>(<span class="s">&quot;</span><span class="s">Jim</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs66', 163)" onmouseover="showTip(event, 'fs66', 163)" class="i">newRow</span>)
 
-<span class="c">// Another option is to use mutable SeriesBuilder</span>
+<span class="c">// 可変なSeriesBuilderオブジェクトを使用することもできます</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 164)" onmouseover="showTip(event, 'fs68', 164)" class="i">otherRow</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs69', 165)" onmouseover="showTip(event, 'fs69', 165)" class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 166)" onmouseover="showTip(event, 'fs14', 166)" class="i">string</span><span class="o">&gt;</span>()
 <span onmouseout="hideTip(event, 'fs68', 167)" onmouseover="showTip(event, 'fs68', 167)" class="i">otherRow</span><span class="o">?</span><span class="i">Name</span> <span class="o">&lt;-</span> <span class="s">&quot;</span><span class="s">Jim</span><span class="s">&quot;</span>
 <span onmouseout="hideTip(event, 'fs68', 168)" onmouseover="showTip(event, 'fs68', 168)" class="i">otherRow</span><span class="o">?</span><span class="i">Age</span> <span class="o">&lt;-</span> <span class="n">51</span>
 <span onmouseout="hideTip(event, 'fs68', 169)" onmouseover="showTip(event, 'fs68', 169)" class="i">otherRow</span><span class="o">?</span><span class="i">Countries</span> <span class="o">&lt;-</span> [<span class="s">&quot;</span><span class="s">US</span><span class="s">&quot;</span>]
 <span onmouseout="hideTip(event, 'fs68', 170)" onmouseover="showTip(event, 'fs68', 170)" class="i">otherRow</span><span class="o">?</span><span class="i">Siblings</span> <span class="o">&lt;-</span> <span class="n">5</span>
-<span class="c">// The Series property returns the built series</span>
+<span class="c">// 組み立てたシリーズはSeriesプロパティで取得できます</span>
 <span onmouseout="hideTip(event, 'fs22', 171)" onmouseover="showTip(event, 'fs22', 171)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 172)" onmouseover="showTip(event, 'fs67', 172)" class="i">Merge</span>(<span class="s">&quot;</span><span class="s">Jim</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs68', 173)" onmouseover="showTip(event, 'fs68', 173)" class="i">otherRow</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 174)" onmouseover="showTip(event, 'fs70', 174)" class="i">Series</span>)</pre>
 </td>
 </tr>
@@ -825,11 +858,12 @@ series from key-value pairs, or we can use the <code>SeriesBuilder</code> type:<
 
 <a name="slicing"></a>
 
-<h2>Advanced slicing and lookup</h2>
+<h2>高度なスライシングおよびルックアップ</h2>
 
-<p>Given a series, we have a number of options for getting one or more values or 
-observations (keys and an associated values) from the series. First, let's look
-at different lookup operations that are available on any (even unordered series).</p>
+<p>特定のシリーズからは多数の方法で1つ以上の値を取得したり、
+(複数キーや関連する複数の値などの)観測データを取得したりできます。
+まず(順序づけられていないシリーズも含む)任意のデータを
+対象にできる差分ルックアップ操作について説明します。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -844,20 +878,21 @@ at different lookup operations that are available on any (even unordered series)
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Sample series with different keys &amp; values</span>
+<span class="c">// 異なるキーと値を持ったサンプル用のシリーズ</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs71', 175)" onmouseover="showTip(event, 'fs71', 175)" class="i">nums</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs63', 176)" onmouseover="showTip(event, 'fs63', 176)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">20.0</span> ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs72', 177)" onmouseover="showTip(event, 'fs72', 177)" class="i">strs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs63', 178)" onmouseover="showTip(event, 'fs63', 178)" class="i">series</span> [ <span class="s">&quot;</span><span class="s">en</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;</span><span class="s">Hi</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">cz</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;</span><span class="s">Ahoj</span><span class="s">&quot;</span> ]
 
-<span class="c">// Lookup values using keys</span>
+<span class="c">// キーを使用して値を検索します</span>
 <span onmouseout="hideTip(event, 'fs71', 179)" onmouseover="showTip(event, 'fs71', 179)" class="i">nums</span><span class="o">.</span>[<span class="n">1</span>]
 <span onmouseout="hideTip(event, 'fs72', 180)" onmouseover="showTip(event, 'fs72', 180)" class="i">strs</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">en</span><span class="s">&quot;</span>]
-<span class="c">// Supported when key is string</span>
-<span onmouseout="hideTip(event, 'fs72', 181)" onmouseover="showTip(event, 'fs72', 181)" class="i">strs</span><span class="o">?</span><span class="i">en</span>      </pre>
+<span class="c">// キーが文字列の場合には以下のようにアクセスできます</span>
+<span onmouseout="hideTip(event, 'fs72', 181)" onmouseover="showTip(event, 'fs72', 181)" class="i">strs</span><span class="o">?</span><span class="i">en</span></pre>
 </td>
 </tr>
 </table>
 
-<p>For more examples, we use the <code>Age</code> column from <a href="#creating-recd">earlier data set</a> as example:</p>
+<p>さらなる例として、<a href="#creating-recd">前の例で作成したデータセット</a> 
+の <code>Age</code> 列を使用します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -870,19 +905,20 @@ at different lookup operations that are available on any (even unordered series)
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get an unordered sample series </span>
+<span class="c">// 順序づけられていないサンプルのシリーズを取得します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs73', 182)" onmouseover="showTip(event, 'fs73', 182)" class="i">ages</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 183)" onmouseover="showTip(event, 'fs22', 183)" class="i">people</span><span class="o">?</span><span class="i">Age</span>
 
-<span class="c">// Returns value for a given key</span>
+<span class="c">// 特定のキーに対応する値を取得します</span>
 <span onmouseout="hideTip(event, 'fs73', 184)" onmouseover="showTip(event, 'fs73', 184)" class="i">ages</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span>]
-<span class="c">// Returns series with two keys from the source</span>
+<span class="c">// データソースから2つのキーを指定してシリーズを取得します</span>
 <span onmouseout="hideTip(event, 'fs73', 185)" onmouseover="showTip(event, 'fs73', 185)" class="i">ages</span><span class="o">.</span>[ [<span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Joe</span><span class="s">&quot;</span>] ]</pre>
 </td>
 </tr>
 </table>
 
-<p>The <code>Series</code> module provides another set of useful functions (many of those
-are also available as members, for example via <code>ages.TryGet</code>):</p>
+<p><code>Series</code> モジュールには便利な関数が他にも用意されています
+(たとえば <code>ages.TryGet</code> のように、多くはメンバーメソッドとしても
+呼び出すことが出来ます)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -895,19 +931,20 @@ are also available as members, for example via <code>ages.TryGet</code>):</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Fails when key is not present</span>
+<span class="c">// キーが存在しない場合には失敗します</span>
 <span class="k">try</span> <span onmouseout="hideTip(event, 'fs73', 186)" onmouseover="showTip(event, 'fs73', 186)" class="i">ages</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 187)" onmouseover="showTip(event, 'fs36', 187)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 188)" onmouseover="showTip(event, 'fs74', 188)" class="i">get</span> <span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span> <span class="k">with</span> _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs75', 189)" onmouseover="showTip(event, 'fs75', 189)" class="i">nan</span>
-<span class="c">// Returns &#39;None&#39; when key is not present</span>
+<span class="c">// キーが存在志ない場合には&#39;None&#39;が返ります</span>
 <span onmouseout="hideTip(event, 'fs73', 190)" onmouseover="showTip(event, 'fs73', 190)" class="i">ages</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 191)" onmouseover="showTip(event, 'fs36', 191)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs76', 192)" onmouseover="showTip(event, 'fs76', 192)" class="i">tryGet</span> <span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span>
-<span class="c">// Returns series with missing value for &#39;John&#39;</span>
-<span class="c">// (equivalent to &#39;ages.[ [&quot;Tomas&quot;; &quot;John&quot;] ]&#39;)</span>
+<span class="c">// &#39;John&#39; の値を除いたシリーズが返ります</span>
+<span class="c">// (&#39;ages.[ [&quot;Tomas&quot;; &quot;John&quot;] ]&#39; と同じです)</span>
 <span onmouseout="hideTip(event, 'fs73', 193)" onmouseover="showTip(event, 'fs73', 193)" class="i">ages</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 194)" onmouseover="showTip(event, 'fs36', 194)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs77', 195)" onmouseover="showTip(event, 'fs77', 195)" class="i">getAll</span> [ <span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span> ]</pre>
 </td>
 </tr>
 </table>
 
-<p>We can also obtain all data from the series. The data frame library uses the
-term <em>observations</em> for all key-value pairs</p>
+<p>シリーズからすべてのデータを取得することもできます。
+データフレームライブラリではすべてのキー値ペアのことを
+<strong>observations(観測値)</strong> と呼んでいます。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -919,11 +956,11 @@ term <em>observations</em> for all key-value pairs</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get all observations as a sequence of &#39;KeyValuePair&#39;</span>
+<span class="c">// すべてのobservationsを&#39;KeyValuePair&#39;のシーケンスとして取得します</span>
 <span onmouseout="hideTip(event, 'fs73', 196)" onmouseover="showTip(event, 'fs73', 196)" class="i">ages</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 197)" onmouseover="showTip(event, 'fs78', 197)" class="i">Observations</span>
-<span class="c">// Get all observations as a sequence of tuples</span>
+<span class="c">// すべてのobservationsをタプルのシーケンスとして取得します</span>
 <span onmouseout="hideTip(event, 'fs73', 198)" onmouseover="showTip(event, 'fs73', 198)" class="i">ages</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 199)" onmouseover="showTip(event, 'fs36', 199)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs79', 200)" onmouseover="showTip(event, 'fs79', 200)" class="i">observations</span>
-<span class="c">// Get all observations, with &#39;None&#39; for missing values</span>
+<span class="c">// 値無しに対しては&#39;None&#39;となるようにしてすべてのobservationsを取得します</span>
 <span onmouseout="hideTip(event, 'fs73', 201)" onmouseover="showTip(event, 'fs73', 201)" class="i">ages</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 202)" onmouseover="showTip(event, 'fs36', 202)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 203)" onmouseover="showTip(event, 'fs80', 203)" class="i">observationsAll</span></pre>
 </td>
 </tr>
@@ -997,8 +1034,41 @@ also obtain values for a sequence of keys:</p>
 </tr>
 </table>
 
-<pre><code>Value 'opens' could not be evaluated
-</code></pre>
+<div class="deedleseries">
+
+<table>
+<thead>
+<tr class="header">
+<th><p>Keys</p></th>
+<th><p>2013/01/02</p></th>
+<th><p>2013/01/03</p></th>
+<th><p>2013/01/04</p></th>
+<th><p>2013/01/07</p></th>
+<th><p>2013/01/08</p></th>
+<th><p> ... </p></th>
+<th><p>2013/01/29</p></th>
+<th><p>2013/01/30</p></th>
+<th><p>2013/01/31</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Values</p></td>
+<td><p>27.25</p></td>
+<td><p>27.63</p></td>
+<td><p>27.27</p></td>
+<td><p>26.77</p></td>
+<td><p>26.75</p></td>
+<td><p> ... </p></td>
+<td><p>27.82</p></td>
+<td><p>28.01</p></td>
+<td><p>27.79</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
 
 <p>The slicing works even if the keys are not available in the series. The lookup
 automatically uses nearest greater lower bound and nearest smaller upper bound
@@ -1429,8 +1499,32 @@ row key and column key, respectively. In the above example, the new row key is
 the <code>Sex</code> value and the new column key is whether a person survived or not. As a result
 we get the following two by two table:</p>
 
-<pre><code>Value 'pivot1' could not be evaluated
-</code></pre>
+<div class="deedleframe">
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>False</p></th>
+<th><p>True</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>male</p></td>
+<td><p>468</p></td>
+<td><p>109</p></td>
+</tr>
+<tr class="even">
+<td><p>female</p></td>
+<td><p>81</p></td>
+<td><p>233</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
 
 <p>The pivot table operation takes the source frame, partitions the data (rows) based on the 
 new row and column keys and then aggregates each frame using the specified aggregation. In the
@@ -1460,8 +1554,32 @@ However, we could easily calculate other statistic - such as average age:</p>
 <p>The results suggest that older males were less likely survive than younger males, but 
 older females were more likely to survive then younger females:</p>
 
-<pre><code>Value 'pivot2' could not be evaluated
-</code></pre>
+<div class="deedleframe">
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>False</p></th>
+<th><p>True</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>male</p></td>
+<td><p>32</p></td>
+<td><p>27</p></td>
+</tr>
+<tr class="even">
+<td><p>female</p></td>
+<td><p>25</p></td>
+<td><p>29</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
 
 <a name="indexing"></a>
 
@@ -1866,7 +1984,7 @@ at all):</p>
 <div class="tip" id="fs25">val wb : WorldBankData.ServiceTypes.WorldBankDataService<br /><br />Full name: Frame.wb</div>
 <div class="tip" id="fs26">type WorldBankData =<br />&#160;&#160;static member GetDataContext : unit -&gt; WorldBankDataService<br />&#160;&#160;nested type ServiceTypes<br /><br />Full name: FSharp.Data.WorldBankData<br /><em><br /><br />&lt;summary&gt;Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.&lt;/summary&gt;</em></div>
 <div class="tip" id="fs27">WorldBankData.GetDataContext() : WorldBankData.ServiceTypes.WorldBankDataService</div>
-<div class="tip" id="fs28">val loadRegion : region:WorldBankData.ServiceTypes.Region -&gt; Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.loadRegion<br /><em><br /><br />&#160;Given a region, load GDP in current US$ and return data as <br />&#160;a frame with two-level column key (region and country name)</em></div>
+<div class="tip" id="fs28">val loadRegion : region:WorldBankData.ServiceTypes.Region -&gt; Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.loadRegion<br /><em><br /><br />&#160;特定の地域に対して、GDPを現在のUSドルでロードし、<br />&#160;2レベルの列キー(地域と国名)を持ったフレームとしてデータを返します</em></div>
 <div class="tip" id="fs29">val region : WorldBankData.ServiceTypes.Region</div>
 <div class="tip" id="fs30">type ServiceTypes =<br />&#160;&#160;nested type Countries<br />&#160;&#160;nested type Country<br />&#160;&#160;nested type Indicators<br />&#160;&#160;nested type IndicatorsDescriptions<br />&#160;&#160;nested type Region<br />&#160;&#160;nested type Regions<br />&#160;&#160;nested type Topic<br />&#160;&#160;nested type Topics<br />&#160;&#160;nested type WorldBankDataService<br /><br />Full name: FSharp.Data.WorldBankData.ServiceTypes<br /><em><br /><br />&lt;summary&gt;Contains the types that describe the data service&lt;/summary&gt;</em></div>
 <div class="tip" id="fs31">type Region =<br />&#160;&#160;inherit Region<br />&#160;&#160;member Countries : Countries<br />&#160;&#160;member Indicators : Indicators<br />&#160;&#160;member Name : string<br />&#160;&#160;member RegionCode : string<br /><br />Full name: FSharp.Data.WorldBankData.ServiceTypes.Region</div>
