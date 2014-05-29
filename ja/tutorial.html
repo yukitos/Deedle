@@ -45,10 +45,10 @@
 
 <p>最初の手順として、 <a href="https://www.nuget.org/packages/Deedle">NuGet経由で</a> <code>Deedle.dll</code> をインストールします。
 次にライブラリをロードします。
-F# Interactive上でライブラリの <code>.dll</code> をロードしている <code>.fsx</code> ファイルをロードし、
-データフレームやシリーズデータを表す型に対するプリンターを適宜登録します。
+F# Interactive上でライブラリの <code>.dll</code> をロードしている <code>.fsx</code> ファイルをロードすることにより、
+データフレームやシリーズデータを表す型に対する簡易プリンターを登録できます。
 今回のサンプルでは <a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a> も必要になるため、
-以下のような感じになります：</p>
+以下のようにします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -232,15 +232,15 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.14</p></td>
-<td><p>0.73</p></td>
-<td><p>0.42</p></td>
-<td><p>0.24</p></td>
-<td><p>0.68</p></td>
+<td><p>0.56</p></td>
+<td><p>0.82</p></td>
+<td><p>0.37</p></td>
+<td><p>0.43</p></td>
+<td><p>0.18</p></td>
 <td><p> ... </p></td>
-<td><p>0.72</p></td>
-<td><p>0.05</p></td>
-<td><p>0.06</p></td>
+<td><p>0.8</p></td>
+<td><p>0.57</p></td>
+<td><p>0.28</p></td>
 </tr>
 </tbody>
 </table>
@@ -276,52 +276,52 @@ F# Interactive上でライブラリの <code>.dll</code> をロードしてい�
 <tr class="odd">
 <td><p>2013/01/01 0:00:00</p></td>
 <td><p>10</p></td>
-<td><p>0.135775934968039</p></td>
+<td><p>0.563030840625535</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/02 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.730432359376192</p></td>
+<td><p>0.820022792471583</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/03 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.417471225567847</p></td>
+<td><p>0.370779561051531</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/04 0:00:00</p></td>
 <td><p>20</p></td>
-<td><p>0.244610082937689</p></td>
+<td><p>0.42694333774361</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/05 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.682384274752058</p></td>
+<td><p>0.18041514986214</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/06 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.499355857493056</p></td>
+<td><p>0.709939134172136</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/07 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.412972399225911</p></td>
+<td><p>0.862709490984077</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/08 0:00:00</p></td>
 <td><p>30</p></td>
-<td><p>0.718848064410895</p></td>
+<td><p>0.799192130937796</p></td>
 </tr>
 <tr class="odd">
 <td><p>2013/01/09 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.0546751795591205</p></td>
+<td><p>0.566198641697969</p></td>
 </tr>
 <tr class="even">
 <td><p>2013/01/10 0:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>0.0642735660375438</p></td>
+<td><p>0.278038516304474</p></td>
 </tr>
 </tbody>
 </table>
@@ -878,29 +878,29 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>2014/05/20 0:00:00</p></th>
-<th><p>2014/05/21 0:00:00</p></th>
-<th><p>2014/05/22 0:00:00</p></th>
-<th><p>2014/05/23 0:00:00</p></th>
-<th><p>2014/05/24 0:00:00</p></th>
-<th><p> ... </p></th>
-<th><p>2014/05/27 0:00:00</p></th>
-<th><p>2014/05/28 0:00:00</p></th>
 <th><p>2014/05/29 0:00:00</p></th>
+<th><p>2014/05/30 0:00:00</p></th>
+<th><p>2014/05/31 0:00:00</p></th>
+<th><p>2014/06/01 0:00:00</p></th>
+<th><p>2014/06/02 0:00:00</p></th>
+<th><p> ... </p></th>
+<th><p>2014/06/05 0:00:00</p></th>
+<th><p>2014/06/06 0:00:00</p></th>
+<th><p>2014/06/07 0:00:00</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.42</p></td>
-<td><p>0.97</p></td>
-<td><p>0.3</p></td>
-<td><p>0.24</p></td>
-<td><p>0.92</p></td>
+<td><p>0.57</p></td>
+<td><p>0.45</p></td>
+<td><p>0.62</p></td>
+<td><p>0.25</p></td>
+<td><p>0.86</p></td>
 <td><p> ... </p></td>
-<td><p>0.59</p></td>
-<td><p>0.94</p></td>
-<td><p>0.19</p></td>
+<td><p>0.72</p></td>
+<td><p>0.41</p></td>
+<td><p>0.2</p></td>
 </tr>
 </tbody>
 </table>
@@ -914,29 +914,29 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>2014/05/20 13:41:26</p></th>
-<th><p>2014/05/21 13:41:26</p></th>
-<th><p>2014/05/22 13:41:26</p></th>
-<th><p>2014/05/23 13:41:26</p></th>
-<th><p>2014/05/24 13:41:26</p></th>
+<th><p>2014/05/29 13:11:30</p></th>
+<th><p>2014/05/30 13:11:30</p></th>
+<th><p>2014/05/31 13:11:30</p></th>
+<th><p>2014/06/01 13:11:30</p></th>
+<th><p>2014/06/02 13:11:30</p></th>
 <th><p> ... </p></th>
-<th><p>2014/05/27 13:41:26</p></th>
-<th><p>2014/05/28 13:41:26</p></th>
-<th><p>2014/05/29 13:41:26</p></th>
+<th><p>2014/06/05 13:11:30</p></th>
+<th><p>2014/06/06 13:11:30</p></th>
+<th><p>2014/06/07 13:11:30</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.42</p></td>
-<td><p>0.97</p></td>
-<td><p>0.3</p></td>
-<td><p>0.24</p></td>
-<td><p>0.92</p></td>
+<td><p>0.57</p></td>
+<td><p>0.45</p></td>
+<td><p>0.62</p></td>
+<td><p>0.25</p></td>
+<td><p>0.86</p></td>
 <td><p> ... </p></td>
-<td><p>0.59</p></td>
-<td><p>0.94</p></td>
-<td><p>0.19</p></td>
+<td><p>0.72</p></td>
+<td><p>0.41</p></td>
+<td><p>0.2</p></td>
 </tr>
 </tbody>
 </table>
@@ -1426,11 +1426,11 @@ Yahoo Financeの価格情報は新しいものから古いものの順で表示�
             </li>
 
             <li class="nav-header">ドキュメント</li>
-            <li><a href="/Deedle/ja/reference/index.html">APIリファレンス(En)</a></li>
+            <li><a href="/Deedle/ja/../reference/index.html">APIリファレンス(En)</a></li>
             <li class="divider"></li>
-            <li><a href="/Deedle/ja/reference/deedle-seriesmodule.html">Series モジュール</a></li>
-            <li><a href="/Deedle/ja/reference/deedle-framemodule.html">Frame モジュール</a></li>
-            <li><a href="/Deedle/ja/reference/deedle-stats.html">Stats モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-seriesmodule.html">Series モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-framemodule.html">Frame モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-stats.html">Stats モジュール</a></li>
 
             <li class="nav-header">サンプル</li>
             <li><a href="/Deedle/ja/lazysource.html">遅延データ読み込み</a></li>

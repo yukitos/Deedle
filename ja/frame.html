@@ -966,9 +966,10 @@ CSVファイルとして保存できます。
 </tr>
 </table>
 
-<p>The previous examples were always looking for an exact key. If we have an ordered
-series, we can search for a nearest available key and we can also perform slicing.
-We use MSFT stock prices <a href="#creating-csv">from earlier example</a>:</p>
+<p>これまでの例ではいずれもキーを厳密に指定して検索を行っていました。
+順序付きシリーズの場合には、最も近くで利用可能なキーを使用して検索をしたり、
+スライシングしたりすることができます。
+<a href="#creating-csv">先の例で作成した</a> MSFTの株価データで試してみましょう：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -983,22 +984,23 @@ We use MSFT stock prices <a href="#creating-csv">from earlier example</a>:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get series with opening prices</span>
+<span class="c">// 始値をシリーズとして取得します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs81', 204)" onmouseover="showTip(event, 'fs81', 204)" class="i">opens</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 205)" onmouseover="showTip(event, 'fs5', 205)" class="i">msft</span><span class="o">?</span><span class="i">Open</span>
 
-<span class="c">// Fails. The key is not available in the series</span>
+<span class="c">// キーがシリーズ内に無いため失敗します</span>
 <span class="k">try</span> <span onmouseout="hideTip(event, 'fs81', 206)" onmouseover="showTip(event, 'fs81', 206)" class="i">opens</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs82', 207)" onmouseover="showTip(event, 'fs82', 207)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>)] <span class="k">with</span> <span onmouseout="hideTip(event, 'fs83', 208)" onmouseover="showTip(event, 'fs83', 208)" class="i">e</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs75', 209)" onmouseover="showTip(event, 'fs75', 209)" class="i">nan</span>
-<span class="c">// Works. Find value for the nearest greater key</span>
+<span class="c">// 最も近い大きな値をキーにして値を探すため正しく動作します</span>
 <span onmouseout="hideTip(event, 'fs81', 210)" onmouseover="showTip(event, 'fs81', 210)" class="i">opens</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 211)" onmouseover="showTip(event, 'fs54', 211)" class="i">Get</span>(<span onmouseout="hideTip(event, 'fs82', 212)" onmouseover="showTip(event, 'fs82', 212)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>), <span onmouseout="hideTip(event, 'fs84', 213)" onmouseover="showTip(event, 'fs84', 213)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 214)" onmouseover="showTip(event, 'fs85', 214)" class="i">ExactOrSmaller</span>)
-<span class="c">// Works. Find value for the nearest smaler key</span>
+<span class="c">// 最も近い小さな値をキーにして値を探すため正しく動作します</span>
 <span onmouseout="hideTip(event, 'fs81', 215)" onmouseover="showTip(event, 'fs81', 215)" class="i">opens</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 216)" onmouseover="showTip(event, 'fs54', 216)" class="i">Get</span>(<span onmouseout="hideTip(event, 'fs82', 217)" onmouseover="showTip(event, 'fs82', 217)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>), <span onmouseout="hideTip(event, 'fs84', 218)" onmouseover="showTip(event, 'fs84', 218)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 219)" onmouseover="showTip(event, 'fs85', 219)" class="i">ExactOrSmaller</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>When using instance members, we can use <code>Get</code> which has an overload taking
-<code>Lookup</code>. The same functionality is exposed using <code>Series.lookup</code>. We can
-also obtain values for a sequence of keys:</p>
+<p>インスタンスのメンバーを使用する場合、
+<code>Lookup</code> を引数にとる <code>Get</code> メソッドのオーバーロードが使用できます。
+同じ機能が <code>Series.lookup</code> として定義されています。
+キーのシーケンスに対応する値を取得することもできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1010,17 +1012,18 @@ also obtain values for a sequence of keys:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Find value for the nearest greater key</span>
+<span class="c">// 最も近い大きなキーに対する値を取得します</span>
 <span onmouseout="hideTip(event, 'fs81', 220)" onmouseover="showTip(event, 'fs81', 220)" class="i">opens</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 221)" onmouseover="showTip(event, 'fs36', 221)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs86', 222)" onmouseover="showTip(event, 'fs86', 222)" class="i">lookup</span> (<span onmouseout="hideTip(event, 'fs82', 223)" onmouseover="showTip(event, 'fs82', 223)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>)) <span onmouseout="hideTip(event, 'fs84', 224)" onmouseover="showTip(event, 'fs84', 224)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 225)" onmouseover="showTip(event, 'fs87', 225)" class="i">ExactOrGreater</span>
 
-<span class="c">// Get first price for each month in 2012</span>
+<span class="c">// 2012年の各月における1つめの価格を取得します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs88', 226)" onmouseover="showTip(event, 'fs88', 226)" class="i">dates</span> <span class="o">=</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs89', 227)" onmouseover="showTip(event, 'fs89', 227)" class="i">m</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">12</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs82', 228)" onmouseover="showTip(event, 'fs82', 228)" class="i">DateTime</span>(<span class="n">2012</span>, <span onmouseout="hideTip(event, 'fs89', 229)" onmouseover="showTip(event, 'fs89', 229)" class="i">m</span>, <span class="n">1</span>) ]
 <span onmouseout="hideTip(event, 'fs81', 230)" onmouseover="showTip(event, 'fs81', 230)" class="i">opens</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 231)" onmouseover="showTip(event, 'fs36', 231)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 232)" onmouseover="showTip(event, 'fs90', 232)" class="i">lookupAll</span> <span onmouseout="hideTip(event, 'fs88', 233)" onmouseover="showTip(event, 'fs88', 233)" class="i">dates</span> <span onmouseout="hideTip(event, 'fs84', 234)" onmouseover="showTip(event, 'fs84', 234)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 235)" onmouseover="showTip(event, 'fs87', 235)" class="i">ExactOrGreater</span></pre>
 </td>
 </tr>
 </table>
 
-<p>With ordered series, we can use slicing to get a sub-range of a series:</p>
+<p>順序付きシリーズに対しては、スライシングによって
+シリーズの部分区間を取得することもできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1070,38 +1073,47 @@ also obtain values for a sequence of keys:</p>
 
 </div>
 
-<p>The slicing works even if the keys are not available in the series. The lookup
-automatically uses nearest greater lower bound and nearest smaller upper bound
-(here, we have no value for January 1).</p>
+<p>スライシングはシリーズのキーが利用できない場合であっても機能します。
+ルックアップ時には上限(最も近い上方の値のうち、最も小さい値)
+および下限(最も近い下方の値のうち、最も大きい値)が自動的に使用されます
+(今回の場合、1月1日に対応する値はありません)。</p>
 
-<p>Several other options - discussed in <a href="#indexing">a later section</a> - are available when using
-hierarchical (or multi-level) indices. But first, we need to look at grouping.</p>
+<p><a href="#indexing">後の節</a> で説明しますが、
+階層的(あるいはマルチレベル)インデックスを使用している場合には
+まだいくつかの方法があります。
+しかしまずはグループ化について説明する必要があるでしょう。</p>
 
 <a name="grouping"></a>
 
-<h2>Grouping data</h2>
+<h2>データのグループ化</h2>
 
-<p>Grouping of data can be performed on both unordered and ordered series and frames.
-For ordered series, more options (such as floating window or grouping of consecutive
-elements) are available - these can be found in the <a href="series.html">time series tutorial</a>.
-There are essentially two options:</p>
+<p>データのグループ化は順序付きのシリーズやフレーム、順序無しのシリーズやフレームの
+いずれに対しても行うことができます。
+順序付きシリーズを対象とする場合には
+(フローティングウィンドウや連続要素のグループ化など)
+固有の機能を利用できます。
+詳細については <a href="series.html">時系列データのチュートリアル</a> を参照してください。
+基本的には2つの機能があります：</p>
 
 <ul>
-<li><p>You can group series of any values and get a series of series (representing individual 
-groups). The result can easily be turned into a data frame using <code>Frame.ofColumns</code> or
-<code>Frame.ofRows</code>, but this is not done automatically.</p></li>
-<li><p>You can group a frame rows using values in a specified column, or using a function.
-The result is a frame with multi-level (hierarchical) index. Hierarchical indexing
-<a href="#indexing">is discussed later</a>.</p></li>
+<li><p>任意の値のシリーズをグループ化して、(それぞれのグループを)
+シリーズのシリーズとして取得できます
+<code>Frame.ofColumns</code> あるいは <code>Frame.ofRows</code> を使用することにより、
+結果を簡単にデータフレームへと変換できますが、この処理は自動的には行われません。</p></li>
+<li><p>特定の列に含まれる値、あるいは関数を使用してフレーム行をグループ化できます。
+この場合にはマルチレベル(階層的)インデックスを持ったフレームが返されます。
+階層的インデックスについては <a href="#indexing">後ほど説明します</a>。</p></li>
 </ul>
 
-<p>Keep in mind that you can easily get a series of rows or a series of columns from a frame
-using <code>df.Rows</code> and <code>df.Columns</code>, so the first option is also useful on data frames.</p>
+<p>データフレームに対して <code>df.Rows</code> あるいは <code>df.Columns</code> とすれば
+簡単に行シリーズ、あるいは列シリーズが取得できるわけなので、
+データフレームに対する1番目の機能は特に有用だということを覚えておいてください。</p>
 
-<h3>Grouping series</h3>
+<h3>シリーズのグループ化</h3>
 
-<p>In the following sample, we use the data frame <code>people</code> loaded from F# records in 
-<a href="#creating-recd">an earlier section</a>. Let's first get the data:</p>
+<p>以下のサンプルでは、 <a href="#creating-recd">先のセクション</a> でF#のレコードから
+ロードしたデータフレーム <code>people</code> を使用しています。
+まずデータを取得します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1117,14 +1129,14 @@ using <code>df.Rows</code> and <code>df.Columns</code>, so the first option is a
 <span class="fsi">val travels : Series&lt;string,string list&gt; =</span>
 <span class="fsi">  Joe     -&gt; [UK; US; UK]       </span>
 <span class="fsi">  Tomas   -&gt; [CZ; UK; US; ... ] </span>
-<span class="fsi">  Eve     -&gt; [FR] </span>
-<span class="fsi">  Suzanne -&gt; [US]</span></pre>
+<span class="fsi">  Eve     -&gt; [FR]               </span>
+<span class="fsi">  Suzanne -&gt; [US]               </span></pre>
 </td>
 </tr>
 </table>
 
-<p>Now we can group the elements using both key (e.g. length of a name) and using the
-value (e.g. the number of visited countries):</p>
+<p>そうすると、キー(例：名前の長さ) と値(行ったことがある国の数)の
+両方を使用して要素を取得することができます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1139,12 +1151,12 @@ value (e.g. the number of visited countries):</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Group by name length (ignoring visited countries)</span>
+<span class="c">// 名前の長さでグループ化 (行ったことがある国は無視)</span>
 <span onmouseout="hideTip(event, 'fs94', 249)" onmouseover="showTip(event, 'fs94', 249)" class="i">travels</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 250)" onmouseover="showTip(event, 'fs36', 250)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 251)" onmouseover="showTip(event, 'fs95', 251)" class="i">groupBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs96', 252)" onmouseover="showTip(event, 'fs96', 252)" class="i">k</span> <span onmouseout="hideTip(event, 'fs97', 253)" onmouseover="showTip(event, 'fs97', 253)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs96', 254)" onmouseover="showTip(event, 'fs96', 254)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs98', 255)" onmouseover="showTip(event, 'fs98', 255)" class="i">Length</span>)
-<span class="c">// Group by visited countries (people visited/not visited US)</span>
+<span class="c">// 行ったことがある国の数 (USに行ったことがある/無い人)</span>
 <span onmouseout="hideTip(event, 'fs94', 256)" onmouseover="showTip(event, 'fs94', 256)" class="i">travels</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 257)" onmouseover="showTip(event, 'fs36', 257)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 258)" onmouseover="showTip(event, 'fs95', 258)" class="i">groupBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs96', 259)" onmouseover="showTip(event, 'fs96', 259)" class="i">k</span> <span onmouseout="hideTip(event, 'fs97', 260)" onmouseover="showTip(event, 'fs97', 260)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs99', 261)" onmouseover="showTip(event, 'fs99', 261)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs100', 262)" onmouseover="showTip(event, 'fs100', 262)" class="i">exists</span> ((<span class="o">=</span>) <span class="s">&quot;</span><span class="s">US</span><span class="s">&quot;</span>) <span onmouseout="hideTip(event, 'fs97', 263)" onmouseover="showTip(event, 'fs97', 263)" class="i">v</span>)
 
-<span class="c">// Group by name length and get number of values in each group</span>
+<span class="c">// 名前の長さでグループ化して各グループの値の個数を取得します</span>
 <span onmouseout="hideTip(event, 'fs94', 264)" onmouseover="showTip(event, 'fs94', 264)" class="i">travels</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 265)" onmouseover="showTip(event, 'fs36', 265)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs101', 266)" onmouseover="showTip(event, 'fs101', 266)" class="i">groupInto</span> 
   (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs96', 267)" onmouseover="showTip(event, 'fs96', 267)" class="i">k</span> <span onmouseout="hideTip(event, 'fs97', 268)" onmouseover="showTip(event, 'fs97', 268)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs96', 269)" onmouseover="showTip(event, 'fs96', 269)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs98', 270)" onmouseover="showTip(event, 'fs98', 270)" class="i">Length</span>) 
   (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs102', 271)" onmouseover="showTip(event, 'fs102', 271)" class="i">len</span> <span onmouseout="hideTip(event, 'fs103', 272)" onmouseover="showTip(event, 'fs103', 272)" class="i">people</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs36', 273)" onmouseover="showTip(event, 'fs36', 273)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs104', 274)" onmouseover="showTip(event, 'fs104', 274)" class="i">countKeys</span> <span onmouseout="hideTip(event, 'fs103', 275)" onmouseover="showTip(event, 'fs103', 275)" class="i">people</span>)</pre>
@@ -1152,15 +1164,17 @@ value (e.g. the number of visited countries):</p>
 </tr>
 </table>
 
-<p>The <code>groupBy</code> function returns a series of series (series with new keys, containing
-series with all values for a given new key). You can than transform the values using
-<code>Series.mapValues</code>. However, if you want to avoid allocating all intermediate series,
-you can also use <code>Series.groupInto</code> which takes projection function as a second argument.
-In the above examples, we count the number of keys in each group.</p>
+<p><code>groupBy</code> 関数はシリーズのシリーズを返します(新しいキーを持ち、
+特定の新しいキーに対するすべての値を含んだシリーズを値とします)。
+そして <code>Series.mapValues</code> を使用すると値を変形させることができます。
+しかし間でシリーズを全く確保したくないという場合には、
+<code>Series.groupInto</code> を使用できます。
+この関数の2番目の引数には射影関数を指定します。
+上の例の場合には各グループのキーの数をカウントしています。</p>
 
-<p>As a final example, let's say that we want to build a data frame that contains individual
-people (as rows), all countries that appear in someone's travel list (as columns). 
-The frame contains the number of visits to each country by each person:</p>
+<p>最後の例として、(行として)それぞれの人物と、
+(列として)誰かしらが行ったことのある国を含むデータフレームを組み立ててみましょう。
+フレームにはそれぞれの人物が行ったことのある国の数が含まれるようにします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1225,21 +1239,26 @@ The frame contains the number of visits to each country by each person:</p>
 
 </div>
 
-<p>The problem can be solved just using <code>Series.mapValues</code>, together with standard F#
-<code>Seq</code> functions. We iterate over all rows (people and their countries). For each
-country list, we generate a series that contains individual countries and the count
-of visits (this is done by composing <code>Seq.countBy</code> and a function <code>series</code> to build
-a series of observations). Then we turn the result to a data frame and fill missing
-values with the constant zero (see a section about <a href="#missing">handling missing values</a>).</p>
+<p>この問題は <code>Series.mapValues</code> とF#の標準的な <code>Seq</code> 関数を
+組み合わせるだけで解決できます。
+まずすべての行(人物および行ったことのある国リスト)を走査します。
+そしてそれぞれの国リストに対して、各国と訪問数を含むようなシリーズを生成します
+(<code>Seq.countBy</code> と <code>series</code> を組み合わせることで観測データのシリーズを組み立てます)。
+それからこの結果をデータフレームへと変換して、
+値無しのデータを定数値0で置き換えています
+(<a href="#missing">値無しへの対処</a>を参照してください)。</p>
 
-<h3>Grouping data frames</h3>
+<h3>データフレームのグループ化</h3>
 
-<p>So far, we worked with series and series of series (which can be turned into data frames
-using <code>Frame.ofRows</code> and <code>Frame.ofColumns</code>). Next, we look at working with data frames.</p>
+<p>これまではシリーズやシリーズのシリーズを対象にしてきました
+(シリーズのシリーズは <code>Frame.ofRows</code> や <code>Frame.ofColumns</code> で
+データフレームに変換できます)。
+次に、データフレームを対象とする方法を説明しましょう。</p>
 
-<p>Assume we loaded <a href="http://www.kaggle.com/c/titanic-gettingStarted">Titanic data set</a> 
-that is also used on the <a href="index.html">project home page</a>. First, let's look at basic
-grouping (also used in the home page demo):</p>
+<p>ここでは <a href="index.html">プロジェクトのホームページ</a> でも使用している、
+<a href="http://www.kaggle.com/c/titanic-gettingStarted">タイタニック号のデータセット</a>
+が読み取り済みであるとします。
+まず基本的なグループ化を紹介します(ホームページのデモでも使用しているものです)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1258,39 +1277,42 @@ grouping (also used in the home page demo):</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Group using column &#39;Sex&#39; of type &#39;string&#39;</span>
+<span class="c">// &#39;string&#39;型の列&#39;Sex&#39;でグループ化</span>
 <span onmouseout="hideTip(event, 'fs1', 287)" onmouseover="showTip(event, 'fs1', 287)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 288)" onmouseover="showTip(event, 'fs2', 288)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs110', 289)" onmouseover="showTip(event, 'fs110', 289)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>
 
-<span class="c">// Grouping using column converted to &#39;decimal&#39;</span>
+<span class="c">// &#39;decimal&#39;に変換された列でグループ化</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs111', 290)" onmouseover="showTip(event, 'fs111', 290)" class="i">byDecimal</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs2', 291)" onmouseover="showTip(event, 'fs2', 291)" class="i">Frame</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs112', 292)" onmouseover="showTip(event, 'fs112', 292)" class="i">decimal</span> <span class="o">*</span> _, _<span class="o">&gt;</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs1', 293)" onmouseover="showTip(event, 'fs1', 293)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 294)" onmouseover="showTip(event, 'fs2', 294)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs113', 295)" onmouseover="showTip(event, 'fs113', 295)" class="i">groupRowsBy</span> <span class="s">&quot;</span><span class="s">Fare</span><span class="s">&quot;</span>
 
-<span class="c">// This is easier using member syntax</span>
+<span class="c">// これはメンバーメソッドを使用すれば簡単に記述できます</span>
 <span onmouseout="hideTip(event, 'fs1', 296)" onmouseover="showTip(event, 'fs1', 296)" class="i">titanic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs114', 297)" onmouseover="showTip(event, 'fs114', 297)" class="i">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs112', 298)" onmouseover="showTip(event, 'fs112', 298)" class="i">decimal</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Fare</span><span class="s">&quot;</span>)
 
-<span class="c">// Group using calculated value - length of name</span>
+<span class="c">// 計算値(名前の長さ)でグループ化</span>
 <span onmouseout="hideTip(event, 'fs1', 299)" onmouseover="showTip(event, 'fs1', 299)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 300)" onmouseover="showTip(event, 'fs2', 300)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 301)" onmouseover="showTip(event, 'fs115', 301)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 302)" onmouseover="showTip(event, 'fs116', 302)" class="i">k</span> <span onmouseout="hideTip(event, 'fs60', 303)" onmouseover="showTip(event, 'fs60', 303)" class="i">row</span> <span class="k">-&gt;</span> 
   <span onmouseout="hideTip(event, 'fs60', 304)" onmouseover="showTip(event, 'fs60', 304)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 305)" onmouseover="showTip(event, 'fs61', 305)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 306)" onmouseover="showTip(event, 'fs14', 306)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span>)<span class="o">.</span><span class="i">Length</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>When working with frames, you can group data using both rows and columns. For most
-functions there is <code>groupRows</code> and <code>groupCols</code> equivalent.
-The easiest functions to use are <code>Frame.groupRowsByXyz</code> where <code>Xyz</code> specifies the 
-type of the column that we're using for grouping. For example, we can easily group
-rows using the "Sex" column.</p>
+<p>フレームを対象にする場合、行と列の両方のデータを使用してグループ化できます。
+多くの関数にとって <code>groupRows</code> と <code>groupCols</code> は同じものです。
+一番簡単に使用できる関数は <code>Frame.groupRowsByXyz</code> で、
+<code>Xyz</code> にはグループ化に使用する列の型を指定します。
+たとえば <code>Frame.groupRowsByString("Sex")</code> とすれば、
+文字列型の列 "Sex" を使用して行を簡単にグループ化できます。</p>
 
-<p>When using less common type, you need to specify the type of the column. You can 
-see this on lines 5 and 9 where we use <code>decimal</code> as the key. Finally, you can also
-specify key selector as a function. The function gets the original key and the row
-as a value of <code>ObjectSeries&lt;K&gt;</code>. The type has various members for getting individual
-values (columns) such as <code>GetAs</code> which allows us to get a column of a specified type.</p>
+<p>あまり一般的では無い型を使用する場合、列の型を指定する必要があります。
+これは5行目と9行目で<code>decimal</code>をキーとして使用しているコードを参照してください。
+最後に、キーセレクタを関数で指定することもできます。
+この関数は元のキーと、<code>ObjectSeries&lt;K&gt;</code> 型の値である行を引数にとります。
+<code>ObjectSeries&lt;K&gt;</code> には特定の型の列を取得する <code>GetAs</code> など、
+それぞれの値(列)を取得するための様々なメンバーが定義されています。</p>
 
-<h3>Grouping by single key</h3>
+<h3>単一キーでのグループ化</h3>
 
-<p>A grouped data frame uses multi-level index. This means that the index is a tuple
-of keys that represent multiple levels. For example:</p>
+<p>グループ化されたデータフレームではマルチレベルインデックスが使用されています。
+これはつまり、インデックスが複数レベルを表すキーのタプルになっているということです。
+たとえば以下の通りです：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1318,10 +1340,11 @@ of keys that represent multiple levels. For example:</p>
 </tr>
 </table>
 
-<p>As you can see, the pretty printer understands multi-level indices and 
-outputs the first level (sex) followed by the second level (passanger id).
-You can turn frame with two-level index into a series of data frames
-(and vice versa) using <code>Frame.unnest</code> and <code>Frame.nest</code>:</p>
+<p>見ての通り、簡易プリンターはマルチレベルインデックスを理解して、
+第1レベル(性別)に続けて第2レベル(乗船者ID)を出力します。
+<code>Frame.unnest</code> や <code>Frame.nest</code> を使用すると、
+2レベルインデックスをデータフレームのシリーズ1つに変換する(あるいは逆の変換をする)
+ことができます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1333,19 +1356,18 @@ You can turn frame with two-level index into a series of data frames
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs117', 310)" onmouseover="showTip(event, 'fs117', 310)" class="i">bySex</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 311)" onmouseover="showTip(event, 'fs1', 311)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 312)" onmouseover="showTip(event, 'fs2', 312)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs110', 313)" onmouseover="showTip(event, 'fs110', 313)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span> 
-<span class="c">// Returns series with two frames as values</span>
+<span class="c">// 値として2つのフレームを持つようなシリーズを返します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs118', 314)" onmouseover="showTip(event, 'fs118', 314)" class="i">bySex1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs117', 315)" onmouseover="showTip(event, 'fs117', 315)" class="i">bySex</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 316)" onmouseover="showTip(event, 'fs2', 316)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs119', 317)" onmouseover="showTip(event, 'fs119', 317)" class="i">nest</span>
-<span class="c">// Converts unstacked data back to a single frame</span>
+<span class="c">// スタックされていないデータを単一のフレームに戻します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs120', 318)" onmouseover="showTip(event, 'fs120', 318)" class="i">bySex2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs117', 319)" onmouseover="showTip(event, 'fs117', 319)" class="i">bySex</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 320)" onmouseover="showTip(event, 'fs2', 320)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs119', 321)" onmouseover="showTip(event, 'fs119', 321)" class="i">nest</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 322)" onmouseover="showTip(event, 'fs2', 322)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs121', 323)" onmouseover="showTip(event, 'fs121', 323)" class="i">unnest</span></pre>
 </td>
 </tr>
 </table>
 
-<h3>Grouping by multiple keys</h3>
+<h3>複数キーでのグループ化</h3>
 
-<p>Finally, we can also apply grouping operation repeatedly to group data using
-multiple keys (and get a frame indexed by more than 2 levels). For example,
-we can group passangers by their class and port where they embarked:</p>
+<p>最後に、複数のキーを使用してデータを繰り返しグループ化できるということを説明します。
+たとえば乗船者を階級(Pclass)および乗船した場所(Embarked)でグループ化できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1360,26 +1382,27 @@ we can group passangers by their class and port where they embarked:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Group by passanger class and port</span>
+<span class="c">// 階級および乗船場所で乗船者をグループ化します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs122', 324)" onmouseover="showTip(event, 'fs122', 324)" class="i">byClassAndPort</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs1', 325)" onmouseover="showTip(event, 'fs1', 325)" class="i">titanic</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 326)" onmouseover="showTip(event, 'fs2', 326)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs123', 327)" onmouseover="showTip(event, 'fs123', 327)" class="i">groupRowsByInt</span> <span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 328)" onmouseover="showTip(event, 'fs2', 328)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs110', 329)" onmouseover="showTip(event, 'fs110', 329)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Embarked</span><span class="s">&quot;</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 330)" onmouseover="showTip(event, 'fs2', 330)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs124', 331)" onmouseover="showTip(event, 'fs124', 331)" class="i">mapRowKeys</span> <span onmouseout="hideTip(event, 'fs125', 332)" onmouseover="showTip(event, 'fs125', 332)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs126', 333)" onmouseover="showTip(event, 'fs126', 333)" class="i">flatten3</span>
 
-<span class="c">// Get just the Age series with the same row index</span>
+<span class="c">// 同じ行インデックスを持ったAgeシリーズだけを取得します</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs127', 334)" onmouseover="showTip(event, 'fs127', 334)" class="i">ageByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs122', 335)" onmouseover="showTip(event, 'fs122', 335)" class="i">byClassAndPort</span><span class="o">?</span><span class="i">Age</span></pre>
 </td>
 </tr>
 </table>
 
-<p>If you look at the type of <code>byClassAndPort</code>, you can see that it is
-<code>Frame&lt;(string * int * int),string&gt;</code>. The row key is a tripple consisting
-of port identifier (string), passanger class (int between 1 and 3) and the
-passanger id. The multi-level indexing is preserved when we get a single
-series from the frame.</p>
+<p><code>byClassAndPort</code> の型を確認してみると、 <code>Frame&lt;(string * int * int),string&gt;</code>
+になっていることがわかります。
+行キーは乗船場の識別子(string)、乗船者の階級(1から3までのint)、
+乗船者IDの3つ組です。
+フレームから単一のフレームを取得すると、
+マルチレベルインデックスは保持されます。</p>
 
-<p>As our last example, we look at various ways of aggregating the groups:</p>
+<p>最後の例として、グループに対する様々な集計方法を紹介します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1400,36 +1423,38 @@ series from the frame.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get average ages in each group</span>
+<span class="c">// 各グループの平均年齢を求めます</span>
 <span onmouseout="hideTip(event, 'fs122', 336)" onmouseover="showTip(event, 'fs122', 336)" class="i">byClassAndPort</span><span class="o">?</span><span class="i">Age</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 337)" onmouseover="showTip(event, 'fs128', 337)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 338)" onmouseover="showTip(event, 'fs129', 338)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs125', 339)" onmouseover="showTip(event, 'fs125', 339)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs130', 340)" onmouseover="showTip(event, 'fs130', 340)" class="i">get1And2Of3</span>
 
-<span class="c">// Averages for all numeric columns</span>
+<span class="c">// 数字的なすべての行に対して平均を求めます</span>
 <span onmouseout="hideTip(event, 'fs122', 341)" onmouseover="showTip(event, 'fs122', 341)" class="i">byClassAndPort</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 342)" onmouseover="showTip(event, 'fs2', 342)" class="i">Frame</span><span class="o">.</span><span class="i">getNumericColumns</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 343)" onmouseover="showTip(event, 'fs36', 343)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs131', 344)" onmouseover="showTip(event, 'fs131', 344)" class="i">dropMissing</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 345)" onmouseover="showTip(event, 'fs36', 345)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 346)" onmouseover="showTip(event, 'fs59', 346)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs128', 347)" onmouseover="showTip(event, 'fs128', 347)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 348)" onmouseover="showTip(event, 'fs129', 348)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs125', 349)" onmouseover="showTip(event, 'fs125', 349)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs130', 350)" onmouseover="showTip(event, 'fs130', 350)" class="i">get1And2Of3</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 351)" onmouseover="showTip(event, 'fs2', 351)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs132', 352)" onmouseover="showTip(event, 'fs132', 352)" class="i">ofColumns</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 342)" onmouseover="showTip(event, 'fs2', 342)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs131', 343)" onmouseover="showTip(event, 'fs131', 343)" class="i">getNumericCols</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 344)" onmouseover="showTip(event, 'fs36', 344)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs132', 345)" onmouseover="showTip(event, 'fs132', 345)" class="i">dropMissing</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 346)" onmouseover="showTip(event, 'fs36', 346)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 347)" onmouseover="showTip(event, 'fs59', 347)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs128', 348)" onmouseover="showTip(event, 'fs128', 348)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 349)" onmouseover="showTip(event, 'fs129', 349)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs125', 350)" onmouseover="showTip(event, 'fs125', 350)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs130', 351)" onmouseover="showTip(event, 'fs130', 351)" class="i">get1And2Of3</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 352)" onmouseover="showTip(event, 'fs2', 352)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs133', 353)" onmouseover="showTip(event, 'fs133', 353)" class="i">ofColumns</span>
 
-<span class="c">// Count number of survivors in each group</span>
-<span onmouseout="hideTip(event, 'fs122', 353)" onmouseover="showTip(event, 'fs122', 353)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 354)" onmouseover="showTip(event, 'fs24', 354)" class="i">GetColumn</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs133', 355)" onmouseover="showTip(event, 'fs133', 355)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 356)" onmouseover="showTip(event, 'fs36', 356)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs134', 357)" onmouseover="showTip(event, 'fs134', 357)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs125', 358)" onmouseover="showTip(event, 'fs125', 358)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs130', 359)" onmouseover="showTip(event, 'fs130', 359)" class="i">get1And2Of3</span> (<span onmouseout="hideTip(event, 'fs36', 360)" onmouseover="showTip(event, 'fs36', 360)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs135', 361)" onmouseover="showTip(event, 'fs135', 361)" class="i">values</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs105', 362)" onmouseover="showTip(event, 'fs105', 362)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs106', 363)" onmouseover="showTip(event, 'fs106', 363)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs107', 364)" onmouseover="showTip(event, 'fs107', 364)" class="i">id</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs63', 365)" onmouseover="showTip(event, 'fs63', 365)" class="i">series</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 366)" onmouseover="showTip(event, 'fs2', 366)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs108', 367)" onmouseover="showTip(event, 'fs108', 367)" class="i">ofRows</span></pre>
+<span class="c">// 各グループの生存者数をカウントします</span>
+<span onmouseout="hideTip(event, 'fs122', 354)" onmouseover="showTip(event, 'fs122', 354)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 355)" onmouseover="showTip(event, 'fs24', 355)" class="i">GetColumn</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs134', 356)" onmouseover="showTip(event, 'fs134', 356)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 357)" onmouseover="showTip(event, 'fs36', 357)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs135', 358)" onmouseover="showTip(event, 'fs135', 358)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs125', 359)" onmouseover="showTip(event, 'fs125', 359)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs130', 360)" onmouseover="showTip(event, 'fs130', 360)" class="i">get1And2Of3</span> (<span onmouseout="hideTip(event, 'fs36', 361)" onmouseover="showTip(event, 'fs36', 361)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs136', 362)" onmouseover="showTip(event, 'fs136', 362)" class="i">values</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs105', 363)" onmouseover="showTip(event, 'fs105', 363)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs106', 364)" onmouseover="showTip(event, 'fs106', 364)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs107', 365)" onmouseover="showTip(event, 'fs107', 365)" class="i">id</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs63', 366)" onmouseover="showTip(event, 'fs63', 366)" class="i">series</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 367)" onmouseover="showTip(event, 'fs2', 367)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs108', 368)" onmouseover="showTip(event, 'fs108', 368)" class="i">ofRows</span></pre>
 </td>
 </tr>
 </table>
 
-<p>The second snippet combines a number of useful functions. It uses <code>Frame.getNumericColumns</code>
-to obtain just numerical columns from a data frame. Then it drops the non-numerical columns
-using <code>Series.dropMissing</code>. Then we use <code>Series.mapValues</code> to apply the averaging operation
-to all columns.</p>
+<p>2番目のスニペットでは便利な関数を複数組み合わせています。
+まず、 <code>Frame.getNumericCols</code> を使用して、
+データフレームから数字的な列だけを取得します。
+そして <code>Series.dropMissing</code> を使用して、値無しの列を排除します。
+それから <code>Series.mapValues</code> を使用して、すべての列に対して平均を計算しています。</p>
 
-<p>The last snippet is alo interesting. We get the "Survived" column (which 
-contains Boolean values) and we aggregate each group using a specified function.
-The function is composed from three components - it first gets the values in the
-group, counts them (to get a number of <code>true</code> and <code>false</code> values) and then creates
-a series with the results. The result looks as the following table (some values
-were omitted):</p>
+<p>最後のスニペットにも注目してください。
+(ブール値が含まれた)"Survived"列を取得した後、
+特定の関数を使用して各グループを集計しています。
+この関数は3つのコンポーネントで構成されています。
+まずグループ内の値を取得し、その値(つまり <code>true</code> と <code>false</code> の数)をカウントし、
+この結果を使用してシリーズを作成しています。
+実行結果は以下のようなテーブルになります(一部の値を省略してあります)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1448,26 +1473,26 @@ were omitted):</p>
   <span class="n">3</span>  <span class="k">-&gt;</span>  <span class="n">25</span>    <span class="n">41</span>        
 <span class="i">S</span> <span class="n">1</span>  <span class="k">-&gt;</span>  <span class="n">74</span>    <span class="n">53</span>        
   <span class="n">2</span>  <span class="k">-&gt;</span>  <span class="n">76</span>    <span class="n">88</span>        
-  <span class="n">3</span>  <span class="k">-&gt;</span>  <span class="n">67</span>    <span class="n">286</span>      </pre>
+  <span class="n">3</span>  <span class="k">-&gt;</span>  <span class="n">67</span>    <span class="n">286</span>       </pre>
 </td>
 </tr>
 </table>
 
 <a name="pivot"></a>
 
-<h2>Summarizing data with pivot table</h2>
+<h2>ピボットテーブルを使用してデータを集計する</h2>
 
-<p>In the previous section, we looked at grouping, which is a very general 
-data manipulation operation. However, very often we want to perform two operations
-at the same time - group the data by certain keys and produce an aggregate. This
-combination is captured by the concept of a <em>pivot table</em>.</p>
+<p>先の節では非常に一般的なデータ処理操作であるグループ化を紹介しました。
+しかしたとえば特定のキーでデータをグループ化しつつ、
+集計結果を出力するというように、2つの操作を同時に行いたいこともよくあります。
+この組み合わせは <strong>ピボットテーブル</strong> という概念としてまとめられています。</p>
 
-<p>A pivot table is a useful tool if you want to summarize data in the frame based
-on two keys that are available in the rows of the data frame.</p>
+<p>ピボットテーブルはデータフレームの行で利用可能な2つのキーを
+元にしたフレーム内のデータを集計したい場合に便利なツールです。</p>
 
-<p>For example, given the titanic data set that <a href="#creating-csv">we loaded earlier</a> and
-explored in the previous section, we might want to compare the survival rate for males 
-and females. The pivot table makes this possible using just a single call:</p>
+<p>たとえば <a href="#creating-csv">以前に読み込み</a>、先の節でも扱った
+タイタニック号のデータセットに対して、男性と女性の生存比率を比較したいとしましょう。
+これはピボットテーブルを作成する呼び出しを1回行うだけで実現できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1481,23 +1506,25 @@ and females. The pivot table makes this possible using just a single call:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs1', 368)" onmouseover="showTip(event, 'fs1', 368)" class="i">titanic</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 369)" onmouseover="showTip(event, 'fs2', 369)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs136', 370)" onmouseover="showTip(event, 'fs136', 370)" class="i">pivotTable</span> 
-    <span class="c">// Returns a new row key</span>
-    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 371)" onmouseover="showTip(event, 'fs116', 371)" class="i">k</span> <span onmouseout="hideTip(event, 'fs137', 372)" onmouseover="showTip(event, 'fs137', 372)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs137', 373)" onmouseover="showTip(event, 'fs137', 373)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 374)" onmouseover="showTip(event, 'fs61', 374)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 375)" onmouseover="showTip(event, 'fs14', 375)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>)) 
-    <span class="c">// Returns a new column key</span>
-    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 376)" onmouseover="showTip(event, 'fs116', 376)" class="i">k</span> <span onmouseout="hideTip(event, 'fs137', 377)" onmouseover="showTip(event, 'fs137', 377)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs137', 378)" onmouseover="showTip(event, 'fs137', 378)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 379)" onmouseover="showTip(event, 'fs61', 379)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs133', 380)" onmouseover="showTip(event, 'fs133', 380)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)) 
-    <span class="c">// Specifies aggregation for sub-frames</span>
-    <span onmouseout="hideTip(event, 'fs2', 381)" onmouseover="showTip(event, 'fs2', 381)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs138', 382)" onmouseover="showTip(event, 'fs138', 382)" class="i">countRows</span> </pre>
+<span onmouseout="hideTip(event, 'fs1', 369)" onmouseover="showTip(event, 'fs1', 369)" class="i">titanic</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 370)" onmouseover="showTip(event, 'fs2', 370)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs137', 371)" onmouseover="showTip(event, 'fs137', 371)" class="i">pivotTable</span>
+    <span class="c">// 新しい行キーを返します</span>
+    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 372)" onmouseover="showTip(event, 'fs116', 372)" class="i">k</span> <span onmouseout="hideTip(event, 'fs138', 373)" onmouseover="showTip(event, 'fs138', 373)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs138', 374)" onmouseover="showTip(event, 'fs138', 374)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 375)" onmouseover="showTip(event, 'fs61', 375)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 376)" onmouseover="showTip(event, 'fs14', 376)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>))
+    <span class="c">// 新しい列キーを返します</span>
+    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 377)" onmouseover="showTip(event, 'fs116', 377)" class="i">k</span> <span onmouseout="hideTip(event, 'fs138', 378)" onmouseover="showTip(event, 'fs138', 378)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs138', 379)" onmouseover="showTip(event, 'fs138', 379)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 380)" onmouseover="showTip(event, 'fs61', 380)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs134', 381)" onmouseover="showTip(event, 'fs134', 381)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>))
+    <span class="c">// サブフレームに対する集計処理を指定します</span>
+    <span onmouseout="hideTip(event, 'fs2', 382)" onmouseover="showTip(event, 'fs2', 382)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs139', 383)" onmouseover="showTip(event, 'fs139', 383)" class="i">countRows</span></pre>
 </td>
 </tr>
 </table>
 
-<p>The <code>pivotTable</code> function (and the corresponding <code>PivotTable</code> method) take three arguments.
-The first two specify functions that, given a row in the original frame, return a new
-row key and column key, respectively. In the above example, the new row key is
-the <code>Sex</code> value and the new column key is whether a person survived or not. As a result
-we get the following two by two table:</p>
+<p><code>pivotTable</code> 関数(および対応する <code>PivotTable</code> メソッド)は
+3つの引数をとります。
+最初の2つには元のフレームの行を受け取って新しい行キーを返す関数、
+および列を受け取って新しい列キーを返す関数をそれぞれ指定します。
+上の例では <code>Sex</code> の値が新しい行キーで、
+乗船者が生存したかどうかが新しい列キーになります。
+その結果、以下のような2x2のテーブルになります：</p>
 
 <div class="deedleframe">
 
@@ -1526,10 +1553,12 @@ we get the following two by two table:</p>
 
 </div>
 
-<p>The pivot table operation takes the source frame, partitions the data (rows) based on the 
-new row and column keys and then aggregates each frame using the specified aggregation. In the
-above example, we used <code>Frame.countRows</code> to simply return number of people in each sub-group.
-However, we could easily calculate other statistic - such as average age:</p>
+<p>ピボットテーブル操作では元となるフレームを受け取り、
+データ(行)を新しい行キーと列キーで分割し、
+そして指定された集計処理により各フレームを集計します。
+上の例では単に各サブグループの合計人数を返せばよいため、
+<code>Frame.countRows</code> を指定しています。
+ですが、たとえば平均年齢のように別の統計情報を計算することも簡単にできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1541,18 +1570,18 @@ However, we could easily calculate other statistic - such as average age:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs1', 383)" onmouseover="showTip(event, 'fs1', 383)" class="i">titanic</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 384)" onmouseover="showTip(event, 'fs2', 384)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs136', 385)" onmouseover="showTip(event, 'fs136', 385)" class="i">pivotTable</span> 
-    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 386)" onmouseover="showTip(event, 'fs116', 386)" class="i">k</span> <span onmouseout="hideTip(event, 'fs137', 387)" onmouseover="showTip(event, 'fs137', 387)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs137', 388)" onmouseover="showTip(event, 'fs137', 388)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 389)" onmouseover="showTip(event, 'fs61', 389)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 390)" onmouseover="showTip(event, 'fs14', 390)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>)) 
-    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 391)" onmouseover="showTip(event, 'fs116', 391)" class="i">k</span> <span onmouseout="hideTip(event, 'fs137', 392)" onmouseover="showTip(event, 'fs137', 392)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs137', 393)" onmouseover="showTip(event, 'fs137', 393)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 394)" onmouseover="showTip(event, 'fs61', 394)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs133', 395)" onmouseover="showTip(event, 'fs133', 395)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)) 
-    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs139', 396)" onmouseover="showTip(event, 'fs139', 396)" class="i">frame</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs139', 397)" onmouseover="showTip(event, 'fs139', 397)" class="i">frame</span><span class="o">?</span><span class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 398)" onmouseover="showTip(event, 'fs128', 398)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs140', 399)" onmouseover="showTip(event, 'fs140', 399)" class="i">mean</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs141', 400)" onmouseover="showTip(event, 'fs141', 400)" class="i">round</span></pre>
+<span onmouseout="hideTip(event, 'fs1', 384)" onmouseover="showTip(event, 'fs1', 384)" class="i">titanic</span> 
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 385)" onmouseover="showTip(event, 'fs2', 385)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs137', 386)" onmouseover="showTip(event, 'fs137', 386)" class="i">pivotTable</span> 
+    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 387)" onmouseover="showTip(event, 'fs116', 387)" class="i">k</span> <span onmouseout="hideTip(event, 'fs138', 388)" onmouseover="showTip(event, 'fs138', 388)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs138', 389)" onmouseover="showTip(event, 'fs138', 389)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 390)" onmouseover="showTip(event, 'fs61', 390)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs14', 391)" onmouseover="showTip(event, 'fs14', 391)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>)) 
+    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 392)" onmouseover="showTip(event, 'fs116', 392)" class="i">k</span> <span onmouseout="hideTip(event, 'fs138', 393)" onmouseover="showTip(event, 'fs138', 393)" class="i">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs138', 394)" onmouseover="showTip(event, 'fs138', 394)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 395)" onmouseover="showTip(event, 'fs61', 395)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs134', 396)" onmouseover="showTip(event, 'fs134', 396)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)) 
+    (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs140', 397)" onmouseover="showTip(event, 'fs140', 397)" class="i">frame</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs140', 398)" onmouseover="showTip(event, 'fs140', 398)" class="i">frame</span><span class="o">?</span><span class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 399)" onmouseover="showTip(event, 'fs128', 399)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs141', 400)" onmouseover="showTip(event, 'fs141', 400)" class="i">mean</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs142', 401)" onmouseover="showTip(event, 'fs142', 401)" class="i">round</span></pre>
 </td>
 </tr>
 </table>
 
-<p>The results suggest that older males were less likely survive than younger males, but 
-older females were more likely to survive then younger females:</p>
+<p>この結果から、年配の男性は若者に比べて生存率が低い一方、
+年配の女性は若者に比べて生存率が高いことがわかります：</p>
 
 <div class="deedleframe">
 
@@ -1583,21 +1612,24 @@ older females were more likely to survive then younger females:</p>
 
 <a name="indexing"></a>
 
-<h2>Hierarchical indexing</h2>
+<h2>階層的インデックシング</h2>
 
-<p>For some data sets, the index is not a simple sequence of keys, but instead a more
-complex hierarchy. This can be captured using hierarchical indices. They also provide
-a convenient way of dealing with multi-dimensional data. The most common source
-of multi-level indices is grouping (the previous section has a number of examples).</p>
+<p>一部のデータセットではインデックスが単純なキーのシーケンスではなく、
+さらに複雑な階層構造をなしている場合があります。
+これは階層的インデックスを使用することで処理することができます。
+また多次元データを簡単に処理する方法もあります。
+マルチレベルインデックスは最も一般的にはグループ化によって生成されます
+(先の節にいくつか例があります)。</p>
 
-<h3>Lookup in the World Bank data set</h3>
+<h3>世界銀行データセットのルックアップ</h3>
 
-<p>In this section, we start by looking at the <a href="#creating-wb">World Bank data set from earlier</a>.
-It is a data frame with two-level hierarchy of columns, where the first level is the name
-of region and the second level is the name of country.</p>
+<p>この節では <a href="#creating-wb">先ほど使用したものと同じ、世界銀行のデータセット</a>
+を見ていくことにします。
+これは2レベルの列階層を持ったデータフレームで、
+1レベル目が地域名、2レベル名が国名になっています。</p>
 
-<p>Basic lookup can be performed using slicing operators. The following are only available 
-in F# 3.1:</p>
+<p>基礎的なルックアップ操作としてはスライシング処理があります。
+以下のコードはF# 3.1においてのみ有効です：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1609,17 +1641,17 @@ in F# 3.1:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get all countries in Euro area</span>
-<span onmouseout="hideTip(event, 'fs43', 401)" onmouseover="showTip(event, 'fs43', 401)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 402)" onmouseover="showTip(event, 'fs142', 402)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="o">*</span>]
-<span class="c">// Get Belgium data from Euro area group</span>
-<span onmouseout="hideTip(event, 'fs43', 403)" onmouseover="showTip(event, 'fs43', 403)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 404)" onmouseover="showTip(event, 'fs142', 404)" class="i">Columns</span><span class="o">.</span>[(<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>)]
-<span class="c">// Belgium is returned twice - from both Euro and OECD</span>
-<span onmouseout="hideTip(event, 'fs43', 405)" onmouseover="showTip(event, 'fs43', 405)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 406)" onmouseover="showTip(event, 'fs142', 406)" class="i">Columns</span><span class="o">.</span>[<span class="o">*</span>, <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>]</pre>
+<span class="c">// ユーロエリアの全国を取得します</span>
+<span onmouseout="hideTip(event, 'fs43', 402)" onmouseover="showTip(event, 'fs43', 402)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 403)" onmouseover="showTip(event, 'fs143', 403)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="o">*</span>]
+<span class="c">// ユーロエリアグループからベルギー(Belgium)のデータを取得します</span>
+<span onmouseout="hideTip(event, 'fs43', 404)" onmouseover="showTip(event, 'fs43', 404)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 405)" onmouseover="showTip(event, 'fs143', 405)" class="i">Columns</span><span class="o">.</span>[(<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>)]
+<span class="c">// ベルギーはユーロとOECD両方に属するため2つデータが返されます</span>
+<span onmouseout="hideTip(event, 'fs43', 406)" onmouseover="showTip(event, 'fs43', 406)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 407)" onmouseover="showTip(event, 'fs143', 407)" class="i">Columns</span><span class="o">.</span>[<span class="o">*</span>, <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>]</pre>
 </td>
 </tr>
 </table>
 
-<p>In F# 3.0, you can use a family of helper functions <code>LookupXOfY</code> as follows:</p>
+<p>F# 3.0の場合には以下のように <code>LookupXOfY</code> 系のヘルパ関数を使用します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1629,17 +1661,18 @@ in F# 3.1:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get all countries in Euro area</span>
-<span onmouseout="hideTip(event, 'fs43', 407)" onmouseover="showTip(event, 'fs43', 407)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 408)" onmouseover="showTip(event, 'fs142', 408)" class="i">Columns</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs143', 409)" onmouseover="showTip(event, 'fs143', 409)" class="i">Lookup1Of2</span> <span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>]
-<span class="c">// Belgium is returned twice - from both Euro and OECD</span>
-<span onmouseout="hideTip(event, 'fs43', 410)" onmouseover="showTip(event, 'fs43', 410)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 411)" onmouseover="showTip(event, 'fs142', 411)" class="i">Columns</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs144', 412)" onmouseover="showTip(event, 'fs144', 412)" class="i">Lookup2Of2</span> <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>]</pre>
+<span class="c">// ユーロエリアの全国を取得します</span>
+<span onmouseout="hideTip(event, 'fs43', 408)" onmouseover="showTip(event, 'fs43', 408)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 409)" onmouseover="showTip(event, 'fs143', 409)" class="i">Columns</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs144', 410)" onmouseover="showTip(event, 'fs144', 410)" class="i">Lookup1Of2</span> <span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>]
+<span class="c">// ベルギーはユーロとOECD両方に属するため2つデータが返されます</span>
+<span onmouseout="hideTip(event, 'fs43', 411)" onmouseover="showTip(event, 'fs43', 411)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 412)" onmouseover="showTip(event, 'fs143', 412)" class="i">Columns</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs145', 413)" onmouseover="showTip(event, 'fs145', 413)" class="i">Lookup2Of2</span> <span class="s">&quot;</span><span class="s">Belgium</span><span class="s">&quot;</span>]</pre>
 </td>
 </tr>
 </table>
 
-<p>The lookup operations always return data frame of the same type as the original frame.
-This means that even if you select one sub-group, you get back a frame with the same
-multi-level hierarchy of keys. This can be easily changed using projection on keys:</p>
+<p>ルックアップ操作では常に元のフレームと同じ型のデータフレームが返されます。
+これはつまり1つのサブグループを選択したとしても、
+マルチレベル階層キーを持った同じフレームを取得し直すことができるということです。
+この動作はキーに対する射影を行うことで簡単に変更できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1649,20 +1682,20 @@ multi-level hierarchy of keys. This can be easily changed using projection on ke
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Drop the first level of keys (and get just countries)</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs145', 413)" onmouseover="showTip(event, 'fs145', 413)" class="i">euro</span> <span class="o">=</span> 
-  <span onmouseout="hideTip(event, 'fs43', 414)" onmouseover="showTip(event, 'fs43', 414)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs142', 415)" onmouseover="showTip(event, 'fs142', 415)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="o">*</span>]
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 416)" onmouseover="showTip(event, 'fs2', 416)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs146', 417)" onmouseover="showTip(event, 'fs146', 417)" class="i">mapColKeys</span> <span onmouseout="hideTip(event, 'fs147', 418)" onmouseover="showTip(event, 'fs147', 418)" class="i">snd</span></pre>
+<span class="c">// 1レベル目のキーを除去します(そして国名だけを取得します)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs146', 414)" onmouseover="showTip(event, 'fs146', 414)" class="i">euro</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs43', 415)" onmouseover="showTip(event, 'fs43', 415)" class="i">world</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs143', 416)" onmouseover="showTip(event, 'fs143', 416)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Euro</span><span class="s"> </span><span class="s">area</span><span class="s">&quot;</span>, <span class="o">*</span>]
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 417)" onmouseover="showTip(event, 'fs2', 417)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs147', 418)" onmouseover="showTip(event, 'fs147', 418)" class="i">mapColKeys</span> <span onmouseout="hideTip(event, 'fs148', 419)" onmouseover="showTip(event, 'fs148', 419)" class="i">snd</span></pre>
 </td>
 </tr>
 </table>
 
-<h3>Grouping and aggregating World Bank data</h3>
+<h3>世界銀行のデータに対するグループ化および集計</h3>
 
-<p>Hierarchical keys are often created as a result of grouping. For example, we can group
-the rows (representing individual years) in the Euro zone data set by decades
-(for more information about grouping see also <a href="#grouping">grouping section</a> in this
-document).</p>
+<p>階層的キーはグループ化の結果として生成されることがよくあります。
+たとえばユーロ地区のデータセットに対して10年単位で行をグループ化することができます
+(グループ化の詳細についてはこのドキュメント内にある
+ <a href="#grouping">グループ化の節</a> を参照してください)。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1679,8 +1712,8 @@ document).</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs148', 419)" onmouseover="showTip(event, 'fs148', 419)" class="i">decades</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs145', 420)" onmouseover="showTip(event, 'fs145', 420)" class="i">euro</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 421)" onmouseover="showTip(event, 'fs2', 421)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 422)" onmouseover="showTip(event, 'fs115', 422)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 423)" onmouseover="showTip(event, 'fs116', 423)" class="i">k</span> _ <span class="k">-&gt;</span> 
-  <span onmouseout="hideTip(event, 'fs149', 424)" onmouseover="showTip(event, 'fs149', 424)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d0s</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs116', 425)" onmouseover="showTip(event, 'fs116', 425)" class="i">k</span> <span class="o">/</span> <span class="n">10</span>))
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs149', 420)" onmouseover="showTip(event, 'fs149', 420)" class="i">decades</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs146', 421)" onmouseover="showTip(event, 'fs146', 421)" class="i">euro</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 422)" onmouseover="showTip(event, 'fs2', 422)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 423)" onmouseover="showTip(event, 'fs115', 423)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 424)" onmouseover="showTip(event, 'fs116', 424)" class="i">k</span> _ <span class="k">-&gt;</span> 
+  <span onmouseout="hideTip(event, 'fs150', 425)" onmouseover="showTip(event, 'fs150', 425)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d0s</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs116', 426)" onmouseover="showTip(event, 'fs116', 426)" class="i">k</span> <span class="o">/</span> <span class="n">10</span>))
 <span class="fsi"> </span>
 <span class="fsi">val decades : Frame&lt;(string * int),string&gt; =</span>
 <span class="fsi">                Austria  Estonia   ...      </span>
@@ -1694,23 +1727,26 @@ document).</p>
 </tr>
 </table>
 
-<p>Now that we have a data frame with hierarchical index, we can select data
-in a single group, such as 1990s. The result is a data frame of the same type.
-We can also multiply the values, to get original GDP in USD (rather than billions):</p>
+<p>これで階層的インデックスを持ったデータフレームが用意出来たので、
+たとえば1990年代のような1つのグループから
+データを選択することが出来るようになりました。
+その結果は同じ型を持ったデータフレームです。
+値それぞれを積算すれば、USドル基準の(10億単位ではない)元々のGDPを計算できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs148', 426)" onmouseover="showTip(event, 'fs148', 426)" class="i">decades</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs150', 427)" onmouseover="showTip(event, 'fs150', 427)" class="i">Rows</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">1990</span><span class="s">s</span><span class="s">&quot;</span>, <span class="o">*</span>] <span class="o">*</span> <span class="n">1e9</span></pre>
+<span onmouseout="hideTip(event, 'fs149', 427)" onmouseover="showTip(event, 'fs149', 427)" class="i">decades</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs151', 428)" onmouseover="showTip(event, 'fs151', 428)" class="i">Rows</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">1990</span><span class="s">s</span><span class="s">&quot;</span>, <span class="o">*</span>] <span class="o">*</span> <span class="n">1e9</span></pre>
 </td>
 </tr>
 </table>
 
-<p>The <code>Frame</code> and <code>Series</code> modules provide a number of functions for aggregating the
-groups. We can access a specific country and aggregate GDP for a country, or we can
-apply aggregation to the entire data set:</p>
+<p><code>Frame</code> および <code>Series</code> モジュールには集計やグループ化を行うための関数が
+多数定義されています。
+たとえば特定の国データを取得してその国のGDPを集計したり、
+データセット全体に対して集計を行ったりすることもできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1728,25 +1764,27 @@ apply aggregation to the entire data set:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Calculate means per decades for Slovakia</span>
-<span onmouseout="hideTip(event, 'fs148', 428)" onmouseover="showTip(event, 'fs148', 428)" class="i">decades</span><span class="o">?</span><span class="i">``Slovak Republic``</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 429)" onmouseover="showTip(event, 'fs128', 429)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 430)" onmouseover="showTip(event, 'fs129', 430)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs151', 431)" onmouseover="showTip(event, 'fs151', 431)" class="i">fst</span>
+<span class="c">// スロヴァキアの10年単位の平均値を計算します</span>
+<span onmouseout="hideTip(event, 'fs149', 429)" onmouseover="showTip(event, 'fs149', 429)" class="i">decades</span><span class="o">?</span><span class="i">``Slovak Republic``</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 430)" onmouseover="showTip(event, 'fs128', 430)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 431)" onmouseover="showTip(event, 'fs129', 431)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs152', 432)" onmouseover="showTip(event, 'fs152', 432)" class="i">fst</span>
 
-<span class="c">// Calculate means per decateds for all countries</span>
-<span onmouseout="hideTip(event, 'fs148', 432)" onmouseover="showTip(event, 'fs148', 432)" class="i">decades</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 433)" onmouseover="showTip(event, 'fs2', 433)" class="i">Frame</span><span class="o">.</span><span class="i">getNumericColumns</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 434)" onmouseover="showTip(event, 'fs36', 434)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 435)" onmouseover="showTip(event, 'fs59', 435)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs128', 436)" onmouseover="showTip(event, 'fs128', 436)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 437)" onmouseover="showTip(event, 'fs129', 437)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs151', 438)" onmouseover="showTip(event, 'fs151', 438)" class="i">fst</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 439)" onmouseover="showTip(event, 'fs2', 439)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs132', 440)" onmouseover="showTip(event, 'fs132', 440)" class="i">ofColumns</span>
+<span class="c">// 全国の10年単位の平均値を計算します</span>
+<span onmouseout="hideTip(event, 'fs149', 433)" onmouseover="showTip(event, 'fs149', 433)" class="i">decades</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 434)" onmouseover="showTip(event, 'fs2', 434)" class="i">Frame</span><span class="o">.</span><span class="i">getNumericColumns</span> 
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 435)" onmouseover="showTip(event, 'fs36', 435)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 436)" onmouseover="showTip(event, 'fs59', 436)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs128', 437)" onmouseover="showTip(event, 'fs128', 437)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs129', 438)" onmouseover="showTip(event, 'fs129', 438)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs152', 439)" onmouseover="showTip(event, 'fs152', 439)" class="i">fst</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 440)" onmouseover="showTip(event, 'fs2', 440)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs133', 441)" onmouseover="showTip(event, 'fs133', 441)" class="i">ofColumns</span>
 
-<span class="c">// Calculate standard deviation per decades in USD</span>
-<span onmouseout="hideTip(event, 'fs148', 441)" onmouseover="showTip(event, 'fs148', 441)" class="i">decades</span><span class="o">?</span><span class="i">Belgium</span> <span class="o">*</span> <span class="n">1.0e9</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 442)" onmouseover="showTip(event, 'fs128', 442)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs152', 443)" onmouseover="showTip(event, 'fs152', 443)" class="i">levelStdDev</span> <span onmouseout="hideTip(event, 'fs151', 444)" onmouseover="showTip(event, 'fs151', 444)" class="i">fst</span></pre>
+<span class="c">// 10年単位の標準偏差をUSドル基準で計算します</span>
+<span onmouseout="hideTip(event, 'fs149', 442)" onmouseover="showTip(event, 'fs149', 442)" class="i">decades</span><span class="o">?</span><span class="i">Belgium</span> <span class="o">*</span> <span class="n">1.0e9</span> 
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 443)" onmouseover="showTip(event, 'fs128', 443)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs153', 444)" onmouseover="showTip(event, 'fs153', 444)" class="i">levelStdDev</span> <span onmouseout="hideTip(event, 'fs152', 445)" onmouseover="showTip(event, 'fs152', 445)" class="i">fst</span></pre>
 </td>
 </tr>
 </table>
 
-<p>So far, we were working with data frames that only had one hierarchical index. However,
-it is perfectly possible to have hierarchical index for both rows and columns. The following
-snippet groups countries by their average GDP (in addition to grouping rows by decades):</p>
+<p>これまでは階層的インデックスを1つしか持たないようなデータフレームを
+対象にしてきました。
+しかし行と列の両方に階層的インデックスがある場合でも完璧に処理できます。
+以下のスニペットではGDP平均を基準にして国をグループ化しています
+(さらに行を10年単位にグループ化しています)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1756,37 +1794,40 @@ snippet groups countries by their average GDP (in addition to grouping rows by d
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Group countries by comparing average GDP with $500bn</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs153', 445)" onmouseover="showTip(event, 'fs153', 445)" class="i">byGDP</span> <span class="o">=</span> 
-  <span onmouseout="hideTip(event, 'fs148', 446)" onmouseover="showTip(event, 'fs148', 446)" class="i">decades</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 447)" onmouseover="showTip(event, 'fs2', 447)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs154', 448)" onmouseover="showTip(event, 'fs154', 448)" class="i">transpose</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 449)" onmouseover="showTip(event, 'fs2', 449)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 450)" onmouseover="showTip(event, 'fs115', 450)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs96', 451)" onmouseover="showTip(event, 'fs96', 451)" class="i">k</span> <span onmouseout="hideTip(event, 'fs155', 452)" onmouseover="showTip(event, 'fs155', 452)" class="i">v</span> <span class="k">-&gt;</span> 
-    <span onmouseout="hideTip(event, 'fs155', 453)" onmouseover="showTip(event, 'fs155', 453)" class="i">v</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 454)" onmouseover="showTip(event, 'fs57', 454)" class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs156', 455)" onmouseover="showTip(event, 'fs156', 455)" class="i">float</span><span class="o">&gt;</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 456)" onmouseover="showTip(event, 'fs128', 456)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs140', 457)" onmouseover="showTip(event, 'fs140', 457)" class="i">mean</span> <span class="o">&gt;</span> <span class="n">500.0</span>)</pre>
+<span class="c">// GDPを500ビリオン(5,000億)ドルと比較して国をグループ化します</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs154', 446)" onmouseover="showTip(event, 'fs154', 446)" class="i">byGDP</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs149', 447)" onmouseover="showTip(event, 'fs149', 447)" class="i">decades</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 448)" onmouseover="showTip(event, 'fs2', 448)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs155', 449)" onmouseover="showTip(event, 'fs155', 449)" class="i">transpose</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 450)" onmouseover="showTip(event, 'fs2', 450)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 451)" onmouseover="showTip(event, 'fs115', 451)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs96', 452)" onmouseover="showTip(event, 'fs96', 452)" class="i">k</span> <span onmouseout="hideTip(event, 'fs156', 453)" onmouseover="showTip(event, 'fs156', 453)" class="i">v</span> <span class="k">-&gt;</span> 
+    <span onmouseout="hideTip(event, 'fs156', 454)" onmouseover="showTip(event, 'fs156', 454)" class="i">v</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 455)" onmouseover="showTip(event, 'fs57', 455)" class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs157', 456)" onmouseover="showTip(event, 'fs157', 456)" class="i">float</span><span class="o">&gt;</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs128', 457)" onmouseover="showTip(event, 'fs128', 457)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs141', 458)" onmouseover="showTip(event, 'fs141', 458)" class="i">mean</span> <span class="o">&gt;</span> <span class="n">500.0</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>You can see (by hovering over <code>byGDP</code>) that the two hierarchies are captured in the type.
-The column key is <code>bool * string</code> (rich? and name) and the row key is <code>string * int</code> 
-(decade, year). This creates two groups of columns. One containing France, Germany and
-Italy and the other containing remaining countries.</p>
+<p>(<code>byGDP</code> 上にマウスを移動させると) 2つの階層が型に含まれていることが確認できます。
+列キーは <code>bool * string</code> (豊かどうかと国名)で、
+行キーは <code>string * int</code> (10年単位および年)です。
+このコードでは2つの列グループが作成されます。
+1つはフランス(France)、ドイツ(Germany)、イタリア(Italy)を含む列で、
+もう1つの列にはそれ以外の国が含まれます。</p>
 
-<p>The aggregations are only (directly) supported on rows, but we can use <code>Frame.transpose</code>
-to switch between rows and columns.</p>
+<p>集計機能は(直接的には)行に対してのみサポートされますが、
+<code>Frame.transpose</code> を使用すれば行と列を入れ替えることができます。</p>
 
 <a name="missing"></a>
 
-<h2>Handling missing values</h2>
+<h2>値無しへの対処</h2>
 
-<p>THe support for missing values is built-in, which means that any series or frame can
-contain missing values. When constructing series or frames from data, certain values
-are automatically treated as "missing values". This includes <code>Double.NaN</code>, <code>null</code> values
-for reference types and for nullable types:</p>
+<p>値無しに対するサポートは組み込みで用意されています。
+つまりシリーズやフレームはいずれも値無しを含むことができます。
+データからシリーズまたはフレームを構成する際に、
+特定の値が自動的に「値無し」として処理されます。
+具体的には <code>Double.NaN</code> や、参照型およびnull許容型における <code>null</code> が該当します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs36', 458)" onmouseover="showTip(event, 'fs36', 458)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 459)" onmouseover="showTip(event, 'fs46', 459)" class="i">ofValues</span> [ <span onmouseout="hideTip(event, 'fs157', 460)" onmouseover="showTip(event, 'fs157', 460)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs158', 461)" onmouseover="showTip(event, 'fs158', 461)" class="i">NaN</span>; <span class="n">1.0</span>; <span class="n">3.14</span> ]</pre>
+<span onmouseout="hideTip(event, 'fs36', 459)" onmouseover="showTip(event, 'fs36', 459)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 460)" onmouseover="showTip(event, 'fs46', 460)" class="i">ofValues</span> [ <span onmouseout="hideTip(event, 'fs158', 461)" onmouseover="showTip(event, 'fs158', 461)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs159', 462)" onmouseover="showTip(event, 'fs159', 462)" class="i">NaN</span>; <span class="n">1.0</span>; <span class="n">3.14</span> ]</pre>
 </td>
 </tr>
 </table>
@@ -1821,8 +1862,8 @@ for reference types and for nullable types:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-[ <span onmouseout="hideTip(event, 'fs159', 462)" onmouseover="showTip(event, 'fs159', 462)" class="i">Nullable</span>(<span class="n">1</span>); <span onmouseout="hideTip(event, 'fs159', 463)" onmouseover="showTip(event, 'fs159', 463)" class="i">Nullable</span>(); <span onmouseout="hideTip(event, 'fs159', 464)" onmouseover="showTip(event, 'fs159', 464)" class="i">Nullable</span>(<span class="n">3</span>) ]
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 465)" onmouseover="showTip(event, 'fs36', 465)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 466)" onmouseover="showTip(event, 'fs46', 466)" class="i">ofValues</span></pre>
+[ <span onmouseout="hideTip(event, 'fs160', 463)" onmouseover="showTip(event, 'fs160', 463)" class="i">Nullable</span>(<span class="n">1</span>); <span onmouseout="hideTip(event, 'fs160', 464)" onmouseover="showTip(event, 'fs160', 464)" class="i">Nullable</span>(); <span onmouseout="hideTip(event, 'fs160', 465)" onmouseover="showTip(event, 'fs160', 465)" class="i">Nullable</span>(<span class="n">3</span>) ]
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 466)" onmouseover="showTip(event, 'fs36', 466)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 467)" onmouseover="showTip(event, 'fs46', 467)" class="i">ofValues</span></pre>
 </td>
 </tr>
 </table>
@@ -1851,10 +1892,11 @@ for reference types and for nullable types:</p>
 
 </div>
 
-<p>Missing values are automatically skipped when performing statistical computations such
-as <code>Series.mean</code>. They are also ignored by projections and filtering, including
-<code>Series.mapValues</code>. When you want to handle missing values, you can use <code>Series.mapAll</code> 
-that gets the value as <code>option&lt;T&gt;</code> (we use sample data set from <a href="#creating-csv">earlier section</a>):</p>
+<p><code>Series.mean</code> のような統計計算を行う場合、値無しは自動的にスキップされます。
+また <code>Series.mapValues</code> のように、射影やフィルタリングを行う際にも無視されます。
+値無しを処理したい場合には <code>Series.mapAll</code> を使用します。
+この場合には値が <code>option&lt;T&gt;</code> として取得できます
+(ここでは <a href="#creating-csv">先の節</a> で使用したサンプルデータセットを使用します)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -1866,18 +1908,19 @@ that gets the value as <code>option&lt;T&gt;</code> (we use sample data set from
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Get column with missing values</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs160', 467)" onmouseover="showTip(event, 'fs160', 467)" class="i">ozone</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 468)" onmouseover="showTip(event, 'fs8', 468)" class="i">air</span><span class="o">?</span><span class="i">Ozone</span> 
+<span class="c">// 値無しを含む列を取得します</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs161', 468)" onmouseover="showTip(event, 'fs161', 468)" class="i">ozone</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 469)" onmouseover="showTip(event, 'fs8', 469)" class="i">air</span><span class="o">?</span><span class="i">Ozone</span> 
 
-<span class="c">// Replace missing values with zeros</span>
-<span onmouseout="hideTip(event, 'fs160', 469)" onmouseover="showTip(event, 'fs160', 469)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 470)" onmouseover="showTip(event, 'fs36', 470)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs161', 471)" onmouseover="showTip(event, 'fs161', 471)" class="i">mapAll</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 472)" onmouseover="showTip(event, 'fs116', 472)" class="i">k</span> <span onmouseout="hideTip(event, 'fs162', 473)" onmouseover="showTip(event, 'fs162', 473)" class="i">v</span> <span class="k">-&gt;</span> 
-  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs162', 474)" onmouseover="showTip(event, 'fs162', 474)" class="i">v</span> <span class="k">with</span> <span onmouseout="hideTip(event, 'fs163', 475)" onmouseover="showTip(event, 'fs163', 475)" class="i">None</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs164', 476)" onmouseover="showTip(event, 'fs164', 476)" class="i">Some</span> <span class="n">0.0</span> | <span onmouseout="hideTip(event, 'fs162', 477)" onmouseover="showTip(event, 'fs162', 477)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs162', 478)" onmouseover="showTip(event, 'fs162', 478)" class="i">v</span>)</pre>
+<span class="c">// 値無しを0に置き換えます</span>
+<span onmouseout="hideTip(event, 'fs161', 470)" onmouseover="showTip(event, 'fs161', 470)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 471)" onmouseover="showTip(event, 'fs36', 471)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs162', 472)" onmouseover="showTip(event, 'fs162', 472)" class="i">mapAll</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 473)" onmouseover="showTip(event, 'fs116', 473)" class="i">k</span> <span onmouseout="hideTip(event, 'fs163', 474)" onmouseover="showTip(event, 'fs163', 474)" class="i">v</span> <span class="k">-&gt;</span> 
+  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs163', 475)" onmouseover="showTip(event, 'fs163', 475)" class="i">v</span> <span class="k">with</span> <span onmouseout="hideTip(event, 'fs164', 476)" onmouseover="showTip(event, 'fs164', 476)" class="i">None</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs165', 477)" onmouseover="showTip(event, 'fs165', 477)" class="i">Some</span> <span class="n">0.0</span> | <span onmouseout="hideTip(event, 'fs163', 478)" onmouseover="showTip(event, 'fs163', 478)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs163', 479)" onmouseover="showTip(event, 'fs163', 479)" class="i">v</span>)</pre>
 </td>
 </tr>
 </table>
 
-<p>In practice, you will not need to use <code>Series.mapAll</code> very often, because the
-series module provides functions that fill missing values more easily:</p>
+<p>実際、 <code>Series</code> モジュールには値無しを
+より手軽に埋めるための関数が定義されているため、
+<code>Series.mapAll</code> を使用する必要はほとんどないでしょう：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1897,33 +1940,32 @@ series module provides functions that fill missing values more easily:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Fill missing values with constant</span>
-<span onmouseout="hideTip(event, 'fs160', 479)" onmouseover="showTip(event, 'fs160', 479)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 480)" onmouseover="showTip(event, 'fs36', 480)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs165', 481)" onmouseover="showTip(event, 'fs165', 481)" class="i">fillMissingWith</span> <span class="n">0.0</span>
+<span class="c">// 値無しを定数値で置き換えます</span>
+<span onmouseout="hideTip(event, 'fs161', 480)" onmouseover="showTip(event, 'fs161', 480)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 481)" onmouseover="showTip(event, 'fs36', 481)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs166', 482)" onmouseover="showTip(event, 'fs166', 482)" class="i">fillMissingWith</span> <span class="n">0.0</span>
 
-<span class="c">// Available values are copied in backward </span>
-<span class="c">// direction to fill missing values</span>
-<span onmouseout="hideTip(event, 'fs160', 482)" onmouseover="showTip(event, 'fs160', 482)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 483)" onmouseover="showTip(event, 'fs36', 483)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs166', 484)" onmouseover="showTip(event, 'fs166', 484)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs167', 485)" onmouseover="showTip(event, 'fs167', 485)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs168', 486)" onmouseover="showTip(event, 'fs168', 486)" class="i">Backward</span>
+<span class="c">// 値無しではない値が前方にコピーされて</span>
+<span class="c">// 値無しが埋められます</span>
+<span onmouseout="hideTip(event, 'fs161', 483)" onmouseover="showTip(event, 'fs161', 483)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 484)" onmouseover="showTip(event, 'fs36', 484)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs167', 485)" onmouseover="showTip(event, 'fs167', 485)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs168', 486)" onmouseover="showTip(event, 'fs168', 486)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs169', 487)" onmouseover="showTip(event, 'fs169', 487)" class="i">Backward</span>
 
-<span class="c">// Available values are propagated forward</span>
-<span class="c">// (if the first value is missing, it is not filled!)</span>
-<span onmouseout="hideTip(event, 'fs160', 487)" onmouseover="showTip(event, 'fs160', 487)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 488)" onmouseover="showTip(event, 'fs36', 488)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs166', 489)" onmouseover="showTip(event, 'fs166', 489)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs167', 490)" onmouseover="showTip(event, 'fs167', 490)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs169', 491)" onmouseover="showTip(event, 'fs169', 491)" class="i">Forward</span>
+<span class="c">// 値無しではない値が後方にコピーされます</span>
+<span class="c">// (1番目が値無しの場合にはそのまま値無しです！)</span>
+<span onmouseout="hideTip(event, 'fs161', 488)" onmouseover="showTip(event, 'fs161', 488)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 489)" onmouseover="showTip(event, 'fs36', 489)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs167', 490)" onmouseover="showTip(event, 'fs167', 490)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs168', 491)" onmouseover="showTip(event, 'fs168', 491)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs170', 492)" onmouseover="showTip(event, 'fs170', 492)" class="i">Forward</span>
 
-<span class="c">// Fill values and drop those that could not be filled</span>
-<span onmouseout="hideTip(event, 'fs160', 492)" onmouseover="showTip(event, 'fs160', 492)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 493)" onmouseover="showTip(event, 'fs36', 493)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs166', 494)" onmouseover="showTip(event, 'fs166', 494)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs167', 495)" onmouseover="showTip(event, 'fs167', 495)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs169', 496)" onmouseover="showTip(event, 'fs169', 496)" class="i">Forward</span>
-      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 497)" onmouseover="showTip(event, 'fs36', 497)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs131', 498)" onmouseover="showTip(event, 'fs131', 498)" class="i">dropMissing</span></pre>
+<span class="c">// 値無しを埋めて、埋められなかったものを除外します</span>
+<span onmouseout="hideTip(event, 'fs161', 493)" onmouseover="showTip(event, 'fs161', 493)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 494)" onmouseover="showTip(event, 'fs36', 494)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs167', 495)" onmouseover="showTip(event, 'fs167', 495)" class="i">fillMissing</span> <span onmouseout="hideTip(event, 'fs168', 496)" onmouseover="showTip(event, 'fs168', 496)" class="i">Direction</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs170', 497)" onmouseover="showTip(event, 'fs170', 497)" class="i">Forward</span>
+      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 498)" onmouseover="showTip(event, 'fs36', 498)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs132', 499)" onmouseover="showTip(event, 'fs132', 499)" class="i">dropMissing</span></pre>
 </td>
 </tr>
 </table>
 
-<p>Various other strategies for handling missing values are not currently directly 
-supported by the library, but can be easily added using <code>Series.fillMissingUsing</code>.
-It takes a function and calls it on all missing values. If we have an interpolation
-function, then we can pass it to <code>fillMissingUsing</code> and perform any interpolation 
-needed.</p>
+<p>上記以外による値無しへの対処方法についてはライブラリでは直接サポートしていませんが、
+<code>Series.fillMissingUsing</code> を使用すれば簡単に機能を追加できます。
+この関数はすべての値無しに対して呼ばれることになる関数を引数にとります。
+たとえば補完関数が既にあるとして、この関数を <code>fillMissingUsing</code> に指定すれば
+必要になる補完処理を実行することができます。</p>
 
-<p>For example, the following snippet gets the previous and next values and averages
-them (if they are available) or returns one of them (or zero if there are no values
-at all):</p>
+<p>たとえば以下のスニペットでは(値無しではない)前後の値の平均か、
+どちらかの値(あるいは前後が値無しの場合には0)を返すようにしています：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -1941,17 +1983,17 @@ at all):</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Fill missing values using interpolation function</span>
-<span onmouseout="hideTip(event, 'fs160', 499)" onmouseover="showTip(event, 'fs160', 499)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 500)" onmouseover="showTip(event, 'fs36', 500)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs170', 501)" onmouseover="showTip(event, 'fs170', 501)" class="i">fillMissingUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 502)" onmouseover="showTip(event, 'fs116', 502)" class="i">k</span> <span class="k">-&gt;</span> 
-  <span class="c">// Get previous and next values</span>
-  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs171', 503)" onmouseover="showTip(event, 'fs171', 503)" class="i">prev</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs160', 504)" onmouseover="showTip(event, 'fs160', 504)" class="i">ozone</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 505)" onmouseover="showTip(event, 'fs55', 505)" class="i">TryGet</span>(<span onmouseout="hideTip(event, 'fs116', 506)" onmouseover="showTip(event, 'fs116', 506)" class="i">k</span>, <span onmouseout="hideTip(event, 'fs84', 507)" onmouseover="showTip(event, 'fs84', 507)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 508)" onmouseover="showTip(event, 'fs85', 508)" class="i">ExactOrSmaller</span>)
-  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs172', 509)" onmouseover="showTip(event, 'fs172', 509)" class="i">next</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs160', 510)" onmouseover="showTip(event, 'fs160', 510)" class="i">ozone</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 511)" onmouseover="showTip(event, 'fs55', 511)" class="i">TryGet</span>(<span onmouseout="hideTip(event, 'fs116', 512)" onmouseover="showTip(event, 'fs116', 512)" class="i">k</span>, <span onmouseout="hideTip(event, 'fs84', 513)" onmouseover="showTip(event, 'fs84', 513)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 514)" onmouseover="showTip(event, 'fs87', 514)" class="i">ExactOrGreater</span>)
-  <span class="c">// Pattern match to check which values were available</span>
-  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs171', 515)" onmouseover="showTip(event, 'fs171', 515)" class="i">prev</span>, <span onmouseout="hideTip(event, 'fs172', 516)" onmouseover="showTip(event, 'fs172', 516)" class="i">next</span> <span class="k">with</span> 
-  | <span onmouseout="hideTip(event, 'fs173', 517)" onmouseover="showTip(event, 'fs173', 517)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs174', 518)" onmouseover="showTip(event, 'fs174', 518)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs175', 519)" onmouseover="showTip(event, 'fs175', 519)" class="i">p</span>), <span onmouseout="hideTip(event, 'fs173', 520)" onmouseover="showTip(event, 'fs173', 520)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs174', 521)" onmouseover="showTip(event, 'fs174', 521)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs176', 522)" onmouseover="showTip(event, 'fs176', 522)" class="i">n</span>) <span class="k">-&gt;</span> 
-      (<span onmouseout="hideTip(event, 'fs175', 523)" onmouseover="showTip(event, 'fs175', 523)" class="i">p</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs176', 524)" onmouseover="showTip(event, 'fs176', 524)" class="i">n</span>) <span class="o">/</span> <span class="n">2.0</span>
-  | <span onmouseout="hideTip(event, 'fs173', 525)" onmouseover="showTip(event, 'fs173', 525)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs174', 526)" onmouseover="showTip(event, 'fs174', 526)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs177', 527)" onmouseover="showTip(event, 'fs177', 527)" class="i">v</span>), _ 
-  | _, <span onmouseout="hideTip(event, 'fs173', 528)" onmouseover="showTip(event, 'fs173', 528)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs174', 529)" onmouseover="showTip(event, 'fs174', 529)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs177', 530)" onmouseover="showTip(event, 'fs177', 530)" class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs177', 531)" onmouseover="showTip(event, 'fs177', 531)" class="i">v</span>
+<span class="c">// 補完関数を使用して値無しを置き換えます</span>
+<span onmouseout="hideTip(event, 'fs161', 500)" onmouseover="showTip(event, 'fs161', 500)" class="i">ozone</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 501)" onmouseover="showTip(event, 'fs36', 501)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs171', 502)" onmouseover="showTip(event, 'fs171', 502)" class="i">fillMissingUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs116', 503)" onmouseover="showTip(event, 'fs116', 503)" class="i">k</span> <span class="k">-&gt;</span> 
+  <span class="c">// 前後の値を取得します</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs172', 504)" onmouseover="showTip(event, 'fs172', 504)" class="i">prev</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs161', 505)" onmouseover="showTip(event, 'fs161', 505)" class="i">ozone</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 506)" onmouseover="showTip(event, 'fs55', 506)" class="i">TryGet</span>(<span onmouseout="hideTip(event, 'fs116', 507)" onmouseover="showTip(event, 'fs116', 507)" class="i">k</span>, <span onmouseout="hideTip(event, 'fs84', 508)" onmouseover="showTip(event, 'fs84', 508)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 509)" onmouseover="showTip(event, 'fs85', 509)" class="i">ExactOrSmaller</span>)
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs173', 510)" onmouseover="showTip(event, 'fs173', 510)" class="i">next</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs161', 511)" onmouseover="showTip(event, 'fs161', 511)" class="i">ozone</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 512)" onmouseover="showTip(event, 'fs55', 512)" class="i">TryGet</span>(<span onmouseout="hideTip(event, 'fs116', 513)" onmouseover="showTip(event, 'fs116', 513)" class="i">k</span>, <span onmouseout="hideTip(event, 'fs84', 514)" onmouseover="showTip(event, 'fs84', 514)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 515)" onmouseover="showTip(event, 'fs87', 515)" class="i">ExactOrGreater</span>)
+  <span class="c">// 利用可能な値に応じたパターンマッチ</span>
+  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs172', 516)" onmouseover="showTip(event, 'fs172', 516)" class="i">prev</span>, <span onmouseout="hideTip(event, 'fs173', 517)" onmouseover="showTip(event, 'fs173', 517)" class="i">next</span> <span class="k">with</span> 
+  | <span onmouseout="hideTip(event, 'fs174', 518)" onmouseover="showTip(event, 'fs174', 518)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs175', 519)" onmouseover="showTip(event, 'fs175', 519)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs176', 520)" onmouseover="showTip(event, 'fs176', 520)" class="i">p</span>), <span onmouseout="hideTip(event, 'fs174', 521)" onmouseover="showTip(event, 'fs174', 521)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs175', 522)" onmouseover="showTip(event, 'fs175', 522)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs177', 523)" onmouseover="showTip(event, 'fs177', 523)" class="i">n</span>) <span class="k">-&gt;</span> 
+      (<span onmouseout="hideTip(event, 'fs176', 524)" onmouseover="showTip(event, 'fs176', 524)" class="i">p</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs177', 525)" onmouseover="showTip(event, 'fs177', 525)" class="i">n</span>) <span class="o">/</span> <span class="n">2.0</span>
+  | <span onmouseout="hideTip(event, 'fs174', 526)" onmouseover="showTip(event, 'fs174', 526)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs175', 527)" onmouseover="showTip(event, 'fs175', 527)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs178', 528)" onmouseover="showTip(event, 'fs178', 528)" class="i">v</span>), _ 
+  | _, <span onmouseout="hideTip(event, 'fs174', 529)" onmouseover="showTip(event, 'fs174', 529)" class="i">OptionalValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs175', 530)" onmouseover="showTip(event, 'fs175', 530)" class="i">Present</span>(<span onmouseout="hideTip(event, 'fs178', 531)" onmouseover="showTip(event, 'fs178', 531)" class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs178', 532)" onmouseover="showTip(event, 'fs178', 532)" class="i">v</span>
   | _ <span class="k">-&gt;</span> <span class="n">0.0</span>)</pre>
 </td>
 </tr>
@@ -2087,53 +2129,54 @@ at all):</p>
 <div class="tip" id="fs128">type Stats =<br />&#160;&#160;static member count : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />&#160;&#160;static member count : series:Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)<br />&#160;&#160;static member expandingCount : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingKurt : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMax : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMin : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSkew : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSum : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Stats</div>
 <div class="tip" id="fs129">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
 <div class="tip" id="fs130">val get1And2Of3 : v1:&#39;a * v2:&#39;b * &#39;c -&gt; &#39;a * &#39;b<br /><br />Full name: Deedle.Pair.get1And2Of3</div>
-<div class="tip" id="fs131">val dropMissing : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.dropMissing</div>
-<div class="tip" id="fs132">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
-<div class="tip" id="fs133">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
-<div class="tip" id="fs134">val applyLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.applyLevel</div>
-<div class="tip" id="fs135">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.values</div>
-<div class="tip" id="fs136">val pivotTable : rowGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;RNew) -&gt; colGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;CNew) -&gt; op:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt; (requires equality and equality and equality and equality)<br /><br />Full name: Deedle.Frame.pivotTable</div>
-<div class="tip" id="fs137">val r : ObjectSeries&lt;string&gt;</div>
-<div class="tip" id="fs138">val countRows : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int (requires equality and equality)<br /><br />Full name: Deedle.Frame.countRows</div>
-<div class="tip" id="fs139">val frame : Frame&lt;int,string&gt;</div>
-<div class="tip" id="fs140">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
-<div class="tip" id="fs141">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
-<div class="tip" id="fs142">property Frame.Columns: ColumnSeries&lt;int,(string * string)&gt;</div>
-<div class="tip" id="fs143">val Lookup1Of2 : k:&#39;a -&gt; ICustomLookup&lt;&#39;b&gt;<br /><br />Full name: Deedle.MultiKeyExtensions.Lookup1Of2</div>
-<div class="tip" id="fs144">val Lookup2Of2 : k:&#39;a -&gt; ICustomLookup&lt;&#39;b&gt;<br /><br />Full name: Deedle.MultiKeyExtensions.Lookup2Of2</div>
-<div class="tip" id="fs145">val euro : Frame&lt;int,string&gt;<br /><br />Full name: Frame.euro</div>
-<div class="tip" id="fs146">val mapColKeys : f:(&#39;C -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;a&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.mapColKeys</div>
-<div class="tip" id="fs147">val snd : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T2<br /><br />Full name: Microsoft.FSharp.Core.Operators.snd</div>
-<div class="tip" id="fs148">val decades : Frame&lt;(string * int),string&gt;<br /><br />Full name: Frame.decades</div>
-<div class="tip" id="fs149">val sprintf : format:Printf.StringFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.sprintf</div>
-<div class="tip" id="fs150">property Frame.Rows: RowSeries&lt;(string * int),string&gt;</div>
-<div class="tip" id="fs151">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
-<div class="tip" id="fs152">static member Stats.levelStdDev : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
-<div class="tip" id="fs153">val byGDP : Frame&lt;(bool * string),(string * int)&gt;<br /><br />Full name: Frame.byGDP</div>
-<div class="tip" id="fs154">val transpose : frame:Frame&lt;&#39;R,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.transpose</div>
-<div class="tip" id="fs155">val v : ObjectSeries&lt;string * int&gt;</div>
-<div class="tip" id="fs156">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
-<div class="tip" id="fs157">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
-<div class="tip" id="fs158">field float.NaN = NaN</div>
-<div class="tip" id="fs159">Multiple items<br />type Nullable =<br />&#160;&#160;static member Compare&lt;&#39;T&gt; : n1:Nullable&lt;&#39;T&gt; * n2:Nullable&lt;&#39;T&gt; -&gt; int<br />&#160;&#160;static member Equals&lt;&#39;T&gt; : n1:Nullable&lt;&#39;T&gt; * n2:Nullable&lt;&#39;T&gt; -&gt; bool<br />&#160;&#160;static member GetUnderlyingType : nullableType:Type -&gt; Type<br /><br />Full name: System.Nullable<br /><br />--------------------<br />type Nullable&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; Nullable&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;member Equals : other:obj -&gt; bool<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetValueOrDefault : unit -&gt; &#39;T + 1 overload<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;end<br /><br />Full name: System.Nullable&lt;_&gt;<br /><br />--------------------<br />Nullable()<br />Nullable(value: &#39;T) : unit</div>
-<div class="tip" id="fs160">val ozone : Series&lt;int,float&gt;<br /><br />Full name: Frame.ozone</div>
-<div class="tip" id="fs161">val mapAll : f:(&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapAll</div>
-<div class="tip" id="fs162">val v : float option</div>
-<div class="tip" id="fs163">union case Option.None: Option&lt;&#39;T&gt;</div>
-<div class="tip" id="fs164">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
-<div class="tip" id="fs165">val fillMissingWith : value:&#39;a -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissingWith</div>
-<div class="tip" id="fs166">val fillMissing : direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissing</div>
-<div class="tip" id="fs167">type Direction =<br />&#160;&#160;|  Backward  =  0<br />&#160;&#160;|  Forward  =  1<br /><br />Full name: Deedle.Direction</div>
-<div class="tip" id="fs168">Direction.Backward: Direction = 0</div>
-<div class="tip" id="fs169">Direction.Forward: Direction = 1</div>
-<div class="tip" id="fs170">val fillMissingUsing : f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissingUsing</div>
-<div class="tip" id="fs171">val prev : OptionalValue&lt;float&gt;</div>
-<div class="tip" id="fs172">val next : OptionalValue&lt;float&gt;</div>
-<div class="tip" id="fs173">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue =<br />&#160;&#160;static member Create : v:&#39;a0 -&gt; OptionalValue&lt;&#39;a0&gt;<br />&#160;&#160;static member Empty : unit -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;static member OfNullable : v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; (requires default constructor and value type and &#39;T :&gt; ValueType)<br /><br />Full name: Deedle.OptionalValue<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
-<div class="tip" id="fs174">active recognizer Present: &#39;T opt -&gt; Choice&lt;unit,&#39;T&gt;<br /><br />Full name: Deedle.OptionalValue.( |Missing|Present| )</div>
-<div class="tip" id="fs175">val p : float</div>
-<div class="tip" id="fs176">val n : float</div>
-<div class="tip" id="fs177">val v : float</div>
+<div class="tip" id="fs131">val getNumericCols : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;R,float&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.getNumericCols</div>
+<div class="tip" id="fs132">val dropMissing : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.dropMissing</div>
+<div class="tip" id="fs133">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
+<div class="tip" id="fs134">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
+<div class="tip" id="fs135">val applyLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.applyLevel</div>
+<div class="tip" id="fs136">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.values</div>
+<div class="tip" id="fs137">val pivotTable : rowGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;RNew) -&gt; colGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;CNew) -&gt; op:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt; (requires equality and equality and equality and equality)<br /><br />Full name: Deedle.Frame.pivotTable</div>
+<div class="tip" id="fs138">val r : ObjectSeries&lt;string&gt;</div>
+<div class="tip" id="fs139">val countRows : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int (requires equality and equality)<br /><br />Full name: Deedle.Frame.countRows</div>
+<div class="tip" id="fs140">val frame : Frame&lt;int,string&gt;</div>
+<div class="tip" id="fs141">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
+<div class="tip" id="fs142">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
+<div class="tip" id="fs143">property Frame.Columns: ColumnSeries&lt;int,(string * string)&gt;</div>
+<div class="tip" id="fs144">val Lookup1Of2 : k:&#39;a -&gt; ICustomLookup&lt;&#39;b&gt;<br /><br />Full name: Deedle.MultiKeyExtensions.Lookup1Of2</div>
+<div class="tip" id="fs145">val Lookup2Of2 : k:&#39;a -&gt; ICustomLookup&lt;&#39;b&gt;<br /><br />Full name: Deedle.MultiKeyExtensions.Lookup2Of2</div>
+<div class="tip" id="fs146">val euro : Frame&lt;int,string&gt;<br /><br />Full name: Frame.euro</div>
+<div class="tip" id="fs147">val mapColKeys : f:(&#39;C -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;a&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.mapColKeys</div>
+<div class="tip" id="fs148">val snd : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T2<br /><br />Full name: Microsoft.FSharp.Core.Operators.snd</div>
+<div class="tip" id="fs149">val decades : Frame&lt;(string * int),string&gt;<br /><br />Full name: Frame.decades</div>
+<div class="tip" id="fs150">val sprintf : format:Printf.StringFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.sprintf</div>
+<div class="tip" id="fs151">property Frame.Rows: RowSeries&lt;(string * int),string&gt;</div>
+<div class="tip" id="fs152">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs153">static member Stats.levelStdDev : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
+<div class="tip" id="fs154">val byGDP : Frame&lt;(bool * string),(string * int)&gt;<br /><br />Full name: Frame.byGDP</div>
+<div class="tip" id="fs155">val transpose : frame:Frame&lt;&#39;R,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.transpose</div>
+<div class="tip" id="fs156">val v : ObjectSeries&lt;string * int&gt;</div>
+<div class="tip" id="fs157">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
+<div class="tip" id="fs158">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
+<div class="tip" id="fs159">field float.NaN = NaN</div>
+<div class="tip" id="fs160">Multiple items<br />type Nullable =<br />&#160;&#160;static member Compare&lt;&#39;T&gt; : n1:Nullable&lt;&#39;T&gt; * n2:Nullable&lt;&#39;T&gt; -&gt; int<br />&#160;&#160;static member Equals&lt;&#39;T&gt; : n1:Nullable&lt;&#39;T&gt; * n2:Nullable&lt;&#39;T&gt; -&gt; bool<br />&#160;&#160;static member GetUnderlyingType : nullableType:Type -&gt; Type<br /><br />Full name: System.Nullable<br /><br />--------------------<br />type Nullable&lt;&#39;T (requires default constructor and value type and &#39;T :&gt; ValueType)&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; Nullable&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;member Equals : other:obj -&gt; bool<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetValueOrDefault : unit -&gt; &#39;T + 1 overload<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;end<br /><br />Full name: System.Nullable&lt;_&gt;<br /><br />--------------------<br />Nullable()<br />Nullable(value: &#39;T) : unit</div>
+<div class="tip" id="fs161">val ozone : Series&lt;int,float&gt;<br /><br />Full name: Frame.ozone</div>
+<div class="tip" id="fs162">val mapAll : f:(&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapAll</div>
+<div class="tip" id="fs163">val v : float option</div>
+<div class="tip" id="fs164">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs165">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs166">val fillMissingWith : value:&#39;a -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissingWith</div>
+<div class="tip" id="fs167">val fillMissing : direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissing</div>
+<div class="tip" id="fs168">type Direction =<br />&#160;&#160;|  Backward  =  0<br />&#160;&#160;|  Forward  =  1<br /><br />Full name: Deedle.Direction</div>
+<div class="tip" id="fs169">Direction.Backward: Direction = 0</div>
+<div class="tip" id="fs170">Direction.Forward: Direction = 1</div>
+<div class="tip" id="fs171">val fillMissingUsing : f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissingUsing</div>
+<div class="tip" id="fs172">val prev : OptionalValue&lt;float&gt;</div>
+<div class="tip" id="fs173">val next : OptionalValue&lt;float&gt;</div>
+<div class="tip" id="fs174">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue =<br />&#160;&#160;static member Create : v:&#39;a0 -&gt; OptionalValue&lt;&#39;a0&gt;<br />&#160;&#160;static member Empty : unit -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;static member OfNullable : v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; (requires default constructor and value type and &#39;T :&gt; ValueType)<br /><br />Full name: Deedle.OptionalValue<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
+<div class="tip" id="fs175">active recognizer Present: &#39;T opt -&gt; Choice&lt;unit,&#39;T&gt;<br /><br />Full name: Deedle.OptionalValue.( |Missing|Present| )</div>
+<div class="tip" id="fs176">val p : float</div>
+<div class="tip" id="fs177">val n : float</div>
+<div class="tip" id="fs178">val v : float</div>
 
         </div>
         <div class="span3">
@@ -2188,11 +2231,11 @@ at all):</p>
             </li>
 
             <li class="nav-header">ドキュメント</li>
-            <li><a href="/Deedle/ja/reference/index.html">APIリファレンス(En)</a></li>
+            <li><a href="/Deedle/ja/../reference/index.html">APIリファレンス(En)</a></li>
             <li class="divider"></li>
-            <li><a href="/Deedle/ja/reference/deedle-seriesmodule.html">Series モジュール</a></li>
-            <li><a href="/Deedle/ja/reference/deedle-framemodule.html">Frame モジュール</a></li>
-            <li><a href="/Deedle/ja/reference/deedle-stats.html">Stats モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-seriesmodule.html">Series モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-framemodule.html">Frame モジュール</a></li>
+            <li><a href="/Deedle/ja/../reference/deedle-stats.html">Stats モジュール</a></li>
 
             <li class="nav-header">サンプル</li>
             <li><a href="/Deedle/ja/lazysource.html">遅延データ読み込み</a></li>
