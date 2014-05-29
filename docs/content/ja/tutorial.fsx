@@ -11,10 +11,10 @@ F#を使用して10分で学ぶDeedle
 
 最初の手順として、 [NuGet経由で](https://www.nuget.org/packages/Deedle) `Deedle.dll` をインストールします。
 次にライブラリをロードします。
-F# Interactive上でライブラリの `.dll` をロードしている `.fsx` ファイルをロードし、
-データフレームやシリーズデータを表す型に対するプリンターを適宜登録します。
+F# Interactive上でライブラリの `.dll` をロードしている `.fsx` ファイルをロードすることにより、
+データフレームやシリーズデータを表す型に対する簡易プリンターを登録できます。
 今回のサンプルでは [F# Charting](http://fsharp.github.io/FSharp.Charting) も必要になるため、
-以下のような感じになります：
+以下のようにします：
 
 *)
 #I "../../../packages/FSharp.Charting.0.90.6"

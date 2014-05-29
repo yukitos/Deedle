@@ -462,35 +462,38 @@ ages |> Series.observations
 ages |> Series.observationsAll
 
 (**
-The previous examples were always looking for an exact key. If we have an ordered
-series, we can search for a nearest available key and we can also perform slicing.
-We use MSFT stock prices [from earlier example](#creating-csv):
+これまでの例ではいずれもキーを厳密に指定して検索を行っていました。
+順序付きシリーズの場合には、最も近くで利用可能なキーを使用して検索をしたり、
+スライシングしたりすることができます。
+[先の例で作成した](#creating-csv) MSFTの株価データで試してみましょう：
 *)
 
-// Get series with opening prices
+// 始値をシリーズとして取得します
 let opens = msft?Open
 
-// Fails. The key is not available in the series
+// キーがシリーズ内に無いため失敗します
 try opens.[DateTime(2013, 1, 1)] with e -> nan
-// Works. Find value for the nearest greater key
+// 最も近い大きな値をキーにして値を探すため正しく動作します
 opens.Get(DateTime(2013, 1, 1), Lookup.ExactOrSmaller)
-// Works. Find value for the nearest smaler key
+// 最も近い小さな値をキーにして値を探すため正しく動作します
 opens.Get(DateTime(2013, 1, 1), Lookup.ExactOrSmaller)
 
 (**
-When using instance members, we can use `Get` which has an overload taking
-`Lookup`. The same functionality is exposed using `Series.lookup`. We can
-also obtain values for a sequence of keys:
+インスタンスのメンバーを使用する場合、
+`Lookup` を引数にとる `Get` メソッドのオーバーロードが使用できます。
+同じ機能が `Series.lookup` として定義されています。
+キーのシーケンスに対応する値を取得することもできます：
 *)
-// Find value for the nearest greater key
+// 最も近い大きなキーに対する値を取得します
 opens |> Series.lookup (DateTime(2013, 1, 1)) Lookup.ExactOrGreater
 
-// Get first price for each month in 2012
+// 2012年の各月における1つめの価格を取得します
 let dates = [ for m in 1 .. 12 -> DateTime(2012, m, 1) ]
 opens |> Series.lookupAll dates Lookup.ExactOrGreater
 
 (**
-With ordered series, we can use slicing to get a sub-range of a series:
+順序付きシリーズに対しては、スライシングによって
+シリーズの部分区間を取得することもできます：
 *)
 
 (*** define-output:opens ***)
@@ -500,67 +503,78 @@ opens.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)]
 (*** include-it:opens ***)
 
 (** 
-The slicing works even if the keys are not available in the series. The lookup
-automatically uses nearest greater lower bound and nearest smaller upper bound
-(here, we have no value for January 1).
+スライシングはシリーズのキーが利用できない場合であっても機能します。
+ルックアップ時には上限(最も近い上方の値のうち、最も小さい値)
+および下限(最も近い下方の値のうち、最も大きい値)が自動的に使用されます
+(今回の場合、1月1日に対応する値はありません)。
 
-Several other options - discussed in [a later section](#indexing) - are available when using
-hierarchical (or multi-level) indices. But first, we need to look at grouping.
+[後の節](#indexing) で説明しますが、
+階層的(あるいはマルチレベル)インデックスを使用している場合には
+まだいくつかの方法があります。
+しかしまずはグループ化について説明する必要があるでしょう。
 
 <a name="grouping"></a>
-Grouping data
--------------
+データのグループ化
+------------------
 
-Grouping of data can be performed on both unordered and ordered series and frames.
-For ordered series, more options (such as floating window or grouping of consecutive
-elements) are available - these can be found in the [time series tutorial](series.html).
-There are essentially two options: 
+データのグループ化は順序付きのシリーズやフレーム、順序無しのシリーズやフレームの
+いずれに対しても行うことができます。
+順序付きシリーズを対象とする場合には
+(フローティングウィンドウや連続要素のグループ化など)
+固有の機能を利用できます。
+詳細については [時系列データのチュートリアル](series.html) を参照してください。
+基本的には2つの機能があります：
 
- - You can group series of any values and get a series of series (representing individual 
-   groups). The result can easily be turned into a data frame using `Frame.ofColumns` or
-   `Frame.ofRows`, but this is not done automatically.
+ - 任意の値のシリーズをグループ化して、(それぞれのグループを)
+   シリーズのシリーズとして取得できます
+   `Frame.ofColumns` あるいは `Frame.ofRows` を使用することにより、
+   結果を簡単にデータフレームへと変換できますが、この処理は自動的には行われません。
 
- - You can group a frame rows using values in a specified column, or using a function.
-   The result is a frame with multi-level (hierarchical) index. Hierarchical indexing
-   [is discussed later](#indexing).
+ - 特定の列に含まれる値、あるいは関数を使用してフレーム行をグループ化できます。
+   この場合にはマルチレベル(階層的)インデックスを持ったフレームが返されます。
+   階層的インデックスについては [後ほど説明します](#indexing)。
 
-Keep in mind that you can easily get a series of rows or a series of columns from a frame
-using `df.Rows` and `df.Columns`, so the first option is also useful on data frames.
+データフレームに対して `df.Rows` あるいは `df.Columns` とすれば
+簡単に行シリーズ、あるいは列シリーズが取得できるわけなので、
+データフレームに対する1番目の機能は特に有用だということを覚えておいてください。
 
-### Grouping series
+### シリーズのグループ化
 
-In the following sample, we use the data frame `people` loaded from F# records in 
-[an earlier section](#creating-recd). Let's first get the data:
+以下のサンプルでは、 [先のセクション](#creating-recd) でF#のレコードから
+ロードしたデータフレーム `people` を使用しています。
+まずデータを取得します：
 *)
 let travels = people.GetColumn<string list>("Countries")
 // [fsi:val travels : Series<string,string list> =]
 // [fsi:  Joe     -> [UK; US; UK]       ]
 // [fsi:  Tomas   -> [CZ; UK; US; ... ] ]
-// [fsi:  Eve     -> [FR] ]              
-// [fsi:  Suzanne -> [US]]
+// [fsi:  Eve     -> [FR]               ]
+// [fsi:  Suzanne -> [US]               ]
 (**
-Now we can group the elements using both key (e.g. length of a name) and using the
-value (e.g. the number of visited countries):
+そうすると、キー(例：名前の長さ) と値(行ったことがある国の数)の
+両方を使用して要素を取得することができます：
 *)
-// Group by name length (ignoring visited countries)
+// 名前の長さでグループ化 (行ったことがある国は無視)
 travels |> Series.groupBy (fun k v -> k.Length)
-// Group by visited countries (people visited/not visited US)
+// 行ったことがある国の数 (USに行ったことがある/無い人)
 travels |> Series.groupBy (fun k v -> List.exists ((=) "US") v)
 
-// Group by name length and get number of values in each group
+// 名前の長さでグループ化して各グループの値の個数を取得します
 travels |> Series.groupInto 
   (fun k v -> k.Length) 
   (fun len people -> Series.countKeys people)
 (**
-The `groupBy` function returns a series of series (series with new keys, containing
-series with all values for a given new key). You can than transform the values using
-`Series.mapValues`. However, if you want to avoid allocating all intermediate series,
-you can also use `Series.groupInto` which takes projection function as a second argument.
-In the above examples, we count the number of keys in each group.
+`groupBy` 関数はシリーズのシリーズを返します(新しいキーを持ち、
+特定の新しいキーに対するすべての値を含んだシリーズを値とします)。
+そして `Series.mapValues` を使用すると値を変形させることができます。
+しかし間でシリーズを全く確保したくないという場合には、
+`Series.groupInto` を使用できます。
+この関数の2番目の引数には射影関数を指定します。
+上の例の場合には各グループのキーの数をカウントしています。
 
-As a final example, let's say that we want to build a data frame that contains individual
-people (as rows), all countries that appear in someone's travel list (as columns). 
-The frame contains the number of visits to each country by each person:
+最後の例として、(行として)それぞれの人物と、
+(列として)誰かしらが行ったことのある国を含むデータフレームを組み立ててみましょう。
+フレームにはそれぞれの人物が行ったことのある国の数が含まれるようにします：
 *)
 (*** define-output: trav ***)
 travels
@@ -571,54 +585,62 @@ travels
 (*** include-it: trav ***)
 
 (**
-The problem can be solved just using `Series.mapValues`, together with standard F#
-`Seq` functions. We iterate over all rows (people and their countries). For each
-country list, we generate a series that contains individual countries and the count
-of visits (this is done by composing `Seq.countBy` and a function `series` to build
-a series of observations). Then we turn the result to a data frame and fill missing
-values with the constant zero (see a section about [handling missing values](#missing)).
+この問題は `Series.mapValues` とF#の標準的な `Seq` 関数を
+組み合わせるだけで解決できます。
+まずすべての行(人物および行ったことのある国リスト)を走査します。
+そしてそれぞれの国リストに対して、各国と訪問数を含むようなシリーズを生成します
+(`Seq.countBy` と `series` を組み合わせることで観測データのシリーズを組み立てます)。
+それからこの結果をデータフレームへと変換して、
+値無しのデータを定数値0で置き換えています
+([値無しへの対処](#missing)を参照してください)。
 
-### Grouping data frames
+### データフレームのグループ化
 
-So far, we worked with series and series of series (which can be turned into data frames
-using `Frame.ofRows` and `Frame.ofColumns`). Next, we look at working with data frames.
+これまではシリーズやシリーズのシリーズを対象にしてきました
+(シリーズのシリーズは `Frame.ofRows` や `Frame.ofColumns` で
+データフレームに変換できます)。
+次に、データフレームを対象とする方法を説明しましょう。
 
-Assume we loaded [Titanic data set](http://www.kaggle.com/c/titanic-gettingStarted) 
-that is also used on the [project home page](index.html). First, let's look at basic
-grouping (also used in the home page demo):
+ここでは [プロジェクトのホームページ](index.html) でも使用している、
+[タイタニック号のデータセット](http://www.kaggle.com/c/titanic-gettingStarted)
+が読み取り済みであるとします。
+まず基本的なグループ化を紹介します(ホームページのデモでも使用しているものです)：
 *)
 
-// Group using column 'Sex' of type 'string'
+// 'string'型の列'Sex'でグループ化
 titanic |> Frame.groupRowsByString "Sex"
 
-// Grouping using column converted to 'decimal'
+// 'decimal'に変換された列でグループ化
 let byDecimal : Frame<decimal * _, _> = 
   titanic |> Frame.groupRowsBy "Fare"
 
-// This is easier using member syntax
+// これはメンバーメソッドを使用すれば簡単に記述できます
 titanic.GroupRowsBy<decimal>("Fare")
 
-// Group using calculated value - length of name
+// 計算値(名前の長さ)でグループ化
 titanic |> Frame.groupRowsUsing (fun k row -> 
   row.GetAs<string>("Name").Length)
 
 (**
-When working with frames, you can group data using both rows and columns. For most
-functions there is `groupRows` and `groupCols` equivalent.
-The easiest functions to use are `Frame.groupRowsByXyz` where `Xyz` specifies the 
-type of the column that we're using for grouping. For example, we can easily group
-rows using the "Sex" column.
+フレームを対象にする場合、行と列の両方のデータを使用してグループ化できます。
+多くの関数にとって `groupRows` と `groupCols` は同じものです。
+一番簡単に使用できる関数は `Frame.groupRowsByXyz` で、
+`Xyz` にはグループ化に使用する列の型を指定します。
+たとえば `Frame.groupRowsByString("Sex")` とすれば、
+文字列型の列 "Sex" を使用して行を簡単にグループ化できます。
 
-When using less common type, you need to specify the type of the column. You can 
-see this on lines 5 and 9 where we use `decimal` as the key. Finally, you can also
-specify key selector as a function. The function gets the original key and the row
-as a value of `ObjectSeries<K>`. The type has various members for getting individual
-values (columns) such as `GetAs` which allows us to get a column of a specified type.
+あまり一般的では無い型を使用する場合、列の型を指定する必要があります。
+これは5行目と9行目で`decimal`をキーとして使用しているコードを参照してください。
+最後に、キーセレクタを関数で指定することもできます。
+この関数は元のキーと、`ObjectSeries<K>` 型の値である行を引数にとります。
+`ObjectSeries<K>` には特定の型の列を取得する `GetAs` など、
+それぞれの値(列)を取得するための様々なメンバーが定義されています。
 
-### Grouping by single key
+### 単一キーでのグループ化
 
-A grouped data frame uses multi-level index. This means that the index is a tuple
-of keys that represent multiple levels. For example:
+グループ化されたデータフレームではマルチレベルインデックスが使用されています。
+これはつまり、インデックスが複数レベルを表すキーのタプルになっているということです。
+たとえば以下の通りです：
 *)
 titanic |> Frame.groupRowsByString "Sex"
 // [fsi:val it : Frame<(string * int),string> =]
@@ -631,69 +653,73 @@ titanic |> Frame.groupRowsByString "Sex"
 // [fsi:         878 -> False     Laleff, Mr. Kristo      ]
 
 (**
-As you can see, the pretty printer understands multi-level indices and 
-outputs the first level (sex) followed by the second level (passanger id).
-You can turn frame with two-level index into a series of data frames
-(and vice versa) using `Frame.unnest` and `Frame.nest`:
+見ての通り、簡易プリンターはマルチレベルインデックスを理解して、
+第1レベル(性別)に続けて第2レベル(乗船者ID)を出力します。
+`Frame.unnest` や `Frame.nest` を使用すると、
+2レベルインデックスをデータフレームのシリーズ1つに変換する(あるいは逆の変換をする)
+ことができます：
 *)
 let bySex = titanic |> Frame.groupRowsByString "Sex" 
-// Returns series with two frames as values
+// 値として2つのフレームを持つようなシリーズを返します
 let bySex1 = bySex |> Frame.nest
-// Converts unstacked data back to a single frame
+// スタックされていないデータを単一のフレームに戻します
 let bySex2 = bySex |> Frame.nest |> Frame.unnest
 (**
 
-### Grouping by multiple keys
-Finally, we can also apply grouping operation repeatedly to group data using
-multiple keys (and get a frame indexed by more than 2 levels). For example,
-we can group passangers by their class and port where they embarked:
+### 複数キーでのグループ化
+
+最後に、複数のキーを使用してデータを繰り返しグループ化できるということを説明します。
+たとえば乗船者を階級(Pclass)および乗船した場所(Embarked)でグループ化できます：
 *)
-// Group by passanger class and port
+// 階級および乗船場所で乗船者をグループ化します
 let byClassAndPort = 
   titanic
   |> Frame.groupRowsByInt "Pclass"
   |> Frame.groupRowsByString "Embarked"
   |> Frame.mapRowKeys Pair.flatten3
 
-// Get just the Age series with the same row index
+// 同じ行インデックスを持ったAgeシリーズだけを取得します
 let ageByClassAndPort = byClassAndPort?Age
 (**
-If you look at the type of `byClassAndPort`, you can see that it is
-`Frame<(string * int * int),string>`. The row key is a tripple consisting
-of port identifier (string), passanger class (int between 1 and 3) and the
-passanger id. The multi-level indexing is preserved when we get a single
-series from the frame.
+`byClassAndPort` の型を確認してみると、 `Frame<(string * int * int),string>`
+になっていることがわかります。
+行キーは乗船場の識別子(string)、乗船者の階級(1から3までのint)、
+乗船者IDの3つ組です。
+フレームから単一のフレームを取得すると、
+マルチレベルインデックスは保持されます。
 
-As our last example, we look at various ways of aggregating the groups:
+最後の例として、グループに対する様々な集計方法を紹介します：
 *)
-// Get average ages in each group
+// 各グループの平均年齢を求めます
 byClassAndPort?Age
 |> Stats.levelMean Pair.get1And2Of3
 
-// Averages for all numeric columns
+// 数字的なすべての行に対して平均を求めます
 byClassAndPort
-|> Frame.getNumericColumns
+|> Frame.getNumericCols
 |> Series.dropMissing
 |> Series.mapValues (Stats.levelMean Pair.get1And2Of3)
 |> Frame.ofColumns
 
-// Count number of survivors in each group
+// 各グループの生存者数をカウントします
 byClassAndPort.GetColumn<bool>("Survived")
 |> Series.applyLevel Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
 |> Frame.ofRows
 
 (**
-The second snippet combines a number of useful functions. It uses `Frame.getNumericColumns`
-to obtain just numerical columns from a data frame. Then it drops the non-numerical columns
-using `Series.dropMissing`. Then we use `Series.mapValues` to apply the averaging operation
-to all columns.
+2番目のスニペットでは便利な関数を複数組み合わせています。
+まず、 `Frame.getNumericCols` を使用して、
+データフレームから数字的な列だけを取得します。
+そして `Series.dropMissing` を使用して、値無しの列を排除します。
+それから `Series.mapValues` を使用して、すべての列に対して平均を計算しています。
 
-The last snippet is alo interesting. We get the "Survived" column (which 
-contains Boolean values) and we aggregate each group using a specified function.
-The function is composed from three components - it first gets the values in the
-group, counts them (to get a number of `true` and `false` values) and then creates
-a series with the results. The result looks as the following table (some values
-were omitted):
+最後のスニペットにも注目してください。
+(ブール値が含まれた)"Survived"列を取得した後、
+特定の関数を使用して各グループを集計しています。
+この関数は3つのコンポーネントで構成されています。
+まずグループ内の値を取得し、その値(つまり `true` と `false` の数)をカウントし、
+この結果を使用してシリーズを作成しています。
+実行結果は以下のようなテーブルになります(一部の値を省略してあります)：
 
              True  False     
     C 1  ->  59    26        
@@ -701,50 +727,54 @@ were omitted):
       3  ->  25    41        
     S 1  ->  74    53        
       2  ->  76    88        
-      3  ->  67    286      
-                  
+      3  ->  67    286       
 
 <a name="pivot"></a>
-Summarizing data with pivot table
----------------------------------
+ピボットテーブルを使用してデータを集計する
+------------------------------------------
 
-In the previous section, we looked at grouping, which is a very general 
-data manipulation operation. However, very often we want to perform two operations
-at the same time - group the data by certain keys and produce an aggregate. This
-combination is captured by the concept of a _pivot table_. 
+先の節では非常に一般的なデータ処理操作であるグループ化を紹介しました。
+しかしたとえば特定のキーでデータをグループ化しつつ、
+集計結果を出力するというように、2つの操作を同時に行いたいこともよくあります。
+この組み合わせは **ピボットテーブル** という概念としてまとめられています。
 
-A pivot table is a useful tool if you want to summarize data in the frame based
-on two keys that are available in the rows of the data frame. 
+ピボットテーブルはデータフレームの行で利用可能な2つのキーを
+元にしたフレーム内のデータを集計したい場合に便利なツールです。
 
-For example, given the titanic data set that [we loaded earlier](#creating-csv) and
-explored in the previous section, we might want to compare the survival rate for males 
-and females. The pivot table makes this possible using just a single call:
+たとえば [以前に読み込み](#creating-csv)、先の節でも扱った
+タイタニック号のデータセットに対して、男性と女性の生存比率を比較したいとしましょう。
+これはピボットテーブルを作成する呼び出しを1回行うだけで実現できます：
 *)
 
 (*** define-output:pivot1 ***)
-titanic 
-|> Frame.pivotTable 
-    // Returns a new row key
-    (fun k r -> r.GetAs<string>("Sex")) 
-    // Returns a new column key
-    (fun k r -> r.GetAs<bool>("Survived")) 
-    // Specifies aggregation for sub-frames
-    Frame.countRows 
+titanic
+|> Frame.pivotTable
+    // 新しい行キーを返します
+    (fun k r -> r.GetAs<string>("Sex"))
+    // 新しい列キーを返します
+    (fun k r -> r.GetAs<bool>("Survived"))
+    // サブフレームに対する集計処理を指定します
+    Frame.countRows
+
 (**
-The `pivotTable` function (and the corresponding `PivotTable` method) take three arguments.
-The first two specify functions that, given a row in the original frame, return a new
-row key and column key, respectively. In the above example, the new row key is
-the `Sex` value and the new column key is whether a person survived or not. As a result
-we get the following two by two table:
+`pivotTable` 関数(および対応する `PivotTable` メソッド)は
+3つの引数をとります。
+最初の2つには元のフレームの行を受け取って新しい行キーを返す関数、
+および列を受け取って新しい列キーを返す関数をそれぞれ指定します。
+上の例では `Sex` の値が新しい行キーで、
+乗船者が生存したかどうかが新しい列キーになります。
+その結果、以下のような2x2のテーブルになります：
 *)
 
 (*** include-it:pivot1 ***)
 
 (**
-The pivot table operation takes the source frame, partitions the data (rows) based on the 
-new row and column keys and then aggregates each frame using the specified aggregation. In the
-above example, we used `Frame.countRows` to simply return number of people in each sub-group.
-However, we could easily calculate other statistic - such as average age:
+ピボットテーブル操作では元となるフレームを受け取り、
+データ(行)を新しい行キーと列キーで分割し、
+そして指定された集計処理により各フレームを集計します。
+上の例では単に各サブグループの合計人数を返せばよいため、
+`Frame.countRows` を指定しています。
+ですが、たとえば平均年齢のように別の統計情報を計算することも簡単にできます：
 *) 
 
 (*** define-output:pivot2 ***)
@@ -755,65 +785,69 @@ titanic
     (fun frame -> frame?Age |> Stats.mean)
 |> round
 (**
-The results suggest that older males were less likely survive than younger males, but 
-older females were more likely to survive then younger females:
+この結果から、年配の男性は若者に比べて生存率が低い一方、
+年配の女性は若者に比べて生存率が高いことがわかります：
 *)
 
 (*** include-it:pivot2 ***)
 
 (**
 <a name="indexing"></a>
-Hierarchical indexing
----------------------
+階層的インデックシング
+----------------------
 
-For some data sets, the index is not a simple sequence of keys, but instead a more
-complex hierarchy. This can be captured using hierarchical indices. They also provide
-a convenient way of dealing with multi-dimensional data. The most common source
-of multi-level indices is grouping (the previous section has a number of examples).
+一部のデータセットではインデックスが単純なキーのシーケンスではなく、
+さらに複雑な階層構造をなしている場合があります。
+これは階層的インデックスを使用することで処理することができます。
+また多次元データを簡単に処理する方法もあります。
+マルチレベルインデックスは最も一般的にはグループ化によって生成されます
+(先の節にいくつか例があります)。
 
-### Lookup in the World Bank data set
+### 世界銀行データセットのルックアップ
 
-In this section, we start by looking at the [World Bank data set from earlier](#creating-wb).
-It is a data frame with two-level hierarchy of columns, where the first level is the name
-of region and the second level is the name of country.
+この節では [先ほど使用したものと同じ、世界銀行のデータセット](#creating-wb)
+を見ていくことにします。
+これは2レベルの列階層を持ったデータフレームで、
+1レベル目が地域名、2レベル名が国名になっています。
 
-Basic lookup can be performed using slicing operators. The following are only available 
-in F# 3.1:
+基礎的なルックアップ操作としてはスライシング処理があります。
+以下のコードはF# 3.1においてのみ有効です：
 *)
 
-// Get all countries in Euro area
+// ユーロエリアの全国を取得します
 world.Columns.["Euro area", *]
-// Get Belgium data from Euro area group
+// ユーロエリアグループからベルギー(Belgium)のデータを取得します
 world.Columns.[("Euro area", "Belgium")]
-// Belgium is returned twice - from both Euro and OECD
+// ベルギーはユーロとOECD両方に属するため2つデータが返されます
 world.Columns.[*, "Belgium"]
 
 (**
-In F# 3.0, you can use a family of helper functions `LookupXOfY` as follows:
+F# 3.0の場合には以下のように `LookupXOfY` 系のヘルパ関数を使用します：
 *)
 
-// Get all countries in Euro area
+// ユーロエリアの全国を取得します
 world.Columns.[Lookup1Of2 "Euro area"]
-// Belgium is returned twice - from both Euro and OECD
+// ベルギーはユーロとOECD両方に属するため2つデータが返されます
 world.Columns.[Lookup2Of2 "Belgium"]
 
 (**
-The lookup operations always return data frame of the same type as the original frame.
-This means that even if you select one sub-group, you get back a frame with the same
-multi-level hierarchy of keys. This can be easily changed using projection on keys:
+ルックアップ操作では常に元のフレームと同じ型のデータフレームが返されます。
+これはつまり1つのサブグループを選択したとしても、
+マルチレベル階層キーを持った同じフレームを取得し直すことができるということです。
+この動作はキーに対する射影を行うことで簡単に変更できます：
 *)
-// Drop the first level of keys (and get just countries)
+// 1レベル目のキーを除去します(そして国名だけを取得します)
 let euro = 
   world.Columns.["Euro area", *]
   |> Frame.mapColKeys snd
 
 (**
-### Grouping and aggregating World Bank data
+### 世界銀行のデータに対するグループ化および集計
 
-Hierarchical keys are often created as a result of grouping. For example, we can group
-the rows (representing individual years) in the Euro zone data set by decades
-(for more information about grouping see also [grouping section](#grouping) in this
-document).
+階層的キーはグループ化の結果として生成されることがよくあります。
+たとえばユーロ地区のデータセットに対して10年単位で行をグループ化することができます
+(グループ化の詳細についてはこのドキュメント内にある
+ [グループ化の節](#grouping) を参照してください)。
 
 *)
 let decades = euro |> Frame.groupRowsUsing (fun k _ -> 
@@ -828,58 +862,66 @@ let decades = euro |> Frame.groupRowsUsing (fun k _ ->
 // [fsi:        2011 -> 417.6    22.15 ]
 // [fsi:        2012 -> 399.6    21.85 ]
 (**
-Now that we have a data frame with hierarchical index, we can select data
-in a single group, such as 1990s. The result is a data frame of the same type.
-We can also multiply the values, to get original GDP in USD (rather than billions):
+これで階層的インデックスを持ったデータフレームが用意出来たので、
+たとえば1990年代のような1つのグループから
+データを選択することが出来るようになりました。
+その結果は同じ型を持ったデータフレームです。
+値それぞれを積算すれば、USドル基準の(10億単位ではない)元々のGDPを計算できます：
 *)
 decades.Rows.["1990s", *] * 1e9
 
 (**
-The `Frame` and `Series` modules provide a number of functions for aggregating the
-groups. We can access a specific country and aggregate GDP for a country, or we can
-apply aggregation to the entire data set:
+`Frame` および `Series` モジュールには集計やグループ化を行うための関数が
+多数定義されています。
+たとえば特定の国データを取得してその国のGDPを集計したり、
+データセット全体に対して集計を行ったりすることもできます：
 *)
 
-// Calculate means per decades for Slovakia
+// スロヴァキアの10年単位の平均値を計算します
 decades?``Slovak Republic`` |> Stats.levelMean fst
 
-// Calculate means per decateds for all countries
+// 全国の10年単位の平均値を計算します
 decades
 |> Frame.getNumericColumns 
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofColumns
 
-// Calculate standard deviation per decades in USD
+// 10年単位の標準偏差をUSドル基準で計算します
 decades?Belgium * 1.0e9 
 |> Stats.levelStdDev fst
 
 (**
-So far, we were working with data frames that only had one hierarchical index. However,
-it is perfectly possible to have hierarchical index for both rows and columns. The following
-snippet groups countries by their average GDP (in addition to grouping rows by decades):
+これまでは階層的インデックスを1つしか持たないようなデータフレームを
+対象にしてきました。
+しかし行と列の両方に階層的インデックスがある場合でも完璧に処理できます。
+以下のスニペットではGDP平均を基準にして国をグループ化しています
+(さらに行を10年単位にグループ化しています)：
 *)
 
-// Group countries by comparing average GDP with $500bn
+// GDPを500ビリオン(5,000億)ドルと比較して国をグループ化します
 let byGDP = 
   decades |> Frame.transpose |> Frame.groupRowsUsing (fun k v -> 
     v.As<float>() |> Stats.mean > 500.0)
 (**
-You can see (by hovering over `byGDP`) that the two hierarchies are captured in the type.
-The column key is `bool * string` (rich? and name) and the row key is `string * int` 
-(decade, year). This creates two groups of columns. One containing France, Germany and
-Italy and the other containing remaining countries.
+(`byGDP` 上にマウスを移動させると) 2つの階層が型に含まれていることが確認できます。
+列キーは `bool * string` (豊かどうかと国名)で、
+行キーは `string * int` (10年単位および年)です。
+このコードでは2つの列グループが作成されます。
+1つはフランス(France)、ドイツ(Germany)、イタリア(Italy)を含む列で、
+もう1つの列にはそれ以外の国が含まれます。
 
-The aggregations are only (directly) supported on rows, but we can use `Frame.transpose`
-to switch between rows and columns. 
+集計機能は(直接的には)行に対してのみサポートされますが、
+`Frame.transpose` を使用すれば行と列を入れ替えることができます。
 
 <a name="missing"></a>
-Handling missing values
------------------------
+値無しへの対処
+--------------
 
-THe support for missing values is built-in, which means that any series or frame can
-contain missing values. When constructing series or frames from data, certain values
-are automatically treated as "missing values". This includes `Double.NaN`, `null` values
-for reference types and for nullable types:
+値無しに対するサポートは組み込みで用意されています。
+つまりシリーズやフレームはいずれも値無しを含むことができます。
+データからシリーズまたはフレームを構成する際に、
+特定の値が自動的に「値無し」として処理されます。
+具体的には `Double.NaN` や、参照型およびnull許容型における `null` が該当します：
 *)
 (*** define-output:misv1 ***)
 Series.ofValues [ Double.NaN; 1.0; 3.14 ]
@@ -893,57 +935,58 @@ Series.ofValues [ Double.NaN; 1.0; 3.14 ]
 (*** include-it:misv2 ***)
 
 (**
-Missing values are automatically skipped when performing statistical computations such
-as `Series.mean`. They are also ignored by projections and filtering, including
-`Series.mapValues`. When you want to handle missing values, you can use `Series.mapAll` 
-that gets the value as `option<T>` (we use sample data set from [earlier section](#creating-csv)):
+`Series.mean` のような統計計算を行う場合、値無しは自動的にスキップされます。
+また `Series.mapValues` のように、射影やフィルタリングを行う際にも無視されます。
+値無しを処理したい場合には `Series.mapAll` を使用します。
+この場合には値が `option<T>` として取得できます
+(ここでは [先の節](#creating-csv) で使用したサンプルデータセットを使用します)：
 *)
 
-// Get column with missing values
+// 値無しを含む列を取得します
 let ozone = air?Ozone 
 
-// Replace missing values with zeros
+// 値無しを0に置き換えます
 ozone |> Series.mapAll (fun k v -> 
   match v with None -> Some 0.0 | v -> v)
 
 (**
-In practice, you will not need to use `Series.mapAll` very often, because the
-series module provides functions that fill missing values more easily:
+実際、 `Series` モジュールには値無しを
+より手軽に埋めるための関数が定義されているため、
+`Series.mapAll` を使用する必要はほとんどないでしょう：
 *)
 
-// Fill missing values with constant
+// 値無しを定数値で置き換えます
 ozone |> Series.fillMissingWith 0.0
 
-// Available values are copied in backward 
-// direction to fill missing values
+// 値無しではない値が前方にコピーされて
+// 値無しが埋められます
 ozone |> Series.fillMissing Direction.Backward
 
-// Available values are propagated forward
-// (if the first value is missing, it is not filled!)
+// 値無しではない値が後方にコピーされます
+// (1番目が値無しの場合にはそのまま値無しです！)
 ozone |> Series.fillMissing Direction.Forward
 
-// Fill values and drop those that could not be filled
+// 値無しを埋めて、埋められなかったものを除外します
 ozone |> Series.fillMissing Direction.Forward
       |> Series.dropMissing
 
 (**
-Various other strategies for handling missing values are not currently directly 
-supported by the library, but can be easily added using `Series.fillMissingUsing`.
-It takes a function and calls it on all missing values. If we have an interpolation
-function, then we can pass it to `fillMissingUsing` and perform any interpolation 
-needed.
+上記以外による値無しへの対処方法についてはライブラリでは直接サポートしていませんが、
+`Series.fillMissingUsing` を使用すれば簡単に機能を追加できます。
+この関数はすべての値無しに対して呼ばれることになる関数を引数にとります。
+たとえば補完関数が既にあるとして、この関数を `fillMissingUsing` に指定すれば
+必要になる補完処理を実行することができます。
 
-For example, the following snippet gets the previous and next values and averages
-them (if they are available) or returns one of them (or zero if there are no values
-at all):
+たとえば以下のスニペットでは(値無しではない)前後の値の平均か、
+どちらかの値(あるいは前後が値無しの場合には0)を返すようにしています：
 *)
 
-// Fill missing values using interpolation function
+// 補完関数を使用して値無しを置き換えます
 ozone |> Series.fillMissingUsing (fun k -> 
-  // Get previous and next values
+  // 前後の値を取得します
   let prev = ozone.TryGet(k, Lookup.ExactOrSmaller)
   let next = ozone.TryGet(k, Lookup.ExactOrGreater)
-  // Pattern match to check which values were available
+  // 利用可能な値に応じたパターンマッチ
   match prev, next with 
   | OptionalValue.Present(p), OptionalValue.Present(n) -> 
       (p + n) / 2.0
