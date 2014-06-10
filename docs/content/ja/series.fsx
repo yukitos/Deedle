@@ -11,39 +11,46 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Working with series and time series data in F#
-==============================================
+シリーズおよび時系列データを F# で扱う
+======================================
 
-In this section, we look at F# data frame library features that are useful when working
-with time series data or, more generally, any ordered series. Although we mainly look at
-operations on the `Series` type, many of the operations can be applied to data frame `Frame`
-containing multiple series. Furthermore, data frame provides an elegant way for aligning and
-joining series. 
+このセクションでは時系列データ、あるいはさらに汎用的に、
+任意の順序付きシリーズデータを扱うための
+F# データフレームライブラリの機能について説明します。
+主には `Series` 型の操作について説明しますが、
+ほとんどは複数のシリーズを含むデータフレームを表す `Frame` 型でも
+利用出来ます。
+さらに、データフレームにはアライメントやシリーズの連結を行うための
+すばらしい機能も用意されています。
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx)
-from GitHub and run the samples interactively.
+このページをGitHubから
+[F#スクリプトファイル](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx)
+としてダウンロードして、インタラクティブに実行することもできます。
 
-Generating input data
----------------------
+入力データの生成
+----------------
 
-For the purpose of this tutorial, we'll need some input data. For simplicitly, we use the
-following function which generates random prices using the geometric Brownian motion.
-The code is adapted from the [financial tutorial on Try F#](http://www.tryfsharp.org/Learn/financial-computing#simulating-and-analyzing).
+このチュートリアル用にいくつか入力データを用意します。
+簡単のために、ここでは幾何ブラウン運動を使用して
+ランダムな価格を生成する、以下のような関数を使用します。
+このコードは
+[Try F#のファイナンス用チュートリアル](http://www.tryfsharp.org/Learn/financial-computing#simulating-and-analyzing)
+から抜粋したものです。
 
 *)
 
-// Use Math.NET for probability distributions
+// 確率分布の計算のために Math.NET を使用します
 #r "MathNet.Numerics.dll"
 open MathNet.Numerics.Distributions
 
-/// Generates price using geometric Brownian motion
-///  - 'seed' specifies the seed for random number generator
-///  - 'drift' and 'volatility' set properties of the price movement
-///  - 'initial' and 'start' specify the initial price and date
-///  - 'span' specifies time span between individual observations
-///  - 'count' is the number of required values to generate
+/// 幾何ブラウン運動を使用して価格を生成します
+///  - 'seed' には乱数生成器のシードを指定します
+///  - 'drift' と 'volatility' には価格変動の特性を設定します
+///  - 'initial' と 'start' には初期の価格と日付を指定します
+///  - 'span' にはそれぞれの測定の間隔を指定します
+///  - 'count' には生成する値の個数を指定します
 let randomPrice seed drift volatility initial start span count = 
-  (*[omit:(Implementation omitted)]*) 
+  (*[omit:(実装については省略)]*) 
   let dist = Normal(0.0, 1.0, RandomSource=Random(seed))  
   let dt = (span:TimeSpan).TotalDays / 250.0
   let driftExp = (drift - 0.5 * pown volatility 2) * dt
@@ -52,43 +59,47 @@ let randomPrice seed drift volatility initial start span count =
     let price = price * exp (driftExp + randExp * dist.Sample()) 
     Some((dt, price), (dt + span, price))) |> Seq.take count(*[/omit]*)
 
-// 12:00 AM today, in current time zone
+// 現在のタイムゾーンにおける本日午前 12:00 のデータ
 let today = DateTimeOffset(DateTime.Today)
 let stock1 = randomPrice 1 0.1 3.0 20.0 today 
 let stock2 = randomPrice 2 0.2 1.5 22.0 today
 (**
-The implementation of the function is not particularly important for the purpose of this
-page, but you can find it in the [script file with full source](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx).
-Once we have the function, we define a date `today` (representing today's midnight) and
-two helper functions that set basic properties for the `randomPrice` function. 
+この関数の実装についてはこのページの目的からすると重要では無いので省略していますが、
+[完全なコードを含んだスクリプトファイル](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx)
+には実際のコードがあります。
 
-To get random prices, we now only need to call `stock1` or `stock2` with `TimeSpan` and 
-the required number of prices:
+この関数を定義した後、(本日の真夜中を表す) `today` という日付データと、
+基本的な性質を設定して `randomPrice` を呼び出す2つのヘルパ関数を定義しています。
+
+そのため `TimeSpan` と、必要になる価格の個数を指定して
+`stock1` と `stock2` を呼び出すだけでランダムな価格を取得することができます：
 *)
 (*** define-output: stocks ***)
 Chart.Combine
   [ stock1 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine
     stock2 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine ]
 (**
-The above snippet generates 1k of prices in one minute intervals and plots them using the
-[F# Charting library](https://github.com/fsharp/FSharp.Charting). When you run the code
-and tweak the chart look, you should see something like this:
+このスニペットでは1分間隔で1000個の価格データを生成した後、
+[F# Chartingライブラリ](https://github.com/fsharp/FSharp.Charting)
+を使用してそれらを表にプロットしています。
+このコードを実行してチャートを確認するとおよそ以下のようなものになっているはずです：
 *)
 
 (*** include-it: stocks ***)
 
 (**
 <a name="alignment"></a>
-Data alignment and zipping
+データアライメントとジップ
 --------------------------
 
-One of the key features of the data frame library for working with time series data is 
-_automatic alignment_ based on the keys. When we have multiple time series with date 
-as the key (here, we use `DateTimeOffset`, but any type of date will do), we can combine
-multiple series and align them automatically to specified date keys.
+データフレームライブラリの主要な機能の1つとして、
+複数キーを元にした時系列データの **自動アライメント (automatic alignment)**
+があります。
+複数の時系列データがキーになっているデータがあるとすると
+(今回は `DateTimeOffset` ですが、任意の型が使用できます)、
+複数のシリーズを連結して特定の日付キーでそれらをアラインすることができます。
 
-To demonstrate this feature, we generate random prices in 60 minute, 30 minute and 
-65 minute intervals:
+この機能を紹介するために、60分、30分、65分間隔のランダムな価格を生成します：
 *)
 
 let s1 = series <| stock1 (TimeSpan(1, 0, 0)) 6
@@ -109,16 +120,17 @@ let s3 = series <| stock1 (TimeSpan(1, 5, 0)) 6
 // [fsi:            3:15:00 AM => 23.92; 4:20:00 AM => 22.72; 5:25:00 AM => 22.79 ]
 
 (**
-### Zipping time series 
+### 時系列の結合
 
-Let's first look at operations that are available on the `Series<K, V>` type. A series
-exposes `Zip` operation that can combine multiple series into a single series of pairs.
-This is not as convenient as working with data frames (which we'll see later), but it 
-is useful if you only need to work with one or two columns without missing values:
+まずは `Series<K, V>` に対して利用出来る操作を紹介します。
+シリーズには2つのシリーズをペアにして1つのシリーズとする `Zip`
+操作が用意されています。
+これは(後ほど説明する)データフレームではそれほど便利ではないのですが、
+値無しを含まない1つまたは2つの列を処理する場合には便利なものです：
 
 *)
-// Match values from right series to keys of the left one
-// (this creates series with no missing values)
+// 左側のシリーズのキーと右側のシリーズの値をマッチさせます
+// (それにより値無しを含まないシリーズが作成されます)
 s1.Zip(s2, JoinKind.Left)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -> (21.32, 21.61) ]
@@ -126,8 +138,8 @@ s1.Zip(s2, JoinKind.Left)
 // [fsi:   2:00:00 AM -> (22.00, 22.35)  ]
 // [fsi:  (...)]
 
-// Match values from the left series to keys of the right one
-// (right has higher resolution, so half of left values are missing)
+// 右側のシリーズのキーと左側のシリーズの値をマッチさせます
+// (右側のほうが精度が高いため、左側の値の半分が値無しになります)
 s1.Zip(s2, JoinKind.Right)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -> (21.32,     21.61) ]
@@ -135,8 +147,8 @@ s1.Zip(s2, JoinKind.Right)
 // [fsi:   1:00:00 AM -> (22.62,     21.86) ]
 // [fsi:  (...)]
 
-// Use left series key and find the nearest previous
-// (smaller) value from the right series
+// 左側のシリーズのキーを使用して、右側のシリーズから最も近い以前の
+// (値として小さな)値を見つけるようにします
 s1.Zip(s2, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -04:00 -> (21.32, 21.61) ]
@@ -145,33 +157,37 @@ s1.Zip(s2, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:  (...)]
 
 (**
-Using `Zip` on series is somewhat complicated. The result is a series of tuples, but each 
-component of the tuple may be missing. To represent this, the library uses the `T opt` type
-(a type alias for `OptionalValue<T>`). This is not necessary when we use data frame to 
-work with multiple columns.
+シリーズに対して `Zip` を呼び出した結果はやや複雑なものになります。
+結果はシリーズのタプルになるのですが、各タプルの要素は値無しになることがあります。
+このことを表現するために、ライブラリでは `T opt` という型を使用しています
+(`OptionalValue<T>` の型エイリアスです)。
+この値はデータフレームを使用して複数の列を扱う場合には不要なものです。
 
-### Joining data frames
+### データフレームの連結
 
-When we store data in data frames, we do not need to use tuples to represent combined values.
-Instead, we can simply use data frame with multiple columns. To see how this works, let's first
-create three data frames containing the three series from the previous section:
+データをデータフレームに格納する際、タプルを使用して組み合わされた値を
+表現する必要はありません。
+そのかわり、単に複数の列を持ったデータフレームを使用できます。
+具体的な動作を紹介するために、まずは以前のセクションで用意した3つのシリーズを含んだ
+3つのデータフレームを用意します：
 *)
 
-// Contains value for each hour
+// 1時間毎の値を含みます
 let f1 = Frame.ofColumns ["S1" => s1]
-// Contains value every 30 minutes
+// 30分毎の値を含みます
 let f2 = Frame.ofColumns ["S2" => s2]
-// Contains values with 65 minute offsets
+// 65分毎の値を含みます
 let f3 = Frame.ofColumns ["S3" => s3]
 
 (**
-Similarly to `Series<K, V>`, the type `Frame<R, C>` has an instance method `Join` that can be
-used for joining (for unordered) or aligning (for ordered) data. The same operation is also
-exposed as `Frame.join` and `Frame.joinAlign` functions, but it is usually more convenient to use 
-the member syntax in this case:
+`Series<K, V>` と同じく、 `Frame<R, C>` には
+(順序づけられていないデータに対する)ジョイン、
+あるいは(順序付きデータに対する)アラインを行う `Join` メソッドが用意されています。
+同じ機能が `Frame.join` や `Frame.joinAlign` 関数として定義されていますが、
+今回の場合にはメンバーメソッドの文法を使用したほうが簡単です：
 *)
 
-// Union keys from both frames and align corresponding values
+// 両方のフレームのキーを結合して、対応する値でアラインします
 f1.Join(f2, JoinKind.Outer)
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 S1        S2               ]
@@ -180,16 +196,16 @@ f1.Join(f2, JoinKind.Outer)
 // [fsi:   1:00:00 AM -> 22.62     21.86 ]
 // [fsi:  (...)]
 
-// Take only keys where both frames contain all values
-// (We get only a single row, because 'f3' is off by 5 minutes)
+// 両方のフレームが値を持つキーだけを取得します
+// ('f3' は5分ずつずれているため1行しか取得できません)
 f2.Join(f3, JoinKind.Inner)
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 S2      S3               ]
 // [fsi:  12:00:00 AM -> 21.61   21.37 ]
 
-// Take keys from the left frame and find corresponding values
-// from the right frame, or value for a nearest smaller date
-// ($21.37 is repeated for all values between 12:00 and 1:05)
+// 左のフレームのキーを取得して、右のフレームから対応する、または
+// 最も近い小さな日付の値を取得します
+// (12:00 から 1:05にかけて 21.37 ドルが繰り返されます)
 f2.Join(f3, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 S2      S3               ]
@@ -199,8 +215,8 @@ f2.Join(f3, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:   1:30:00 AM -> 22.22   22.73 ]
 // [fsi:  (...)]
 
-// If we perform left join as previously, but specify exact 
-// matching, then most of the values are missing
+// 厳密マッチングでレフトジョインを行うと
+// ほとんどが値無しになります
 f2.Join(f3, JoinKind.Left, Lookup.Exact)
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 S2      S3               ]
@@ -209,68 +225,77 @@ f2.Join(f3, JoinKind.Left, Lookup.Exact)
 // [fsi:   1:00:00 AM -> 21.86   <missing>        ]
 // [fsi:  (...)]
 
-// Equivalent to line 2, using function syntax 
+// 関数シンタックスで2行目と同じことを行います
 Frame.join JoinKind.Outer f1 f2
 
-// Equivalent to line 20, using function syntax
+// 関数シンタックスで20行目と同じことを行います
 Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller f1 f2
 
 (**
-The automatic alignment is extremely useful when you have multiple data series with different
-offsets between individual observations. You can choose your set of keys (dates) and then easily
-align other data to match the keys. Another alternative to using `Join` explicitly is to create
-a new frame with just keys that you are interested in (using `Frame.ofRowKeys`) and then use
-the `AddSeries` member (or the `df?New <- s` syntax) to add series. This will automatically left
-join the new series to match the current row keys.
+それぞれの観測値間で異なるオフセットを持った複数のデータシリーズを扱う場合、
+自動アライメントの機能はきわめて便利なものです。
+キーのセット(日付)を選択するだけで、簡単にキーと一致する
+別のデータを整列させることができます。
+`Join` を明示的に使用しない方法としては、
+(`Frame.ofRowKeys` を使用して)対象とするキーを持った新しいフレームを作成し、
+`AddSeries` メンバー(または `df?New <- s` のシンタックス)を使用して
+シリーズを追加することもできます。
+この場合には新しいシリーズに対して、現在の行キーに一致するよう自動的に
+レフトジョインが行われます。
 
-When aligning data, you may or may not want to create data frame with missing values. If your
-observations do not happen at exact time, then using `Lookup.ExactOrSmaller` or `Lookup.ExactOrGreater`
-is a great way to avoid mismatch. 
+データをアラインする際、値無しを含んだデータフレームを作成したい、
+あるいは作成したくないことがあります。
+観測値が厳密な時刻を持たない場合、ミスマッチを防ぐには
+`Lookup.ExactOrSmaller` または `Lookup.ExactOrGreater` を使用するとよいでしょう。
 
-If you have observations that happen e.g. at two times faster rate (one series is hourly and 
-another is half-hourly), then you can create data frame with missing values using `Lookup.Exact` 
-(the default value) and then handle missing values explicitly (as [discussed here](frame.html#missing)).
-
+観測値がたとえばたまたま倍の頻度(1つは1時間毎、もう1つは30分毎)
+になっているのであれば、(デフォルト値である) `Lookup.Exact` を使用すると
+値無しを含むデータフレームを作成でき、
+([こちらで説明しているように](frame.html#missing))
+明示的に値無しを処理することができます。
 
 <a name="windowing"></a>
-Windowing, chunking and pairwise
+ウィンドウ化、チャンク化、ペア化
 --------------------------------
 
-Windowing and chunking are two operations on ordered series that allow aggregating
-the values of series into groups. Both of these operations work on consecutive elements,
-which contrast with [grouping](tutorial.html#grouping) that does not use order.
+ウィンドウ化とチャンク化は順序付きシリーズの値をグループとして集計する操作です。
+これらの操作は順序を考慮しない [グループ化](tutorial.html#grouping) とは異なり、
+連続する要素を対象とするものです。
 
-### Sliding windows
+### ウィンドウのスライディング
 
-Sliding window creates windows of certain size (or certain condition). The window
-"slides" over the input series and provides a view on a part of the series. The
-key thing is that a single element will typically appear in multiple windows.
+スライディングウィンドウは特定の大きさのウィンドウ(あるいは特定の条件)を作成します。
+ウィンドウは入力シリーズ全体を「スライド」していき、シリーズの一部分を返します。
+一般的には複数のウィンドウ内に単一の要素しか現れないという点が重要です。
 *)
 
-// Create input series with 6 observations
+// 6個の観測値を含む入力用シリーズを作成します
 let lf = series <| stock1 (TimeSpan(0, 1, 0)) 6
 
-// Create series of series representing individual windows
+// 各ウィンドウを表すシリーズのシリーズを作成します
 lf |> Series.window 4
-// Aggregate each window using 'Stats.mean'
+// 'Stats.mean'を使用して各ウィンドウを集計します
 lf |> Series.windowInto 4 Stats.mean
-// Get first value in each window
+// 各ウィンドウの最初の値を取得します
 lf |> Series.windowInto 4 Series.firstValue
 
 (**
-The functions used above create window of size 4 that moves from the left to right.
-Given input `[1,2,3,4,5,6]` the this produces the following three windows:
-`[1,2,3,4]`, `[2,3,4,5]` and `[3,4,5,6]`. By default, the `Series.window` function 
-automatically chooses the key of the last element of the window as the key for 
-the whole window (we'll see how to change this soon):
+上のコードで使用している関数は左から右に移動する、
+サイズが4のウィンドウを作成しています。
+つまり入力値が `[1,2,3,4,5,6]` とすると、
+`[1,2,3,4]` `[2,3,4,5]` `[3,4,5,6]`
+という3つのウィンドウが生成されることになります。
+デフォルトでは `Series.window` 関数はウィンドウの最後の要素のキーを
+ウィンドウ全体のキーとして選択します
+(この挙動を変更する方法についてはもう少し後で説明します)：
 
 *)
-// Calculate means for sliding windows
+// スライディングウィンドウの平均を計算します
 let lfm1 = lf |> Series.windowInto 4 Stats.mean
-// Construct dataframe to show aligned results
+// アラインされた結果を表示するためのデータフレームを作成します
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
 // [fsi:val it : Frame<DateTimeOffset,string> =]
-// [fsi:                 Means      Orig        ]     
+// [fsi:                 Means      Orig ]
 // [fsi:  12:00:00 AM -> <missing>  20.16]
 // [fsi:  12:01:00 AM -> <missing>  20.32]
 // [fsi:  12:02:00 AM -> <missing>  20.25]
@@ -279,19 +304,20 @@ Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
 // [fsi:  12:05:00 AM -> 20.34      20.33]
 
 (**
-What if we want to avoid creating `<missing>` values? One approach is to 
-specify that we want to generate windows of smaller sizes at the beginning 
-or at the end of the beginning. This way, we get _incomplete_ windows that look as 
-`[1]`, `[1,2]`, `[1,2,3]` followed by the three _complete_ windows shown above:
+`<missing>` の値が出来てしまうのを避けたい場合にはどうしたらよいでしょうか？
+1つのアプローチとしては開始時刻の先頭または末尾で小さなサイズのウィンドウを
+生成するようにします。
+この場合、 `[1]` `[1,2]` `[1,2,3]` という**不完全な**ウィンドウに続けて、
+上の結果にある3つの**完全な**ウィンドウが生成されることになります：
 *)
 let lfm2 = 
-  // Create sliding windows with incomplete windows at the beginning
+  // 先頭では不完全なサイズのスライディングウィンドウを作成します
   lf |> Series.windowSizeInto (4, Boundary.AtBeginning) (fun ds ->
     Stats.mean ds.Data)
 
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 // [fsi:val it : Frame<DateTimeOffset,string> =]
-// [fsi:                 Means  Orig        ]     
+// [fsi:                 Means  Orig ]
 // [fsi:  12:00:00 AM -> 20.16  20.16]
 // [fsi:  12:01:00 AM -> 20.24  20.32]
 // [fsi:  12:02:00 AM -> 20.24  20.25]
@@ -300,30 +326,37 @@ Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 // [fsi:  12:05:00 AM -> 20.34  20.33]
 
 (**
-As you can see, the values in the first column are equal, because the first
-`Mean` value is just the average of singleton series.
+見ての通り、1行目では1つしかデータが無いシリーズの
+`Mean` (平均)を計算しているわけなので、
+いずれも同じ値になっています。
 
-When you specify `Boundary.AtBeginning` (this example) or `Boundary.Skip` 
-(default value used in the previous example), the function uses the last key
-of the window as the key of the aggregated value. When you specify 
-`Boundary.AtEnding`, the last key is used, so the values can be nicely 
-aligned with original values. When you want to specify custom key selector,
-you can use a more general function `Series.aggregate`. 
+(今回の例のように) `Boundary.AtBeginning` や
+(1つ前の例で使用している、デフォルト値) `Boundary.Skip` を指定すると、
+この関数はウィンドウの最後のキーを集計値のキーとして
+使用するようになります。
+また、 `Boundary.AtEnding` を指定すると最初のキーが使用されるため、
+オリジナルの値をいい感じにアラインすることができます。
+独自のキーセレクター指定したい場合には、さらに汎用的な関数
+`Series.aggregate` を使用します。
 
+この例では、集計を行うコードが `Stats.mean` のような単なる関数ではなく、
+`DataSegment<T>` 型の引数 `ds` をとるラムダ式になっています。
+この型にはウィンドウが完全かどうかを示す情報が含まれています。
+たとえば
 In the previous sample, the code that performs aggregation is no longer
 just a simple function like `Stats.mean`, but a lambda that takes `ds`,
 which is of type `DataSegment<T>`. This type informs us whether the window
 is complete or not. For example:
 *)
 
-// Simple series with characters
+// 文字を含んだ単純なシリーズ
 let st = Series.ofValues [ 'a' .. 'e' ]
 st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
   | DataSegment.Complete(ser) -> 
-      // Return complete windows as uppercase strings
+      // 完全なウィンドウに対しては大文字の文字列を返す
       String(ser |> Series.values |> Array.ofSeq).ToUpper()
   | DataSegment.Incomplete(ser) -> 
-      // Return incomplete windows as padded lowercase strings
+      // 不完全なウィンドウに対しては小文字かつ字詰めした文字列を返す
       String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-') )  
 // [fsi:val it : Series<int,string> =]
 // [fsi:  0 -> ABC ]
@@ -333,99 +366,106 @@ st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
 // [fsi:  4 -> e-- ]
 
 (**
-### Window size conditions
+### ウィンドウのサイズ条件
 
-The previous examples generated windows of fixed size. However, there are two other
-options for specifying when a window ends. 
+先の例では固定サイズのウィンドウを生成しました。
+しかしウィンドウの終点を指定する方法としてはさらに2つのオプションがあります。
 
- - The first option is to specify the maximal
-   _distance_ between the first and the last key
- - The second option is to specify a function that is called with the first
-   and the last key; a window ends when the function returns false.
+ - 1つ目のオプションは始点キーと終点キーの最大**距離**を指定する方法です
+ - 2つ目のオプションは始点キーと終点キーで呼び出される関数を指定する方法です。
+   この関数は終点に至るとfalseを返します。
 
-The two functions are `Series.windowDist` and `Series.windowWhile` (together
-with versions suffixed with `Into` that call a provided function to aggregate
-each window):
+これらはそれぞれ `Series.windowDist` と `Series. windowWhile` として
+実装されています
+(また、各ウィンドウを集計するために呼び出される関数を指定することができる、
+`Into` サフィックスのついたバージョンもあります)：
 *)
-// Generate prices for each hour over 30 days
+// 30日間の価格を1時間単位にまとめます
 let hourly = series <| stock1 (TimeSpan(1, 0, 0)) (30*24)
 
-// Generate windows of size 1 day (if the source was
-// irregular, windows would have varying size)
+// 1日単位のウィンドウを作成します(ソースがイレギュラーなデータを含む場合、
+// ウィンドウのサイズはまちまちになります)
 hourly |> Series.windowDist (TimeSpan(24, 0, 0))
 
-// Generate windows such that date in each window is the same
-// (windows start every hour and end at the end of the day)
+// 同じ日付のデータが同じウィンドウに入るようなウィンドウを生成します
+// (各ウィンドウは0時に始まり、同日の最終時刻データまでが含まれます)
 hourly |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
 
 (**
-### Chunking series
+### シリーズのチャンク化
 
-Chunking is similar to windowing, but it creates non-overlapping chunks, 
-rather than (overlapping) sliding windows. The size of chunk can be specified
-in the same three ways as for sliding windows (fixed size, distance on keys
-and condition):
+チャンク化(chunking)はウィンドウ化に似ていますが、
+(重複する)スライディングウィンドウとは異なり、
+重複部分のないチャンク(訳注：データの小さなかたまり)が生成されます。
+チャンクのサイズはスライディングウィンドウの場合と同じく、
+3つの方法で指定できます(固定長、キー間の距離および特定条件)：
 *)
 
-// Generate per-second observations over 10 minutes
+// 10分間、1秒単位の観測値を生成します
 let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
 
-// Create 10 second chunks with (possible) incomplete
-// chunk of smaller size at the end.
+// 10秒単位のチャンクを作成して、(おそらくは)末尾では
+// 10秒未満のチャンクとなるようにします。
 hf |> Series.chunkSize (10, Boundary.AtEnding) 
 
-// Create 10 second chunks using time span and get
-// the first observation for each chunk (downsample)
+// 10秒間隔でチャンクを作成して、
+// 各チャンクにある最初の観測値(ダウンサンプル)を取得します
 hf |> Series.chunkDistInto (TimeSpan(0, 0, 10)) Series.firstValue
 
-// Create chunks where hh:mm component is the same
-// (containing observations for all seconds in the minute)
+// hh:mm(時分)の値が同じもの同士でチャンクを作成します
+// (すべての秒データがいずれかのチャンクに含まれることになります)
 hf |> Series.chunkWhile (fun k1 k2 -> 
   (k1.Hour, k1.Minute) = (k2.Hour, k2.Minute))
 
 (**
-The above examples use various chunking functions in a very similar way, mainly
-because the randomly generated input is very uniform. However, they all behave
-differently for inputs with non-uniform keys. 
+上の例では非常によく似た方法で様々なチャンク化関数を呼び出しています。
+これは主に、ランダムに生成された入力データが非常に均一だというのが理由です。
+しかし均一ではないキーを持った入力に対しては、
+上のそれぞれの関数は異なった動作になります。
 
-Using `chunkSize` means that the chunks have the same size, but may correspond
-to time series of different time spans. Using `chunkDist` guarantees that there
-is a maximal time span over each chunk, but it does not guarantee when a chunk
-starts. That is something which can be achieved using `chunkWhile`.
+`chunkSize` を使用する場合、チャンクのサイズは同じになりますが、
+時間の間隔が異なるシリーズに対応する場合があります。
+`chunkDist` ではそれぞれのチャンクにおける最大の時刻が存在することが保証されますが、
+いつチャンクが開始されるのかは保証されません。
+これは `chunkWhile` を使用した場合も同様です。
 
-Finally, all of the aggregations discussed so far are just special cases of
-`Series.aggregate` which takes a discriminated union that specifies the kind
-of aggregation ([see API reference](reference/fsharp-dataframe-aggregation-1.html)).
-However, in practice it is more convenient to use the helpers presented here -
-in some rare cases, you might need to use `Series.aggregate` as it provides
-a few other options.
+最後に、これまで紹介した集計関数はいずれも `Series.aggregate`
+の特化版であることを明記しておきます。
+この関数には集計の種類を判別共用体で指定できます。
+([APIリファレンスを参照してください](../reference/fsharp-dataframe-aggregation-1.html))
+しかし実際のところはここで紹介したヘルパー関数を使用した方が簡単です。
+一部のまれなケースにおいては、 `Series.aggregate` にいくつかオプションを指定して
+呼び出す必要があるかもしれません。
 
-### Pairwise 
+### ペア化
 
-A special form of windowing is building a series of pairs containing a current
-and previous value from the input series (in other words, the key for each pair
-is the key of the later element). For example:
+ウィンドウ化の特別版として、入力されたシリーズから現在および直前の値を含んだ
+一連のペアを生成することができます
+(別の言い方をすると、各ペアのキーがペアの後者であるようなウィンドウということです)。
+たとえば以下のようにします：
 *)
 
-// Create a series of pairs from earlier 'hf' input
+// 前述の 'hf' から一連のペアを生成します
 hf |> Series.pairwise 
 
-// Calculate differences between the current and previous values
+// 現在の値と直前の値の差を計算します
 hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
 
 (** 
-The `pairwise` operation always returns a series that has no value for
-the first key in the input series. If you want more complex behavior, you
-will usually need to replace `pairwise` with `window`. For example, you might
-want to get a series that contains the first value as the first element, 
-followed by differences. This has the nice property that summing rows,
-starting from the first one gives you the current price:
+`pairwise` 演算では、入力されたシリーズの最初の値をキーとする値を
+含まないようなシリーズが常に返されます。
+さらに複雑な動作をさせる必要がある場合には、
+`pairwise` を `window` に置き換えることになります。
+たとえば最初の要素としてシリーズの最初の値を含み、
+以降にはペアの差分を含むようなシリーズを取得したいとします。
+このシリーズには、最初の値から行を加算していくと
+それぞれの時点における価格が計算できるという素敵な性質があります：
 *)
-// Sliding window with incomplete segment at the beginning 
+// 一番最初は不完全なセグメントとなるスライディングウィンドウ
 hf |> Series.windowSizeInto (2, Boundary.AtBeginning) (function
-  // Return the first value for the first segment
+  // 1番目のセグメントに対しては1つめの値を返す
   | DataSegment.Incomplete s -> s.GetAt(0)
-  // Calculate difference for all later segments
+  // その他のセグメントに対しては差分を計算する
   | DataSegment.Complete s -> s.GetAt(1) - s.GetAt(0))
 
 (**
