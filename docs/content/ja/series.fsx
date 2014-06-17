@@ -342,11 +342,7 @@ Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 この例では、集計を行うコードが `Stats.mean` のような単なる関数ではなく、
 `DataSegment<T>` 型の引数 `ds` をとるラムダ式になっています。
 この型にはウィンドウが完全かどうかを示す情報が含まれています。
-たとえば
-In the previous sample, the code that performs aggregation is no longer
-just a simple function like `Stats.mean`, but a lambda that takes `ds`,
-which is of type `DataSegment<T>`. This type informs us whether the window
-is complete or not. For example:
+たとえば以下のようにできます：
 *)
 
 // 文字を含んだ単純なシリーズ
@@ -471,46 +467,52 @@ hf |> Series.windowSizeInto (2, Boundary.AtBeginning) (function
 (**
 
 <a name="sampling"></a>
-Sampling and resampling time series
------------------------------------
+時系列データのサンプリングおよび再サンプリング
+----------------------------------------------
 
-Given a time series with high-frequency prices, sampling or resampling makes 
-it possible to get time series with representative values at lower frequency.
-The library uses the following terminology:
+高頻度の価格データを持った時系列データに対して、
+サンプリングあるいは再サンプリングを行うと頻度の低い値を含んだ
+時系列データを取得することができます。
+このライブラリでは以下の用語を使用します：
 
- - **Lookup** means that we find values at specified key; if a key is not
-   available, we can look for value associated with the nearest smaller or 
-   the nearest greater key.
+ - **ルックアップ(Lookup)** とは、
+   特定のキーに対する値を検索することを表します。
+   なおキーが利用できない場合、指定した値に最も近く、それよりも小さいか大きい値を
+   見つけることもできます。
 
- - **Resampling** means that we aggregate values values into chunks based
-   on a specified collection of keys (e.g. explicitly provided times), or 
-   based on some relation between keys (e.g. date times having the same date).
+ - **再サンプリング(Resampling)** とは、
+   特定のキーコレクション(たとえば明示的に指定した時刻)、
+   あるいはキー同士の関係性(たとえば日付が同じ時刻)
+   を元にして値を集計することを表します。
 
- - **Uniform resampling** is similar to resampling, but we specify keys by
-   providing functions that generate a uniform sequence of keys (e.g. days),
-   the operation also fills value for days that have no corresponding 
-   observations in the input sequence.
+ - **ユニフォーム再サンプリング(Uniform resampling)** は
+   再サンプリングと似ていますが、一意なキーのシーケンス(たとえば日付)を生成する
+   関数によってキーを指定します。
+   またこの関数では、キーに対応する値が入力シーケンス中に見つからなかった場合に
+   値を埋めさせることもできます。
 
-Finally, the library also provides a few helper functions that are specifically
-desinged for series with keys of types `DateTime` and `DateTimeOffset`.
+なおこのライブラリにはキーの型が `DateTime` あるいは `DateTimeOffset` の
+シリーズデータに特化したヘルパー関数がいくつか用意されています。
 
-### Lookup
+### ルックアップ
 
-Given a series `hf`, you can get a value at a specified key using `hf.Get(key)`
-or using `hf |> Series.get key`. However, it is also possible to find values
-for larger number of keys at once. The instance member for doing this
-is `hf.GetItems(..)`. Moreover, both `Get` and `GetItems` take an optional
-parameter that specifies the behavior when the exact key is not found.
+シリーズ `hf` に対して、 `hf.Get(key)` または `hf |> SEries.get key` とすると
+特定のキーに対する1つの値が取得できます。
+しかし複数のキーに対する複数の値を同時に取得することも可能です。
+そのためのインスタンスメンバーが `hf.GetItems(..)` です。
+また、 `Get` および `GetItems` にはオプションとして
+キーに厳密に一致する値が見つからなかった場合の挙動を指定することもできます。
 
-Using the function syntax, you can use `Series.getAll` for exact key 
-lookup and `Series.lookupAll` when you want more flexible lookup:
+関数シンタックスを使用する場合、厳密なキールックアップを
+行う場合には `Series.getAll`、より柔軟なルックアップを行いたい場合には
+`Series.lookupAll` を使用します：
 *)
-// Generate a bit less than 24 hours of data with 13.7sec offsets
+// 13.7秒間隔で24時間以内のデータを生成します
 let mf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
-// Generate keys for all minutes in 24 hours
+// 1分間隔で24時間以内のキーを生成します
 let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
 
-// Find value for a given key, or nearest greater key with value
+// 特定のキーに一致する値、または最も近く大きい値を検索します
 mf |> Series.lookupAll keys Lookup.ExactOrGreater
 // [fsi:val it : Series<DateTimeOffset,float> =]
 // [fsi:  12:00:00 AM -> 20.07 ]
@@ -519,90 +521,99 @@ mf |> Series.lookupAll keys Lookup.ExactOrGreater
 // [fsi:  11:58:00 PM -> 19.03 ]
 // [fsi:  11:59:00 PM -> <missing>        ]
 
-// Find value for nearest smaller key
-// (This returns value for 11:59:00 PM as well)
+// 最も近く小さいキーに対する値を検索します
+// (この場合には午後11:59:00の値が返されます)
 mf |> Series.lookupAll keys Lookup.ExactOrSmaller
 
-// Find values for exact key 
-// (This only works for the first key)
+// キーに厳密に一致する値を検索します
+// (1番目のキーに対してのみ機能します)
 mf |> Series.lookupAll keys Lookup.Exact
 
 (**
-Lookup operations only return one value for each key, so they are useful for
-quick sampling of large (or high-frequency) data. When we want to calculate
-a new value based on multiple values, we need to use resampling.
+ルックアップ操作ではキーそれぞれに対して1つの値しか返されません。
+そのため巨大な(あるいは高頻度の)データから
+簡単にサンプリングする場合に便利なものです。
+複数の値を元にして新しい値を計算したい場合には
+再サンプリングする必要があります。
 
-### Resampling
+### 再サンプリング
 
-Series supports two kinds of resamplings. The first kind is similar to lookup
-in that we have to explicitly specify keys. The difference is that resampling
-does not find just the nearest key, but all smaller or greater keys. For example:
+シリーズでは2種類の再サンプリングがサポートされています。
+1つめは明示的にキーを指定しなければならないルックアップとよく似ています。
+違いとして、再サンプリングでは直近のキーだけではなく、
+すべてのより小さなキー、あるいはより大きなキーが見つかります。
+たとえば以下のようになります：
 *)
 
-// For each key, collect values for greater keys until the 
-// next one (chunk for 11:59:00 PM is empty)
+// 各キーに対して、大きいキーまでにある値を取得します
+// (午後11:59:00のチャンクは空になります)
 mf |> Series.resample keys Direction.Forward
 
-// For each key, collect values for smaller keys until the 
-// previous one (the first chunk will be singleton series)
+// 各キーに対して、小さいキーまでにある値を取得します
+// (最初のチャンクにはシリーズ1つだけが含まれます)
 mf |> Series.resample keys Direction.Backward
 
-// Aggregate each chunk of preceding values using mean
+// チャンク内にある一連の値の平均を集計します
 mf |> Series.resampleInto keys Direction.Backward 
   (fun k s -> Stats.mean s)
 
-// Resampling is also available via the member syntax
+// 再サンプリングはメンバ構文でも実行できます
 mf.Resample(keys, Direction.Forward)
 (**
 
-The second kind of resampling is based on a projection from existing keys in 
-the series. The operation then collects chunks such that the projection returns
-equal keys. This is very similar to `Series.groupBy`, but resampling assumes 
-that the projection preserves the ordering of the keys, and so it only aggregates
-consequent keys.
+2つめの方法として、シリーズ内にある既存のキーに対する射影を元にして
+再サンプリングすることもできます。
+この操作では、射影によって同じキーが返されるようなチャンクを収集します。
+この動作は `Series.groupBy` と非常によく似ていますが、
+再サンプリングでは射影によってキーの順序が維持されることが想定されます。
+そのため、連続するキーだけが集計されます。
 
-The typical scenario is when you have time series with date time information
-(here `DateTimeOffset`) and want to get information for each day (we use 
-`DateTime` with empty time to represent dates):
+一般的なシナリオとしては、時刻情報(今回の場合は`DateTimeOffset`)を含んだ
+時系列データがあり、日単位の情報を取得したい場合が想定できます
+(ここでは日付を表すために、時刻データが空の `DateTime` を使用します)：
 *)
 
-// Generate 2.5 months of data in 1.7 hour offsets
+// 1.7時間毎、2.5ヶ月分のデータを生成します
 let ds = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
 
-// Sample by day (of type 'DateTime')
+// ('DateTime'型の)日単位でサンプリング
 ds |> Series.resampleEquiv (fun d -> d.Date)
 
-// Sample by day (of type 'DateTime')
+// ('DateTime'型の)日単位でサンプリング
 ds.ResampleEquivalence(fun d -> d.Date)
 (**
-The same operation can be easily implemented using `Series.chunkWhile`, but as
-it is often used in the context of sampling, it is included in the library as a
-primitive. Moreover, we'll see that it is closely related to uniform resampling.
 
-Note that the resulting series has different type of keys than the source. The
-source has keys `DateTimeOffset` (representing date with time) while the resulting
-keys are of the type returned by the projection (here, `DateTime` representing just
-dates).
+同じ処理は `Series.chunkWhile` を使用して簡単に実装できますが、
+サンプリングという文脈で使用されることが多いことも有り、
+ライブラリに標準実装してあります。
+さらに、ユニフォーム再サンプリングと密接な関係があることを後ほど説明します。
 
-### Uniform resampling
+なお結果として返されるシリーズは元とは異なる型のキーを持つことに注意してください。
+元データでは(時刻を含む日付を表す) `DateTimeOffset` 型のキーでしたが、
+結果のキーは射影によって返される型になります
+(今回の場合には日付だけが有効な `DateTime` 型です)。
 
-In the previous section, we looked at `resampleEquiv`, which is useful if you want
-to sample time series by keys with "lower resolution" - for example, sample date time
-observations by date. However, the function discussed in the previous section only
-generates values for which there are keys in the input sequence - if there is no
-observation for an entire day, then the day will not be included in the result.
+### ユニフォーム再サンプリング
 
-If you want to create sampling that assigns value to each key in the range specified
-by the input sequence, then you can use _uniform resampling_.
+先のセクションでは、「解像度の低い(lower resolution)」キーを持った時系列データへと
+サンプリングしたい場合には `resampleEquiv` が使用できることを説明しました
+(例として日時の観測値を日付単位にサンプリングしました)。
+しかし先のセクションで説明した関数は、
+入力シーケンス中にキーが存在する場合にのみ値を生成します。
+つまり観測値が丸一日存在しない場合、その日のデータは結果に含まれないことになります。
 
-The idea is that uniform resampling applies the key projection to the smallest and
-greatest key of the input (e.g. gets date of the first and last observation) and then
-it generates all keys in the projected space (e.g. all dates). Then it picks the
-best value for each of the generated key.
+入力シーケンスによって指定されている範囲内にある各キーに対して
+値を割り当てるようなサンプリングを行いたい場合には
+**ユニフォーム再サンプリング** を行うことになります。
+
+ユニフォーム再サンプリングとは、最小および最大の入力キーに対して
+(たとえば観測値の最初および最後の日付を取得するような)射影を適用して、
+射影空間(たとえばすべての日付)内ですべてのキーを生成し、
+生成したキーの中から最善の値をピックアップするものです。
 *)
 
-// Create input data with non-uniformly distributed keys
-// (1 value for 10/3, three for 10/4 and two for 10/6)
+// 非ユニフォームな、分散キーを持った入力データを作成します
+// (10/3には1つ、10/4には3つ、10/6には2つのデータが含まれます)
 let days =
   [ "10/3/2013 12:00:00"; "10/4/2013 15:00:00" 
     "10/4/2013 18:00:00"; "10/4/2013 19:00:00"
@@ -611,193 +622,212 @@ let nu =
   stock1 (TimeSpan(24,0,0)) 10 |> series
   |> Series.indexWith days |> Series.mapKeys DateTimeOffset.Parse
 
-// Generate uniform resampling based on dates. Fill
-// missing chunks with nearest smaller observations.
+// 日付を基準にして、ユニフォーム再サンプリングを行います。
+// 値無しのチャンクに対しては最も近く小さい観測値で埋めます。
 let sampled =
   nu |> Series.resampleUniform Lookup.ExactOrSmaller 
     (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
 
-// Same thing using the C#-friendly member syntax
-// (Lookup.ExactOrSmaller is the default value)
+// C#フレンドリーなメンバーシンタックスを使用して同じことを行います
+// (Lookup.ExactOrSmaller はデフォルト値です)
 nu.ResampleUniform((fun dt -> dt.Date), (fun dt -> dt.AddDays(1.0)))
 
-// Turn into frame with multiple columns for each day
-// (to format the result in a readable way)
+// (結果を見やすくするために)
+// 日毎に複数列を持つようなフレームへと変換します
 sampled 
 |> Series.mapValues Series.indexOrdinally
 |> Frame.ofRows
 // [fsi:val it : Frame<DateTime,int> =]
 // [fsi:             0      1          2                ]
 // [fsi:10/3/2013 -> 21.45  <missing>  <missing>        ]
-// [fsi:10/4/2013 -> 21.63  19.83      17.51]
+// [fsi:10/4/2013 -> 21.63  19.83      17.51            ]
 // [fsi:10/5/2013 -> 17.51  <missing>  <missing>        ]
 // [fsi:10/6/2013 -> 18.80  20.93      <missing>        ]
 
 (**
-To perform the uniform resampling, we need to specify how to project (resampled) keys
-from original keys (we return the `Date`), how to calculate the next key (add 1 day)
-and how to fill missing values.
+ユニフォーム再サンプリングを行うには、元のキーを(再サンプリング後の)キーへと
+どのようにして射影するのか(ここでは`Date`を返しています)、
+次のキーをどのように計算するのか(翌日に設定しています)、
+そして値無しをどのように補填するのかを指定する必要があります。
 
-After performing the resampling, we turn the data into a data frame, so that we can 
-nicely see the results. The individual chunks have the actual observation times as keys,
-so we replace those with just integers (using `Series.indexOrdinal`). The result contains
-a simple ordered row of observations for each day.
+再サンプリングの実行後、結果を見やすくするために
+データをデータフレームへと変換しています。
+それぞれのチャンクには実際の観測時刻がキーとして設定されているため、
+これらのキーを(`Series.indexOrdinal`を使用して)単に整数へと置き換えています。
+その結果、各行には日毎の観測値が整列された状態で並びます。
 
-The important thing is that there is an observation for each day - even for for 10/5/2013
-which does not have any corresponding observations in the input. We call the resampling
-function with `Lookup.ExactOrSmaller`, so the value 17.51 is picked from the last observation
-of the previous day (`Lookup.ExactOrGreater` would pick 18.80 and `Lookup.Exact` would give
-us an empty series for that date).
+重要なのは各日付に対応する観測値があるということです。
+つまり2013年10月5日には対応する観測値が入力中には全くないにもかかわらず、
+値を持っています。
+再サンプリング関数に `Lookup.ExactOrSmaller` を指定して呼び出しているため、
+前日の最後の観測値である 17.51 が値として採用されています。
+(`Lookup.ExactOrGreater` を指定した場合は 18.80、
+`Lookup.Exact` の場合は空のシリーズになります)
 
-### Sampling time series
+### 時系列データのサンプリング
 
-Perhaps the most common sampling operation that you might want to do is to sample time series
-by a specified `TimeSpan`. Although this can be easily done by using some of the functions above,
-the library provides helper functions exactly for this purpose:
+サンプリング操作として最も一般的に行われるものは、
+おそらく `TimeSpan` を指定して時系列データをサンプリングすることでしょう。
+この操作は既に紹介した関数をいくつか使用することで簡単に実現できますが、
+ライブラリにはまさにこの用途に適したヘルパー関数が用意されています：
 
 *)
-// Generate 1k observations with 1.7 hour offsets
+// 1.7時間毎、1000個の観測値を生成します
 let pr = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
 
-// Sample at 2 hour intervals; 'Backward' specifies that
-// we collect all previous values into a chunk.
+// 2時間毎にサンプリングします。
+// 'Backward' は以前のすべての値をチャンクに含めることを示しています。
 pr |> Series.sampleTime (TimeSpan(2, 0, 0)) Direction.Backward
 
-// Same thing using member syntax - 'Backward' is the dafult
+// 同じ処理をメンバーシンタックスで行います。
+// 'Backward' はデフォルト値です。
 pr.Sample(TimeSpan(2, 0, 0))
 
-// Get the most recent value, sampled at 2 hour intervals
+// 2時間毎にサンプリングしつつ、直近の値を取得します
 pr |> Series.sampleTimeInto
   (TimeSpan(2, 0, 0)) Direction.Backward Series.lastValue
 
 (**
 <a name="stats"></a>
-Calculations and statistics
----------------------------
+計算および統計
+--------------
 
-In the final section of this tutorial, we look at writing some calculations over time series. Many of the
-functions demonstrated here can be also used on unordered data frames and series.
+このチュートリアルの最後のセクションとして、
+時系列データに対するいくつかの計算処理について説明します。
+ここで紹介する関数の多くは順序づけられていないデータフレームやシリーズも
+対象とすることができます。
 
-### Shifting and differences
+### シフトおよび差分
 
-First of all, let's look at functions that we need when we need to compare subsequent values in
-the series. We already demonstrated how to do this using `Series.pairwise`. In many cases,
-the same thing can be done using an operation that operates over the entire series.
+まず最初に、シリーズ内で後に続く値と比較しなければならない場合に
+必要になる関数を紹介します。
+この処理は既に `Series.pairwise` で行えることを紹介しました。
+たいていの場合、シリーズ全体を処理するような操作を行うことによって
+同じ処理が実現できます。
 
-The two useful functions here are:
+以下の2つの便利な関数があります：
 
- - `Series.diff` calcualtes the difference between current and n-_th_  previous element
- - `Series.shift` shifts the values of a series by a specified offset
+ - `Series.diff` は現在の値とn個前の要素との差分を計算します
+ - `Series.shift` はシリーズの値を特定のオフセット分だけシフトします
 
-The following snippet illustrates how both functions work:
+これらの関数の機能については以下のスニペットを参照してください：
 *)
-// Generate sample data with 1.7 hour offsets
+// 1.7時間毎でサンプリングされたデータを生成します
 let sample = series <| stock1 (TimeSpan.FromHours(1.7)) 6
 
-// Calculates: new[i] = s[i] - s[i-1]
+// new[i] = s[i] - s[i-1] となるよう計算します
 let diff1 = sample |> Series.diff 1
-// Diff in the opposite direction
+// 逆順で差分を計算します
 let diffM1 = sample |> Series.diff -1
 
-// Shift series values by 1
+// シリーズの値を1ずつシフトします
 let shift1 = sample |> Series.shift 1
 
-// Align all results in a frame to see the results
+// 結果を確認するためにすべての結果を1つのフレームとしてアラインします
 let df = 
   [ "Shift +1" => shift1 
     "Diff +1" => diff1 
     "Diff" => sample - shift1 
     "Orig" => sample ] |> Frame.ofColumns 
 // [fsi:val it : Frame<DateTimeOffset,string> =]
-// [fsi:                 Diff       Diff +1    Orig   Shift +1         ]
-// [fsi:  12:00:00 AM -> <missing>  <missing>  21.73  <missing>        ]
-// [fsi:   1:42:00 AM ->  1.73       1.73      23.47  21.73 ]
-// [fsi:   3:24:00 AM -> -0.83      -0.83      22.63  23.47 ]
-// [fsi:   5:06:00 AM ->  2.37       2.37      25.01  22.63 ]
-// [fsi:   6:48:00 AM -> -1.57      -1.57      23.43  25.01 ]
-// [fsi:   8:30:00 AM ->  0.09       0.09      23.52  23.43 ]
+// [fsi:                 Diff       Diff +1    Orig   Shift +1  ]
+// [fsi:  12:00:00 AM -> <missing>  <missing>  21.73  <missing> ]
+// [fsi:   1:42:00 AM ->  1.73       1.73      23.47  21.73     ]
+// [fsi:   3:24:00 AM -> -0.83      -0.83      22.63  23.47     ]
+// [fsi:   5:06:00 AM ->  2.37       2.37      25.01  22.63     ]
+// [fsi:   6:48:00 AM -> -1.57      -1.57      23.43  25.01     ]
+// [fsi:   8:30:00 AM ->  0.09       0.09      23.52  23.43     ]
 
 (**
-In the above snippet, we first calcluate difference using the `Series.diff` function.
-Then we also show how to do that using `Series.shift` and binary operator applied
-to two series (`sample - shift`). The following section provides more details. 
-So far, we also used the functional notation (e.g. `sample |> Series.diff 1`), but
-all operations can be called using the member syntax - very often, this gives you
-a shorter syntax. This is also shown in the next few snippets.
+上のスニペットではまず `Series.diff` 関数を使用して差分を計算しています。
+次に `Series.shift` の呼び方をデモした後、2つのシリーズに対して2項演算を
+行っています(`sample - shift`)。
+詳細については以降のセクションで説明します。
+また、ここでは(`sample |> Series.diff 1` のような)関数表記を使用していますが、
+いずれの操作もメンバーシンタックスで呼び出すこともできます。
+たいていの場合にはそのほうがコード的に短くなるでしょう。
+このことについても次のセクションで説明します。
 
-### Operators and functions
+### 演算子と関数
 
-Time series also supports a large number of standard F# functions such as `log` and `abs`.
-You can also use standard numerical operators to apply some operation to all elements
-of the series. 
+時系列データでは、`log` や `abs` のようなF#の標準関数が多数サポートされています。
+また標準的な数値演算子を使用して、シリーズのすべての要素に対して
+演算を行うといったこともできます。
 
-Because series are indexed, we can also apply binary operators to two series. This 
-automatically aligns the series and then applies the operation on corresponding elements.
+シリーズにはインデックスがあるため、
+2つのシリーズに対して2項演算を行うことができます。
+この場合、シリーズを自動的にアラインして、
+対応する要素間で処理を実行することになります。
 
 *)
 
-// Subtract previous value from the current value
+// 直前の値と現在の値との差を計算します
 sample - sample.Shift(1)
 
-// Calculate logarithm of such differences
+// 先の差分に対する自然対数を計算します
 log (sample - sample.Shift(1))
 
-// Calculate square of differences
+// 差分の平方を計算します
 sample.Diff(1) ** 2.0
 
-// Calculate average of value and two immediate neighbors
+// 現在の値と前後2つの値の平均値を計算します
 (sample.Shift(-1) + sample + sample.Shift(2)) / 3.0
 
-// Get absolute value of differences
+// 差分の絶対値を計算します
 abs (sample - sample.Shift(1))
 
-// Get absolute value of distance from the mean
+// 平均との差分の絶対値を計算します
 abs (sample - (Stats.mean sample))
 
 (**
-The time series library provides a large number of functions that can be applied in this
-way. These include trigonometric functions (`sin`, `cos`, ...), rounding functions
-(`round`, `floor`, `ceil`), exponentials and logarithms (`exp`, `log`, `log10`) and more.
-In general, whenever there is a built-in numerical F# function that can be used on 
-standard types, the time series library should support it too.
+時系列ライブラリにはこういった方法で呼び出すことのできる関数が多数用意されています。
+その他にも、(`sin`や`cos`といった)三角関数や、
+(`round` `floor` `ceil`といった)ラウンド関数、
+(`exp` `log` `log10`といった)対数関数などがあります。
+一般的に、標準的な型に使用できるF#の組み込みの数値演算関数に対しては
+時系列ライブラリでも同じ機能がサポートされています。
 
-However, what can you do when you write a custom function to do some calculation and
-want to apply it to all series elements? Let's have a look:
+しかしシリーズの全要素に適用可能な計算を行うような、
+独自の関数を作成するにはどうしたらよいのでしょう？
+では説明していきます：
 *)
 
-// Truncate value to interval [-1.0, +1.0]
+// [-1.0, +1.0] の区間に値を切り詰めます
 let adjust v = min 1.0 (max -1.0 v)
 
-// Apply adjustment to all function
+// すべての要素を調整します
 adjust $ sample.Diff(1)
 
-// The $ operator is a shorthand for
+// $ 演算子は以下の省略形です
 sample.Diff(1) |> Series.mapValues adjust
 
 (**
-In general, the best way to apply custom functions to all values in a series is to 
-align the series (using either `Series.join` or `Series.joinAlign`) into a single series
-containing tuples and then apply `Series.mapValues`. The library also provides the `$` operator
-that simplifies the last step - `f $ s` applies the function `f` to all values of the series `s`.
+一般的に、シリーズ内のすべての値に対して独自の関数を適用する場合の最善の方法は、
+(`Series.join` または `Series.joinAlign` のいずれかを使用して)
+タプルを含む1つのシリーズとしてアラインした後、
+`Series.mapValues` を適用することです。
+ライブラリには最後の手順を省略できるように `$` 演算子が定義されています。
+つまり、 `f $ s` とするとシリーズ `s` のすべての値に関数 `f` を適用できます。
 
-### Data frame operations
+### データフレームの操作
 
-Finally, many of the time series operations demonstrated above can be applied to entire
-data frames as well. This is particularly useful if you have data frame that contains multiple
-aligned time series of similar structure (for example, if you have multiple stock prices or 
-open-high-low-close values for a given stock). 
+最後に、これまでに紹介した操作の多くがデータフレームに対しても
+通用することを説明しましょう。
+これは(たとえば複数の株価データやローソク足データのように)
+同じような構造をしているアラインされた時系列データを
+複数含むようなデータフレームがあるような場合に便利です。
 
-The following snippet is a quick overview of what you can do:
+以下のスニペットで用法を確認してください：
 *)
-/// Multiply all numeric columns by a given constant
+/// すべての数値列を特定の定数倍にします
 df * 0.65
 
-// Apply function to all columns in all series
+// すべての列にあるすべてのシリーズに関数を適用します
 let conv x = min x 20.0
 df |> Frame.mapRowValues (fun os -> conv $ os.As<float>())
    |> Frame.ofRows
 
-// Sum each column and divide results by a constant
+// 各列の総和を計算して、結果を定数で除算します
 Stats.sum df / 6.0
-// Divide sum by mean of each frame column
+// 総和を各フレーム列の平均で除算します
 Stats.sum df / Stats.mean df
