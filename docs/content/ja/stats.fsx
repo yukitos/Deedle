@@ -10,35 +10,40 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Calculating frame and series statistics
-=======================================
+フレームおよびシリーズの統計情報を計算する
+==========================================
 
-The `Stats` type contains functions for fast calculation of statistics over
-series and frames as well as over a moving and an expanding window in a series. 
-The standard statistical functions that are available in the `Stats` type 
-are overloaded and can be applied to both data frames and series. More advanced
-functionality is available only for series (but can be applied to frame columns
-easily using the `Frame.getNumericCols` function.
+`Stats` 型にはシリーズやフレーム、さらにはシリーズでウィンドウを
+移動あるいは拡張させつつ統計情報を高速に計算する関数が用意されています。
+`Stats` 型にある標準統計関数にはオーバーロードがあり、
+データフレームとシリーズの両方に対応しています。
+さらに高度な機能についてはシリーズのみ対応しています
+(ただし `Frame.getNumericCols` 関数と組み合わせることで
+簡単に対応させることができます)。
 
 <a name="stats"></a>
-Series and frame statistics
----------------------------
+シリーズおよびフレームの統計情報
+--------------------------------
 
-In this section, we look at calculating simple statistics over data frame and
-series. An important aspect is handling of missing values, so we demonstrate that
-using a data set about air quality that contains missing values. The following
-snippet loads `AirQuality.csv` and shows the values in the `Ozone` column:
+このセクションでは、データフレームおよびシリーズ全体から
+単純な統計情報を計算する方法を紹介します。
+重要なポイントは値無しを扱う方法です。
+そのため、ここでは値無しを含む大気質(air quality)のデータセットを
+使用してデモを行います。
+以下のスニペットでは `AirQuality.csv` をロードして、
+`Ozone` 列にある値を表示しています：
 *)
 let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
 let ozone = air?Ozone
 (*** include-value: ozone ***)
 
 (**
-### Series statistics
+### シリーズの統計情報
 
-Given a series `ozone`, we can use a number of `Stats` functions to calculate 
-statistics. The following example creates a series (indexed by strings) that
-stores mean extremes and median of the input series:
+シリーズ `ozone` に対して `Stats` の様々な関数を使用することで
+統計情報を計算できます。
+以下の例では入力されたシリーズに対して、平均、最小値、最大値、中央値を含むような
+(文字列によってインデックスされた)シリーズを作成しています：
 *)
 
 (*** define-output: ozinfo ***)
@@ -51,25 +56,28 @@ series [
 (*** include-it: ozinfo ***)
 
 (**
-To make the output simpler, we round the value of the mean (although the result is
-a floating point number). Note that the value is calculated from the *available* values
-in the series. All of the statistical functions skip over missing values in the 
-input series.
+出力結果を単純にするために、ここでは平均の値を丸めています
+(実際には浮動小数点数です)。
+なお値はシリーズ内で**利用可能な**値から計算されている点に注意してください。
+統計用の関数はいずれも入力されたシリーズに含まれる値無しを無視します。
 
-As the above example demonstrates, `Stats.max` and `Stats.min` return `option<float>`
-rather than just `float`. The result value is `None` when the series contains no values.
-This makes it possible to use the functions not just on floating point numbers, but
-also on series of integers and other types. Other statistical functions such as 
-`Stats.mean` return `nan` when no values are available.
+上の例にもある通り、`Stats.max` と `Stats.min` は単なる `float` ではなく、
+`option<float>` を返します。
+シリーズに値が含まれない場合には結果が `None` になります。
+そのため、これらの関数は浮動小数点数だけでなく、整数値のシリーズや
+他の型の値を含んだシリーズに対しても使用できます。
+`Stats.mean` など、別の統計用関数では利用可能な値がない場合には `nan` が返されます。
 
-### Frame statistics
+### フレームの統計情報
 
-Functions such as `Stats.mean` can be called on series, but also on entire data frames.
-In that case, they calculate the statistics for each column of a data frame and return
-`Series<'C, float>` where `'C` is the column key of the original frame. 
+`Stats.mean` など一部の関数はシリーズに対してだけでなく、
+データフレーム全体に対して呼び出すことができます。
+その場合、データフレームの各列に対して統計情報を計算した後、
+`Series<'C, float>` が返されます。
+なお `'C` は元のフレームの列キーです。
 
-In the following snippet, we calculate means and standard deviations of all columns of
-the `air` data set and build a frame that shows the values (series) in two columns:
+以下のスニペットでは `air` データセットのすべての列に対して平均および標準偏差を
+計算した後、これら2つの列(シリーズ)の値を表示するためにフレームを作成しています：
 *)
 (*** define-output: airinfo ***)
 let info = 
@@ -78,28 +86,31 @@ let info =
 (*** include-value: round(info*100.0)/100.0 ***)
 
 (**
-Missing values are handled in the same way as when calculating statistics of a series
-and are skipped. If this is not desirable, you can use functions from the [Series 
-module](reference/deedle-seriesmodule.html) for working with missing values to treat 
-missing values in different ways.
+シリーズの統計情報を計算した場合と同じく、値無しのデータは無視されます。
+これが意図した動作ではない場合、
+[Series モジュール](reference/deedle-seriesmodule.html)
+にある関数を使用して、値無しを別の方法で処理することになります。
 
-The `Stats` module provides basic statistical functionality such as mean, standard
-deviation and variance, but also more advanced functions including skewness and kurtosis.
-You can find a complete list in the [Series statistics](reference/deedle-stats.html#section5)
-and [Frame statistics](reference/deedle-stats.html#section1) sections of the API reference.
+`Stats` モジュールには平均や標準偏差、分散といった基礎的な統計用関数がありますが、
+他にも歪度や尖度といった高度な関数もあります。
+すべての関数の一覧については、APIリファレンスの
+[Series statistics](reference/deedle-stats.html#section5)
+や
+[Frame statistics](reference/deedle-stats.html#section1)
+のセクションを参照してください。
 
 <a name="moving"></a>
-Moving window statistics
+移動ウィンドウの統計情報
 ------------------------
 
-The `Stats` type provides an efficient implementation of moving window statistics. The
-implementation uses an online algorithm so that it does not have to re-calculate the 
-statistics for each window separately, but instead updates the value as it iterates over
-the input (and so this is faster than using `Series.window`). 
+`Stats` 型には移動ウィンドウの統計情報を効率的に取得する機能も実装されています。
+この実装では各ウィンドウを個別に再計算する必要がない
+オンラインアルゴリズムが採用されていますが、その代わりにインプットを走査するたびに
+値が更新されるようになっています(そのため `Series.window` よりも高速です)。
 
-The moving window function names are pre-fixed with the word `moving` and calculate moving
-statistics over a window of a fixed length. The following example calculates means over a
-moving window of length 3:
+移動ウィンドウの関数名には `moving` という接頭辞が付けられていて、
+固定長のウィンドウを使用して移動統計を計算します。
+以下の例では移動ウィンドウの長さ3で平均を計算しています：
 *)
 (*** define-output:mvmozone ***)
 ozone
@@ -107,16 +118,18 @@ ozone
 (*** include-it:mvmozone ***)
 
 (**
-The keys of the resulting series are the same as the keys of the input series. Statistical
-moving functions (count, sum, mean, variance, standard deviation, skewness and kurtosis)
-over a window of size _n_ always mark the first _n-1_ values with missing (i.e. they only
-perform the calculation over complete windows). This explains why the value associated with
-the key _1_ is _N/A_. For the key _2_, the mean is calculated from all available values in 
-the window, which is: _(36+12)/2_.
+結果のシリーズのキーは入力したシリーズのキーと同じです。
+ウィンドウのサイズ **n** における統計用移動関数
+(カウント、総和、平均、分散、標準偏差、歪度、尖度)では、
+最初の **n-1** 個の値が常に値無しになります
+(つまりこれらは完全なウィンドウに対してのみ計算を行います)。
+キー **1** の値が **N/A** になっているのはこのためです。
+キー **2** の場合、ウィンドウ内で利用可能な値を使用して平均が計算されます。
+つまり **(36+12)/2** です。
 
-The boundary behavior of the functions that calculate minimum and maximum over a moving window
-differs. Rather than returning _N/A_ for the first _n-1_ values, they return the extreme 
-value over a smaller window:
+移動ウィンドウにおける最小値および最大値を計算する関数では動作が異なります。
+最初の **n-1** 個の値が **N/A** になるのではなく、
+より小さなウィンドウにおける極地が返されます：
 *)
 (*** define-output:mvxozone ***)
 ozone
@@ -124,34 +137,43 @@ ozone
 (*** include-it:mvxozone ***)
 
 (**
-Here, the first value is missing, because the one-element window containing just the first value
-contains only missing values. However, the value for the key _1_, because the two-element window
-(starting from the beginning of the series) contains two elements.
+最初の値だけを含む1要素のウィンドウには値無ししか含まれていないため、
+結果の最初の値は値無しになっています。
+しかしキー **1** では(シリーズの先頭から数えて)2つの要素を含む
+ウィンドウになっているため、値が計算されます。
 
-### Remarks
+### 注意
 
-The windowing functions in the `Stats` type support an efficient calculations over a fixed-size
-windows specified by the size of the window. They also provide one, fixed, boundary behavior.
-If you need more complex windowing behavior (such as window based on the distance between keys), 
-different handling of boundaries, or chunking (calculation over adjacent chunks), you can use 
-chunking and windowing functions from the `Series` module such as `Series.windowSizeInto` or
-`Series.chunkSizeInto`. For more information, see [Grouping, windowing and 
-chunking](reference/deedle-seriesmodule.html#section1) section in the API reference.
+`Stats` 型のウィンドウ関数はウィンドウのサイズによって決まる固定サイズのウィンドウを
+利用して効率的に計算を行います。
+また、境界における挙動についても定型の機能が用意されています。
+複雑なウィンドウ化(たとえばキー間の距離を元にしたウィンドウ)を行う場合や、
+境界における挙動を変更したい場合、
+あるいはチャンク化(隣接するチャンクを使用した計算)を行う場合には、
+`Series` モジュールにある `Series.windowSizeInto` あるいは `Series.chunkSizeInto`
+といったチャンク化あるいはウィンドウ化用の関数を使用します。
+詳細についてはAPIリファレンスの
+[Grouping, windowing and chunking](reference/deedle-seriesmodule.html#section1)
+を参照してください。
 
 <a name="exp"></a>
-Expanding windows
------------------
+拡張ウィンドウ
+--------------
 
-Expanding window means that the window starts as a single-element sized window at the beginning
-of a series and expands as it moves over the series. For a time-series data ordered by time,
-this gives you statistics calculated over all previous known observations. 
-In other words, the statistics is calculated for all values up to the current key and the 
-result is attached to the key at the end of the window. The expanding window functions are
-prefixed with `expanding`. 
+拡張ウィンドウ (Expanding window) とは、シリーズの最初の時点では
+1要素のウィンドウから始めて、シリーズ上を移動するたびに拡張されるような
+ウィンドウのことです。
+時間で順序づけられた時系列データの場合、
+拡張ウィンドウを使用することによって
+過去の既知の観測データをすべて使用して統計を計算できます。
+言い換えると、現在のキーまですべての値を使用して統計が計算され、
+ウィンドウの最後の位置にあるキーに結果が結びつけられます。
+拡張ウィンドウ関数は `expanding` から始まる名前になっています。
 
-The following example demonstrates how to calculate expanding mean and expanding standard
-deviation over the Ozone series. The resulting series has the same keys as the input series.
-Here, we align the two series using a frame, so that we can easily see the results aligned:
+以下のデモではOzoneシリーズに対して拡張平均および拡張標準偏差を計算しています。
+結果のシリーズには元のシリーズと同じキーが含まれます。
+なお結果を見やすくするために、
+フレームを使用して2つのシリーズを整列しています：
 *)
 let exp =
   [ "Ozone" => ozone 
@@ -160,38 +182,46 @@ let exp =
 (*** include-value:(round(exp*100.0))/100.0 ***)
 
 (**
-As the example illustrates, expanding window statistics typically returns a series that starts
-with some missing values. Here, the first mean is missing (because one-element window contains
-no values) and the first two standard deviations are missing (`stdDev` is define only for two
-and more values). The only exception is `expandingSum`, because the sum of no elements is zero.
+この例からもわかるように、拡張ウィンドウ統計では
+一般的に結果の冒頭部分にいくつか値無しが含まれます。
+今回の場合は(1要素のウィンドウには値無ししか含まれないため)平均で最初の1つ、
+(`stdDev` は2つ以上の値に対してのみ定義されるため)標準偏差で最初の2つが
+値無しになっています。
+唯一の例外は `expandingSum` で、値無しの総和は0になります。
 
 <a name="multi"></a>
-Multi-level indexed statistics
-------------------------------
+多層インデックス統計
+--------------------
 
-For a series with multi-level (hierarchical) index, the functions prefixed with `level` provide 
-a way to apply statistical operation on a single level of the index. Series with multi-level 
-index can be created directly by using a tuple (such as `'K1 * 'K2`) as the key, or they can
-be produced by a grouping operation such as `Frame.groupRowsBy`.
+複数レベルの(階層的)インデックスを持つシリーズに対しては、
+`level` という接頭辞を持つ関数を使用することによって、
+1つのインデックスを対象にした統計処理を行うことができます。
+複数レベルのインデックスを持つシリーズは(たとえば `'K1 * 'K2` のような)
+タプルをキーとすることにより、直接作成できます。
+あるいは `Frame.groupRowsBy` のようなグループ化操作を行って
+作成することもできます。
 
-For example, you can create two-level index that represents time-series data with month as the
-first part of the key and day as the second part of the key. Then you can use multi-level
-statistical functions to calculate means (and other statistics) for each month separately.
+たとえば月を1つめのキー、日を2つめのキーとするような、
+2レベルのインデックスを持った時系列データを作成できます。
+そして複数レベル用の(あるいはその他の)統計関数を使用することにより、
+月毎の平均を個別に計算するといったことができます。
 
-The following example demonstrates the idea - the `air` data set contains data for each
-day between May and September. We can create a frame with two-level row key using 
-`Frame.indexRowsUsing` and returning a tuple as the index:
+この例に対するデモが以下のコードです。
+`air` データセットには5月から9月まで、日毎のデータが含まれています。
+このデータセットに対して `Frame.indexRowsUsing` を呼び、
+インデックスとしてタプルを返すようにしています：
 *)
 let dateFormat = CultureInfo.CurrentCulture.DateTimeFormat
 let byMonth = air |> Frame.indexRowsUsing (fun r ->
     dateFormat.GetMonthName(r.GetAs("Month")), r.GetAs<int>("Day"))
 (**
-The type of the `byMonth` value is `Frame<string * int, string>` meaning that the row index
-has two levels. To make the output a little nicer, we use the `GetMonthName` function to 
-turn the first level of the index into a string representing the month name.
+値 `byMonth` の型は `Frame<string * int, string>`で、
+行インデックスが2レベルあることがわかります。
+出力を少し見やすくするために、ここでは `GetMonthName` 関数を使用して
+1レベル目のインデックスを月の名前に変換しています。
 
-We can now access individual columns and calculate statistics over the 
-first level (individual months) using functions prefixed with `level`:
+そして `level` の接頭辞を持った関数を使用することにより、
+各列にアクセスして、1レベル目(つまりそれぞれの月)の統計情報を計算できます：
 *)
 
 (*** define-output:lvlozone ***)
@@ -200,9 +230,10 @@ byMonth?Ozone
 (*** include-it:lvlozone ***)
 
 (**
-Currently, the `Stats` type does not include a function that would let you apply multi-level
-statistical functions on entire data frames, but this can easily be implemented using the
-`Frame.getNumericalCols` function and `Series.mapValues`:
+現在のところ、`Stats` 型にはデータフレームの複数レベルに対して
+統計関数を適用するような機能は実装されていません。
+しかしこれは `Frame.getNumericCols` 関数と `Series.mapValues` を組み合わせるだけで
+簡単に実装できます：
 *)
 (*** define-output:lvlall ***)
 byMonth
@@ -212,7 +243,8 @@ byMonth
 |> Frame.ofRows
 (*** include-it:lvlall ***)
 (**
-If we used `Frame.getNumericCols` directly, we would also calculate the mean of "Day" and 
-"Month" columns, which does not make much sense in this example. For that reason, the snippet
-first calls `sliceCols` to get only relevant columns.
+`Frame.getNumericCols` を直接呼び出すと"Day"および"Month"列の平均も
+計算することになりますが、今回の例ではあまり意味がありません。
+そのため、上のスニペットでは最初に `sliceCols` を呼び出して
+関係のある列だけに絞り込んでいます。
 *)
