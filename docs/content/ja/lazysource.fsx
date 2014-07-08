@@ -3,29 +3,30 @@
 open System
 
 (**
-Creating lazily loaded series
-=============================
+遅延ロードされるシリーズを作成する
+==================================
 
-When loading data from an external data source (such as a database), you might
-want to create a _virtual_ time series that represents the data source, but 
-does not actually load the data until needed. If you apply some range restriction
-(like slicing) to the data series before using the values, then it is not 
-necessary to load the entire data set into memory.
+データを(たとえばデータベースなどの)外部データソースからロードする場合、
+データソースを表す**実際の**時系列データを作成したいものの、
+実際に必要になるまではロードさせたくないことがあります。
+たとえば値を使用する前に何らかの(スライシングのような)範囲制限を行うのであれば、
+データセット全体をメモリ上にロードする必要はありません。
 
-The F# data frame library supports lazy loading through the `DelayedSeries.Create` 
-method. It returns an ordinary data series of type `Series<K, V>` which has a 
-delayed internal representation.
+F# data frame libraryは遅延ロードを `DelayedSeries.Create` メソッドとして
+サポートしています。
+このメソッドは普通の `Series<K, V>` 型のシリーズを返しますが、
+内部表現が遅延評価されるという違いがあります。
 
-## Creating lazy series
+## 遅延シリーズの作成
 
-We will not use a real database in this tutorial, but let's say that you have the
-following function which loads data for a given day range: 
+このチュートリアルでは実際のデータベースを使用しませんが、
+以下のような特定の期間のデータをロードするような関数が既にあるものとします：
 *)
 open Deedle
 
-/// Given a time range, generates random values for dates (at 12:00 AM)
-/// starting with the day of the first date time and ending with the 
-/// day after the second date time (to make sure they are in range)
+/// 特定の期間に対して、日毎(午前12:00毎)にランダムな値を生成します。
+/// 1番目の日付の日から始まり、(指定された期間が範囲に収まるように)
+/// 2番目の日付の翌日までが範囲になります。
 let generate (low:DateTime) (high:DateTime) =
   let rnd = Random()
   let days = int (high.Date - low.Date).TotalDays + 1
@@ -33,54 +34,61 @@ let generate (low:DateTime) (high:DateTime) =
           KeyValue.Create(low.Date.AddDays(float d), rnd.Next()) }
 
 (**
-Using random numbers as the source in this example is not entirely correct, because
-it means that we will get different values each time a new sub-range of the series
-is required - but it will suffice for the demonstration.
+ソースを乱数で生成してしまうと、シリーズの部分区間が必要になるたびに
+異なる値が取得できてしまうため、本来は正しいものではありません。
+ただし今回のデモとしてはこれで十分でしょう。
 
-Now, to create a lazily loaded series, we need to open the `Indices` namespace,
-specify the minimal and maximal value of the series and use `DelayedSeries.Create`:
+さて、遅延的にロードされるシリーズを作成するためには、
+まず `Indices` 名前空間をオープンし、
+シリーズの最小値および最大値を決め、
+`DelayedSeries.Create` を呼び出します：
+
 *)
 open Deedle.Indices
 
-// Minimal and maximal values that can be loaded from the series
+// シリーズからロードできる最小値および最大値
 let min, max = DateTime(2010, 1, 1), DateTime(2013, 1, 1)
 
-// Create a lazy series for the given range
+// 特定の期間に対する遅延シリーズを作成
 let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -> async { 
     printfn "Query: %A - %A" (lo, lob) (hi, hib)
     return generate lo hi })
 
 (**
-To make the diagnostics easier, we print the required range whenever a request
-is made. After running this code, you should not see any output yet.
-The parameter to `DelayedSeries.Create` is a function that takes 4 arguments:
+挙動をわかりやすくするために、リクエストがあるたびに
+要求された期間を表示するようにしています。
+ただし、このコードを実行するだけでは何も表示されません。
+`DelayedSeries.Create` の引数には4つの引数をとる関数を指定します：
 
-  - `lo` and `hi` specify the low and high boundaries of the range. Their
-    type is the type of the key (e.g. `DateTime` in our example)
-  - `lob` and `hib` are values of type `BoundaryBehavior` and can be either
-    `Inclusive` or `Exclusive`. They specify whether the boundary value should
-    be included or not.
+  - `lo` および `hi` は範囲の下限および上限を表します。
+    これらの型はキーの型です(たとえば今回の例であれば`DateTime`)
+  - `lob` および `hib` は `BoundaryBehavior` 型の値で、
+    `Inclusive` または `Exclusive` のいずれかを指定します。
+    端点を範囲に含むかどうかを指定します。
 
-Our sample function does not handle boundaries correctly - it always includes the
-boundary (and possibly more values). This is not a problem, because the lazy loader
-automatically skips over such values. But if you want, you can use `lob` and `hib` 
-parameters to build a more optimal SQL query.
+サンプルの関数では端点を正しく処理しておらず、
+常に端点(およびさらに多くの値)が範囲内に含まれるようになっています。
+遅延ローダーはこれらの値を自動的にスキップするため、
+このこと自体は問題ではありません。
+しかし必要に応じて `lob` や `hib` 引数を指定し、
+より最適化されたSQLクエリを組み立てることもできるでしょう。
 
-## Using un-evaluated series
+## 未評価のシリーズを使用する
 
-Let's now have a look at the operations that we can perform on un-evaluated series.
-Any operation that actually accesses values or keys of the series (such as `Series.observations`
-or lookup for a specific key) will force the evaluation of the series.
+では未評価のシリーズに対して操作を行うとどうなるのか見ていきましょう。
+シリーズの値やキーに実際にアクセスする操作
+(たとえば `Series.observations` や、特定のキーに対するルックアップなど)を行うと、
+シリーズが強制的に評価されます。
 
-However, we can use range restrictions before accessing the data:
+しかしデータにアクセスする前に、期間を制限してしまうことも出来ます：
 *)
-// Get series representing January 2012
+// 2012年1月を表すデータを取得
 let jan12 = ls.[DateTime(2012, 1, 1) .. DateTime(2012, 2, 1)]
 
-// Further restriction - only first half of the month
+// さらなる制限として、月の前半のみに制限
 let janHalf = jan12.[.. DateTime(2012, 1, 15)]
 
-// Get value for a specific date
+// 特定の日付の値を取得
 janHalf.[DateTime(2012, 1, 1)]
 // [fsi: Query: (1/1/2012, Inclusive) - (1/15/2012, Inclusive)]
 // [fsi: val it : int = 1127670994]
@@ -88,28 +96,34 @@ janHalf.[DateTime(2012, 1, 1)]
 janHalf.[DateTime(2012, 1, 2)]
 // [fsi: val it : int = 560920727]
 (**
-As you can see from the output on line 9, the series obtained data for the
-15 day range that we created by restricting the original series. When we requested
-another value within the specified range, it was already available and it was
-returned immediately. Note that `janHalf` is restricted to the specified 15 day
-range, so we cannot access values outside of the range. Also, when you access a single
-value, entire series is loaded. The motivation is that you probably need to access
-multiple values, so it is likely cheaper to load the whole series.
+9行目の出力からもわかるように、
+元のシリーズに対して制限を加えてあるために、
+15日分のシリーズデータしか取得されていません。
+特定の範囲内にある別の値をリクエストすると、
+既にデータが利用可能になっているため、即座に値が返されます。
+なお `janHalf` には15日分しかデータがないため、
+範囲外の値にアクセスすることはできないことに注意してください。
+また、1つの値にアクセスする場合でもシリーズ全体がロードされている点にも
+注意してください。
+おそらく複数の値にアクセスする必要があるはずなので、
+シリーズ全体をロードしてしまったほうがコストが低くなるだろう
+というのがその理由です。
 
-Another operation that can be performed on an unevaluated series is to add it
-to a data frame with some existing key range:
+未評価のシリーズに対して行えるもう1つの操作として、
+既存のキー範囲を持ったデータフレームにシリーズを追加することができます：
 *)
 
-// Create empty data frame for days of December 2011
+// 2011年12月の日付を含んだ空のデータフレームを作成
 let dec11 = Frame.ofRowKeys [ for d in 1 .. 31 -> DateTime(2011, 12, d) ]
 
-// Add series as the 'Values' column to the data frame
+// シリーズを'Values'列としてデータフレームに追加
 dec11?Values <- ls
 // [fsi: Query: (12/1/2011, Inclusive) - (12/31/2011, Inclusive)]
 
 (**
-When adding lazy series to a data frame, the series has to be evaluated (so that
-the values can be properly aligned) but it is first restricted to the range of the
-data frame. In the above example, only one month of data is loaded.
+遅延シリーズをデータフレームに追加すると、
+(値が適切にアラインされるように)その時点でシリーズが評価されますが、
+まずはデータフレームの範囲によって制限されます。
+上のコードの場合、1ヶ月分のデータだけがロードされます。
 
 *)
