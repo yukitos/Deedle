@@ -3,55 +3,65 @@
 #I "../../../packages/FSharp.Charting.0.90.6"
 #I @"../../../bin"
 open System
-let airQuality = __SOURCE_DIRECTORY__ + "/../../data/AirQuality.csv"
+let airQuality = __SOURCE_DIRECTORY__ + "/../data/AirQuality.csv"
 
 (**
 
-Interoperating between R and Deedle
-===================================
+RとDeedleの連携
+===============
 
-The [R type provider](http://bluemountaincapital.github.io/FSharpRProvider/) enables
-smooth interoperation between R and F#. The type provider automatically discovers 
-installed packages and makes them accessible via the `RProvider` namespace.
+[R 型プロバイダー](http://bluemountaincapital.github.io/FSharpRProvider/)
+を使用すると、RとF#とをスムーズに連携できるようになります。
+R 型プロバイダーはインストール済みのパッケージを自動的に検出するため、
+`RProvider` 名前空間経由でそれらにアクセスできるようになります。
 
-R type provider for F# automatically converts standard data structures betwene R
-and F# (such as numerical values, arrays, etc.). However, the conversion mechanism
-is extensible and so it is possible to support conversion between other F# types.
+F#用のR 型プロバイダーはRとF#の標準データ構造(数値や配列など)を自動的に変換します。
+しかしこの変換機能は拡張可能であるため、その他のF#型に対する変換を
+サポートすることもできます。
 
-The Deedle library comes with extension that automatically converts between Deedle
-`Frame<R, C>` and R `data.frame` and also between Deedle `Series<K, V>` and the
-[zoo package](http://cran.r-project.org/web/packages/zoo/index.html) (Z's ordered 
-observations).
+Deedleライブラリには、Deedleの ｀Frame<R, C>` と R の `data.frame`、
+Deedleの `Series<K, V>` と
+[zoo package](http://cran.r-project.org/web/packages/zoo/index.html)
+(Z's ordered observations：Zの順序付き観測値)
+を自動的に変換するような拡張機能が備えられています。
 
-To use Deedle and R provider together, all you need to do is to install the following
-NuGet package (this depends on the R provider and Deedle, so you do not need anything
-else).
+DeedleとR プロバイダーを組み合わせるには、
+以下のNuGetパッケージをインストールするだけですみます
+(このパッケージはR プロバイダーとDeedleに依存しているため、
+追加でインストールするものはありません)。
 
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The F# DataFrame library can be <a href="https://nuget.org/packages/Deedle.RPlugin">installed from NuGet</a>:
+      F# DataFrame library は<a href="https://nuget.org/packages/Deedle.RPlugin">NuGet経由で</a>インストールできます：
       <pre>PM> Install-Package Deedle.RPlugin</pre>
     </div>
   </div>
   <div class="span1"></div>
 </div>
 
-This page is a quick overview showing how to pass data between R and Deedle.
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx)
-from GitHub and run the samples interactively.
+このページではRとDeedle間でデータをやりとりする方法について簡単に説明します。
+また、このページをGitHubから
+[F# スクリプトファイル](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx)
+としてダウンロードすれば、サンプルをインタラクティブに実行できます。
 
 <a name="setup"></a>
 
-Getting started
----------------
+はじめに
+--------
 
-In a typical project ("F# Tutorial"), the NuGet packages are installed in the `../packages`
-directory. To use R provider and Deedle, you need to write something like this:
+(「F# チュートリアル」のような)一般的なプロジェクトにおいて、
+NuGetパッケージは `../packages` ディレクトリにインストールされます。
+R プロバイダーとDeedleを使用するためには、
+以下のようなコードを用意する必要があります：
+
+> 訳注：インクルードディレクトリのパスは実際の環境、
+  および使用しているライブラリのバージョンによって異なります。
+  適宜修正してください。
 *)
-#I "../packages/Deedle.0.9.9-beta/"
-#I "../packages/RProvider.1.0.7-alpha/"
+#I "../../../packages/Deedle.0.9.9-beta/"
+#I "../../../packages/RProvider.1.0.7-alpha/"
 #load "RProvider.fsx"
 #load "Deedle.fsx"
 
@@ -60,45 +70,52 @@ open RDotNet
 open Deedle
 (**
 
-If you're not using NuGet from Visual Studio, then you'll need to manually copy the
-file `Deedle.RProvider.Plugin.dll` from the package `Deedle.RPlugin` to the 
-directory where `RProvider.dll` is located (in `RProvider.1.0.7-alpha/lib`). Once that's
-done, the R provider will automatically find the plugin.
+Visual StudioのNuGetを使用していない場合には、
+`Deedle.RPlugin` パッケージの `Deedle.RProvider.Plugin.dll` ファイルを
+(`RProvider.1.0.7-alpha/lib` にある)`RProvider.dll` と
+同じディレクトリにコピーする必要があります。
+そうするとR プロバイダーがこのプラグインを自動的に検出します。
 
 <a name="frames"></a>
 
-Passing data frames to and from R
----------------------------------
+データフレームをRとの間でやりとりする
+-------------------------------------
 
-### From R to Deedle
-Let's start by looking at passing data frames from R to Deedle. To test this, we
-can use some of the sample data sets available in the `datasets` package. The R
-makes all packages available under the `RProvider` namespace, so we can just
-open `datasets` and access the `mtcars` data set using `R.mtcars` (when typing
-the code, you'll get automatic completion when you type `R` followed by dot):
+### RからDeedleへ
+
+まずはデータフレームをRからDeedleに渡す方法から見ていきましょう。
+これをテストするために、`datasets` パッケージにある、
+いくつかのサンプルデータセットを使用します。
+Rのすべてのパッケージは `RProvider` 名前空間以下に用意されているため、
+`datasets` をオープンして `R.mtcars` とすれば `mtcars` にアクセスできます
+(`R`に続けてドットを入力すれば自動的に補完候補が表示されるはずです)：
 
 *)
 (*** define-output:mtcars ***)
 open RProvider.datasets
 
-// Get mtcars as an untyped object
+// 型無しオブジェクトとして mtcars を取得します
 R.mtcars.Value
 
 (*** include-it:mtcars ***)
 
-// Get mtcars as a typed Deedle frame
+// mtcars を型付きのDeedleフレームとして取得します
 let mtcars : Frame<string, string> = R.mtcars.GetValue()
 
 (**
-The first sample uses the `Value` property to convert the data set to a boxed Deedle
-frame of type `obj`. This is a great way to explore the data, but when you want to do 
-some further processing, you need to specify the type of the data frame that you want
-to get. This is done on line 13 where we get `mtcars` as a Deedle frame with both rows
-and columns indexed by `string`.
+1番目のサンプルでは `Value` プロパティを参照して、
+データセットをDeedleの`obj`型にボックス化されたフレームへと変換しています。
+データを探索するにはこれでも素晴らしいのですが、
+さらに複雑な処理を行いたい場合にはデータフレームの型を指定する必要があります。
+具体的には13行目のようにすると、
+行と列が`string`型でインデックスされたDeedleフレームとして`mtcars`を取得できます。
 
-To see that this is a standard Deedle data frame, let's group the cars by the number of
-gears and calculate the average "miles per galon" value based on the gear. To visualize
-the data, we use the [F# Charting library](https://github.com/fsharp/FSharp.Charting):
+これが標準的なDeedleのデータフレームであることを確認するために、
+この車両データをギア数でグループ化して、
+ギアをベースとした平均「燃費(1ガロンあたりの走行マイル数)」を計算します。
+データを可視化するためには
+[F# Charting library](https://github.com/fsharp/FSharp.Charting)
+を使用します：
 
 *) 
 (*** define-output:mpgch ***)
@@ -115,12 +132,13 @@ mtcars
 
 (**
 
-### From Deedle to R
+### DeedleからRへ
 
-So far, we looked how to turn R data frame into Deedle `Frame<R, C>`, so let's look
-at the opposite direction. The following snippet first reads Deedle data frame 
-from a CSV file (file name is in the `airQuality` variable). We can then use the
-data frame as argument to standard R functions that expect data frame.
+これまではRのデータフレームをDeedleの`Frame<R, C>`に変換する方法を紹介しましたが、
+次に反対方向の変換を紹介しましょう。
+以下のスニペットでは、まずCSVファイルからDeedleデータフレームを読み取ります
+(ファイル名は`airQuality`変数として保持されています)。
+そしてデータフレームを受け取る標準R関数の引数にこのデータフレームを指定します。
 *)
 
 let air = Frame.ReadCsv(airQuality, separators=";")
@@ -128,37 +146,39 @@ let air = Frame.ReadCsv(airQuality, separators=";")
 (*** include-value:air ***)
 
 (**
-Let's first try passing the `air` frame to the R `as.data.frame` function (which 
-will not do anything, aside from importing the data into R). To do something 
-slightly more interesting, we then use the `colMeans` R function to calculate averages
-for each column (to do this, we need to open the `base` package):
+まず最初に、`air` フレームをRの`as_data_frame`関数に渡してみます
+(この関数はデータをRにインポートするだけで、それ以外は何も行いません)。
+もう少し興味深い処理として、Rの`colMeans`関数を呼び出して、
+各列に対する平均を計算してみます
+(そのためにはあらかじめ`base`パッケージをオープンしておく必要があります)：
 *)
 open RProvider.``base``
 
-// Pass air data to R and print the R output
+// airデータをRに渡して、Rの出力を表示します
 R.as_data_frame(air)
 
-// Pass air data to R and get column means
+// airデータをRに渡して、列の平均を計算します
 R.colMeans(air)
 // [fsi:val it : SymbolicExpression =]
 // [fsi:  Ozone  Solar.R  Wind  Temp  Month   Day ]
 // [fsi:    NaN      NaN  9.96 77.88   6.99  15.8]
 
 (** 
-As a final example, let's look at the handling of missing values. Unlike R, Deedle does not 
-distinguish between missing data (`NA`) and not a number (`NaN`). For example, in the 
-following simple frame, the `Floats` column has missing value for keys 2 and 3 while
-`Names` has missing value for the row 2:
+最後の例として、値無しの処理について説明します。
+Rと異なり、Deedleではデータ無し(`NA`)と非数(`NaN`)が区別されません。
+たとえば以下の単純なフレームにおいて、`Floats`列のキー2と3は値無し、
+一方`Names`列は2の行が値無しです：
 *)
-// Create sample data frame with missing values
+// 値無しを含んだサンプルデータを作成
 let df = 
   [ "Floats" =?> series [ 1 => 10.0; 2 => nan; 4 => 15.0]
     "Names"  =?> series [ 1 => "one"; 3 => "three"; 4 => "four" ] ] 
   |> frame
 (**
-When we pass the data frame to R, missing values in numeric columns are turned into `NaN`
-and missing data for other columns are turned into `NA`. Here, we use `R.assign` which
-stores the data frame in a varaible available in the current R environment:
+このデータフレームをRに渡すと、数値的な列にある値無しは`NaN`、
+その他の列にあるデータ無しは`NA`になります。
+以下では現在のR環境下で利用可能な変数にデータフレームを格納する関数
+ `R.assign` を使用しています：
 *)
 R.assign("x",  df)
 // [fsi:val it : SymbolicExpression = ]
@@ -171,25 +191,29 @@ R.assign("x",  df)
 
 <a name="series"></a>
 
-Passing time series to and from R
----------------------------------
+時系列データをRとの間でやりとりする
+-----------------------------------
 
-For working with time series data, the Deedle plugin uses [the zoo package](http://cran.r-project.org/web/packages/zoo/index.html) 
-(Z's ordered observations). If you do not have the package installed, you can do that
-by using the `install.packages("zoo")` command from R or using the following code from
-F# (when running the code from F#, you'll need to restart your editor and F# interactive
-after it is installed): 
+Deedleプラグインは時系列データを処理するために
+[zoo package](http://cran.r-project.org/web/packages/zoo/index.html) 
+(Z's ordered observations：Zの順序付き観測値)を使用しています。
+このパッケージをまだインストールしていない場合、
+R上で`install.packages("zoo")`コマンドを実行するか、
+以下のF#コードを実行します
+(F#コードを実行した場合、インストール完了後に
+エディタとF# Interactiveを一度終了する必要があります)：
 *)
 
 open RProvider.utils
 R.install_packages("zoo")
 
 (**
-### From R to Deedle
+### RからDeedleへ
 
-Let's start by looking at getting time series data from R. We can again use the `datasets`
-package with samples. For example, the `austres` data set gives us access to 
-quarterly time series of the number of australian residents:
+まずはRから時系列データを取得する方法を紹介します。
+今回もまたサンプル用に`datasets`パッケージを使用します。
+たとえば`austres`データセットにはオーストラリアの人口に関する4半期毎の
+時系列データが含まれています：
 *)
 R.austres.Value
 // [fsi:val it : obj =]
@@ -201,37 +225,40 @@ R.austres.Value
 // [fsi:    1993    -> 17627.1 ]
 // [fsi:    1993.25 -> 17661.5 ]
 (**
-As with data frames, when we want to do any further processing with the time series, we need
-to use the generic `GetValue` method and specify a type annotation to that tells the F#
-compiler that we expect a series where both keys and values are of type `float`:
+データフレームと同様、時系列データに対してもっと複雑な処理を行いたい場合には、
+型アノテーションを指定して`GetValue`ジェネリックメソッドを呼び出します。
+以下では、キーと値がいずれも`float`型であるシリーズを取得したいということを
+F#コンパイラに伝えています：
 *)
-// Get series with numbers of australian residents
+// オーストラリアの人口を含んだシリーズを取得
 let austres : Series<float, float> = R.austres.GetValue()
 
-// Get TimeSpan representing (roughly..) two years
+// (約)2年間を表すTimeSpanを取得
 let twoYears = TimeSpan.FromDays(2.0 * 365.0)
 
-// Calculate means of sliding windows of 2 year size 
+// 2年単位でスライドするウィンドウ毎の平均を計算
 austres 
 |> Series.mapKeys (fun y -> 
     DateTime(int y, 1 + int (12.0 * (y - floor y)), 1))
 |> Series.windowDistInto twoYears Stats.mean
 (**
 
-The current version of the Deedle plugin supports only time series with single column.
-To access, for example, the EU stock market data, we need to write a short R inline
-code to extract the column we are interested in. The following gets the FTSE time 
-series from `EuStockMarkets`:
+現在のバージョンのDeedleプラグインでは、
+単一の列を持った時系列データだけがサポートされています。
+たとえばEUの株式市場データにアクセスする場合、
+対象とする列を展開するRの短いインラインコードを作成する必要があります。
+以下のコードでは`EuStockMarkets`からFTSE時系列データを取得しています：
 
 *)
 let ftseStr = R.parse(text="""EuStockMarkets[,"FTSE"]""")
 let ftse : Series<float, float> = R.eval(ftseStr).GetValue()
 (**
 
-### From Deedle to R
+### DeedleからRへ
 
-The opposite direction is equally easy. To demonstrate this, we'll generate a simple
-time series with 3 days of randomly generated values starting today:
+逆方向の処理も同じく簡単です。
+デモとして、本日から3日間、ランダムに生成された値を含む
+単純な時系列データを生成します：
 *)
 let rnd = Random()
 let ts = 
@@ -239,54 +266,55 @@ let ts =
       DateTime.Today.AddHours(i), rnd.NextDouble() ] 
   |> series
 (**
-Now that we have a time series, we can pass it to R using the `R.as_zoo` function or
-using `R.assign` to store it in an R variable. As previously, the R provider automatically
-shows the output that R prints for the value:
+時系列データが用意出来たので、
+`R.as_zoo`あるいは`R.assign`関数を使用してRの変数に格納します。
+先ほどと同じく、RプロバイダーはRが出力した値を自動的に画面に表示します：
 *)
 open RProvider.zoo
 
-// Just convert time series to R
+// 時系列データを単にRのデータに変換します
 R.as_zoo(ts)
-// Convert and assing to a variable 'ts'
+// データを変換して変数'ts'に割り当てます
 R.assign("ts", ts)
 // [fsi:val it : string =
 // [fsi: 2013-11-07 05:00:00 2013-11-07 06:00:00 2013-11-07 07:00:00 ...]
 // [fsi: 0.749946652         0.580584353         0.523962789         ...]
 
 (**
-Typically, you will not need to assign time series to an R variable, because you can 
-use it directly as an argument to functions that expect time series. For example, the
-following snippet applies the rolling mean function with a window size 20 to the 
-time series.
+時系列データはそれを引数にとる関数に直接渡すことが出来るため、
+一般的には時系列データをRの変数に割り当てる必要はありません。
+たとえば以下のスニペットでは、時系列データに対してウィンドウサイズ20で
+回転平均を計算する関数を呼び出しています。
 *)
-// Rolling mean with window size 20
+// ウィンドウサイズ20で回転平均を計算
 R.rollmean(ts, 20)
 
 (**
-This is a simple example - in practice, you can achieve the same thing with `Series.window`
-function from Deedle - but it demonstrates how easy it is to use R packages with 
-time series (and data frames) from Deedle. As a final example, we create a data frame that
-contains the original time series together with the rolling mean (in a separate column)
-and then draws a chart showing the results:
+これは単純な例です。
+実際、`Series.window`関数をDeedleから呼び出せば同じ結果が得られます。
+しかしこのデモからは、時系列データ(およびデータフレーム)を処理するRパッケージを
+Deedleから簡単に呼び出すことが出来るということがわかります。
+最後の例として、元の時系列データと回転平均の両方を(別の列として)
+含むデータフレームを作成し、結果をチャートとして表示させます：
 *)
 
 (*** define-output:means ***)
-// Use 'rollmean' to calculate mean and 'GetValue' to 
-// turn the result into a Deedle time series
+// 'rollmean'で平均を計算した後、'GetValue'で結果を
+// Deedleの時系列データとして取得します
 let tf = 
   [ "Input" => ts 
     "Means5" => R.rollmean(ts, 5).GetValue<Series<_, float>>()
     "Means20" => R.rollmean(ts, 20).GetValue<Series<_, float>>() ]
   |> frame
 
-// Chart original input and the two rolling means
+// 元の入力データと2つの回転平均をチャートにします
 Chart.Combine
   [ Chart.Line(Series.observations tf?Input)
     Chart.Line(Series.observations tf?Means5)
     Chart.Line(Series.observations tf?Means20) ]
 
 (**
-Depending on your random number generator, the resulting chart looks something like this:
+生成された乱数次第ですが、結果はおよそ以下のようなものになります：
 *)
 
 (*** include-it:means ***)
