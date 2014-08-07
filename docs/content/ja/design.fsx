@@ -1,97 +1,116 @@
 ﻿(**
 
-F# Data Frame design notes
-==========================
+F# Data Frameデザインノート
+===========================
 
-This is the first version of F# Data Frame library and so we are still actively looking
-at how to improve the design. The best place for discussions is either the [issue list
-on GitHub](https://github.com/BlueMountainCapital/Deedle/issues) or the 
-mailing list of the [F# for Data and Machine Learning](http://fsharp.org/technical-groups/) 
-group (for more broader topics).
+これはF# Data Frameライブラリの最初のバージョンで、
+我々はどうすればデザインを向上させることができるか、
+積極的に追求している最中です。
+議論にうってつけの場所としては、
+[GitHub上のissueリスト](https://github.com/BlueMountainCapital/Deedle/issues)
+か、
+[F# for Data and Machine Learning](http://fsharp.org/technical-groups/)
+のメーリングリストのいずれかです(後者はより広範なトピックを対象にしています)。
 
-The current version of the library implements most of the basic functionality,
-but it hopefully provides the right "core" internals that should make it easier to add 
-all the additional (useful) features. 
+現行のライブラリではほとんどの基礎的な機能が実装されていますが、
+追加の(便利な)機能を簡単に実装することができるよう、
+適切な内部「コア」機能も用意してあるつもりです。
 
-When developing the library, we follow the principle that there should be a small number
-of _primitive_ or _fundamental_ functions (these are typically provided as members on
-the basic objects) that can be used to provide a wide range of useful functions (typically
-available as extension members and in F# modules). We are generally quite happy to include
-more extension members and functions for commonly used operations, so feel free to contribute!
+ライブラリの実装時には、幅広い場面で有用な関数において使用されるような
+**素朴(primitive)** かつ **基本的(fundamental)** な関数を少数用意するという
+方針を採用しています(これらの関数は一般的には基本的なオブジェクトのメンバーとして
+定義されます)。
+また、一般的な操作を行う拡張メンバーや関数を
+さらに増やしていけるといいと考えていますので、
+是非このライブラリに貢献をお願いします！
 
-## Library principles
+## ライブラリの原則
 
- * **F# and C# friendly** - We want to make sure that the library works from both F# and C#.
-   For this reason, most functionality is exposed as extension members (using the C# `Extension`
-   attribute - so they are only visible in C# and F# 3.1) and as functions in modules
-   (`Frame` and `Series`). These are generally very similar. One difference is that functions
-   use tuples and F# `option<T>` and more abbreviations, while extensions use `KeyValuePair<K, V>`,
-   `OptionalValue<T>` (a C#-friendly `struct` defined in the library).
+ * **F# と C# で使いやすいこと** - このライブラリはF#とC#の両方で
+   使用できるようにしたいと考えています。
+   そのため、ほとんどの機能は拡張メンバーおよび
+   (`Frame` および `Series`)モジュール関数として定義されます
+   (拡張メンバーにはC#の`Extension`属性が指定されているため、
+    それらはC#およびF# 3.1においてのみ利用可能です)。
+   1つ異なる点として、拡張メンバーでは `KeyValuePair<K, V>` や `OptionalValue<T>`
+   (ライブラリ内で定義されているC#フレンドリーな`struct`)が使用されているのに対して、
+   関数ではタプルやF#の`option<T>`、省略型などが使用されています。
 
- * **Symmetry between rows and columns** - The data in data frame is stored as a list of 
-   columns and it is good idea to use the data frame in a column-wise way (and there are
-   more functions for working with column-based frames).
+ * **行と列の対称性** - データフレーム内のデータは列のリストとして格納されるため、
+   列方向にデータフレームを処理するほうがよいでしょう
+   (列ベースのフレームを処理する関数も多数用意されています)。
+   しかし`Frame<'TRowKey, `TColKey>` 型のデータには対称性が有り、
+   列(シリーズ)と行の両方でアクセスできるような独自のインデックスを使用できます。
+   また、`df.Columns` や `df.Rows` 経由で(ネストされた)シリーズのシリーズとして
+   行や列にアクセスすることもできます。
+   列キーは一般的には文字列(シリーズ名)になりますが、これは必須ではなく、
+   `df.Transpose()` メソッドを呼ぶことにより、フレームを転置させることもできます。
 
-   However, the data type `Frame<'TRowKey, 'TColKey>` is symmetric in that it uses custom
-   index for access by both columns (series) and rows. You can also access columns/rows as
-   a series of (nested) series via `df.Columns` and `df.Rows`. Although the column key is
-   typically going to be a string (series name), this is not required and you can e.g. transpose
-   frame using the `df.Transpose()` method.
-
- * **Missing and NaN values** we assume that data frames can always contain missing values and
-   so there is no type distinction between frame/series that may have missing values and one
-   that may not have missing values. Operations available on the frame and series are designed
-   to handle missing values well - they generally skip over missing values unless you explicitly
-   try to read a value by a key.
-
-   The current version treats certain values as "missing" values, including `Double.NaN` 
-   (for numeric values) and `null` (for `Nullable<'T>` types and reference types). This 
-   means that when you create a series from `Double.NaN`, this is turned into a _missing_ value
-   and the value is skipped when doing aggregation such as `Series.sum`. (An alternative would be
-   to support both `NaN` and _missing_, but there is no clear conclusion about what is the 
-   most useful option.)
-
- * **Immutability** - A series is fully immutable data type, but a
-   data frame supports limited mutation - you can add new series, drop a series & replace
-   a series (but you cannot mutate the series). The row index of a data frame is mostly immutable -
-   the only case when it changes is when you create an empty data frame and than add the first
-   series.
-
-   This seems to be useful because it works nicely with the `?<-` operator and you do not have 
-   to re-bind when you're writing some research script.
-
-## Library internals
-
-The following types are (mostly) not directly visible to the user, but they represent the
-"minimal" core that changes infrequently. You could use them when extending the library: 
-
- * `IVector<'TValue>` represents a vector (essentially an abstract data
-   storage) that contains values `'TValue` that can be accessed via an address
-   `Address`. A simple concrete implementation is an array with `int` addresses,
-   but we aim to make this abstract - one could use an array of arrays with `int64`
-   index for large data sets, lazy vector that loads data from a stream or even 
-   a virtual vector with e.g. Cassandra data source). 
+ * **値無しおよびNaN** - データフレームには常に値無しが含まれうるものだと
+   想定しているため、値無しを含む可能性のあるフレームまたはシリーズと、
+   値無しを含まないものは、いずれも同じ型になっています。
+   フレームやシリーズに対して実行可能な操作においては、
+   値無しを適切に処理できるように設計されています。
+   これらの操作では、値をキーによって明示的に読み取ろうとしない限り、
+   基本的には値無しをスキップするようになっています。
    
-   An important thing about vectors is that they handle missing values, so vector 
-   of integers is actually more like `array<option<int>>` (but we have a custom value 
-   type so that this is continuous block of memory). We decided that handling missing
-   values is something that is so important for data frame, that it should be directly
-   supported rather than done by e.g. storing optional or nullable values. Our 
-   implementation actually does a simple optimization - if there are no missing values,
-   it just stores `array<int>`.
+   現在のバージョンでは、(数値に対する)`Double.NaN`や
+   (`Nullable</T>`や参照型に対する)`null`といった特定の値が「値無し」と
+   みなされるようになっています。
+   つまり`Double.NaN`を含むシリーズを作成したとすると、
+   この値が**値無し**となり、`Series.sum`のような集計関数を呼び出すと
+   値が無視されるというわけです
+   (`NaN`と**値無し**の両方に対応できるようにするべきかもしれませんが、
+   何が最善の選択肢なのかという問いに対する答えは出ていません)。
 
- * `VectorConstruction` is a discriminated union (DSL) that describes
-   construction of vector. For every vector type, there is an `IVectorBuilder`
-   that knows how to construct vectors using the construction instructions (these 
-   include things like re-shuffling of elements, appending vectors, getting a sub-range
-   etc.)
+ * **不変性(Immutability)** - シリーズは完全に不変なデータ型ですが、
+   データフレームは限定的に可変性をサポートします。
+   たとえば新しいシリーズを追加、削除、置換したりすることができます
+   (ただしシリーズそのものを変更することは出来ません)。
+   また、データフレームの行インデックスはほぼ不変ですが、
+   空のデータフレームを作成した後に最初のシリーズを追加する場合に限って
+   変更されることがあります。
+   
+   これらの処理は `?<-` 演算子で手軽に行うことが出来るため、
+   リサーチ用のスクリプトを作成している場合などに再バインドする必要もありません。
 
- * `IIndex<'TKey>` represents an index - that is, a mapping from keys
-   of a series or data frame to addresses in a vector. In the simple case, this is just
-   a hash table that returns the `int` offset in an array when given a key (e.g.
-   `string` or `DateTime`). A super-simple index would just map `int` offsets to 
-   `int` addresses via an identity function (not implemented yet!) - if you have
-   series or data frame that is simply a list of recrods.
+## ライブラリの内部について
+
+以下の型は(たいていの場合には)ユーザーが直接使用するようなものではありませんが、
+あまり頻繁には変更されることがない「最小限の」コアを表すものです。
+ライブラリを拡張させる場合にはこれらの型を使用することになるでしょう：
+
+ * `IVector<'TValue>` は`Address`型を経由してアクセスすることができる
+   `'TValue`型の値を含んだベクターです。
+   具体的な実装としては単に`int`型のアドレスを持った配列とすればいいのですが、
+   ライブラリではこれを抽象化しています。
+   たとえば巨大なデータセットや、ストリームからデータを読み込むような遅延ベクター、
+   (Cassandra等をデータソースとするような)仮想ベクターに対しては
+   `int64`をインデックスとするような配列の配列が使用されることがあります。
+
+   ベクターには、値無しを処理するという重要な役割があります。
+   そのため、整数のベクターは `array<option<int>>` とみなすことができます
+   (ただしこれが連続したメモリブロックに配置されるよう、独自の値型を定義しています)。
+   値無しの処理はデータフレームにとって重要な項目であると判断したため、
+   オプション値やNull許容の値を格納するのではなく、
+   直接サポートするべきだということになりました。
+   ライブラリの実装では、単純な最適化が行われています。
+   もし値無しが全くない場合は単に`array<int>`が格納されます。
+
+ * `VectorConstruction` は判別共用体で、ベクターの構造を表すものです。
+   すべてのベクター型に対して、
+   ベクターを生成する方法を定義している`IVectorBuilder`という
+   インターフェイスの実装が用意されます
+   (このインターフェイスには要素の再シャッフルやベクターの追加、部分区間の取得なども
+    定義されています)。
+
+ * `IIndex<'TKey>` はインデックス、つまりシリーズあるいはデータフレームのキーと
+   ベクター内のアドレスとのマッピングを表します。
+   単純なケースでは、これは指定された特定のキー(たとえば`string`や`DateTime`)に対応する、
+   配列内の`int`型オフセットを返すような単なるハッシュテーブルになります。
+   きわめて単純なインデックスとしては、アイデンティティ関数(未実装です！)によって
+   `int`オフセットと`int`アドレスをマッピングするだけのものになります。
+   シリーズやデータフレームの場合、これは単なるレコードのリストです。
 
 Now, the following types are directly used:
 
