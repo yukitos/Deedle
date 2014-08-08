@@ -1,51 +1,58 @@
-Using Deedle from C#
-====================
+C#からDeedleを使用する
+======================
 
-Deedle is a .NET library for data manipulation and it can be used from both F# and C# as well as from
-other .NET languages. Deedle is a single managed library `Deedle.dll` that contains the core Deedle
-types, together with extension methods for convenient use from C#. To install Deedle, just use the
-Deedle NuGet package.
+Deedleはデータ操作用の.NETライブラリなので、F#やC#、
+さらにはその他の.NET言語から利用できます。
+Deedleは`Deedle.dll`という単一のマネージライブラリで、
+この中にDeedleの型や、C#で使用しやすいようにするための
+拡張メソッドの定義などが含まれています。
+Deedleは単にDeedle NuGetパッケージを使用してインストールできます：
 
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The F# DataFrame library can be <a href="https://nuget.org/packages/Deedle">installed from NuGet</a>:
+      F# DataFrame library は<a href="https://nuget.org/packages/Deedle">NuGet経由でインストール</a>出来ます:
       <pre>PM> Install-Package Deedle</pre>
     </div>
   </div>
   <div class="span1"></div>
 </div>
 
-Overview
---------
+概要
+----
 
-The Deedle library provides types for working with _series_ and _data frames_. A series is a collection 
-mapping a set of keys to values. The keys are used for lookup in the series, but also for automatic 
-alignment when working with multiple series. For example, the keys can be ordinal numbers or strings 
-(when you use it to store different properties) or ordered dates or times (when you use series to 
-represent time series such as stock prices). When performing operations on multiple series (e.g. adding
-or zipping), the keys are used to automatically match corresponding values. Furthermore, series automatically
-handles missing data.
+Deedleライブラリには**シリーズ**および**データフレーム**を操作するための型が定義されています。
+シリーズはキーのセットから複数の値へのマッピングのコレクションです。
+キーはシリーズ内を検索するために使用されますが、複数のシリーズを処理する場合に
+自動的にアラインを行う場合にも使用されます。
+たとえばキーとしては(異なる性質のデータを格納する場合には)序数または文字列、
+あるいは(たとえば株価のように時系列データを表すシリーズの場合には)日付または時刻を使用できます。
+複数のシリーズに対して(追加あるいは圧縮といった)操作を行う場合、
+関連する値を一致させるために自動的にキーが使用されます。
+さらに、シリーズでは値なしについても自動的に処理されます。
 
-A data frame is a structure containing multiple series (multiple columns) that share the same row keys.
-A typical example includes data frame that stores different properties about objects (each row represents
-a single object), or data frame that stores aligned time series data such as prices for multiple stocks.
+データフレームは複数のシリーズ(複数の列)を含み、同一の行キーを共有するデータ構造です。
+一般的な例としては、オブジェクトに対する異なる性質を格納するデータフレーム
+(各行が1つのオブジェクトを表します)であったり、
+複数の株価のような、アラインされた時系列データを格納するデータフレームなどがあります。
 
-The best way to learn about using Deedle from C# is to go through the two tutorials below that disucss 
-working with series and frames, respectively.
+DeedleをC#から使用する方法を習得するには、
+それぞれシリーズとフレームを操作する以下の2つのチュートリアルを進めるとよいでしょう。
 
-Documentation
--------------
+ドキュメント
+------------
 
- * [**Working with data series**](csharpseries.html) explains the `Series<K, V>` type, discusses how to 
-   build series, retrieve data from a series, perform series computations including aggregation
-   and handle missing data and how to work with series values and indices.
+ * [**データシリーズの操作**](csharpseries.html) では `Series<K, V>` 型の説明や、
+   シリーズを組み立てる方法、シリーズからデータを取得する方法、シリーズに対して
+   集計を行う方法、値なしを処理する方法、シリーズの値とインデックスを扱う方法を説明しています。
 
- * [**Working with data frames**](csharpframe.html) discusses how to combine multiple series in a data
-   frame, how to align data and time series using dates, how to work with rows and columns of a
-   data frame and how to perform calculations over entire data frames.
+ * [**データフレームの操作**](csharpframe.html) では
+   複数のシリーズを1つのデータフレームとして組み合わせる方法や、
+   日付を使用して時系列データをアラインする方法、
+   データフレームの行および列を操作する方法、
+   データフレーム全体に対して計算を行う方法について説明しています。
 
- * [**Design notes document**](http://bluemountaincapital.github.io/Deedle/design.html) is worth checking
-   out if you want to get better understanding of the library principles - how it has been designed and
-   how the implementation works.
+ * [**デザインノート**](http://bluemountaincapital.github.io/Deedle/design.html) には
+   ライブラリの基本原則をさらに理解するための記述があるので、こちらも確認しておくとよいでしょう。
+   ライブラリの設計方法、および実装の挙動に関する説明があります。
