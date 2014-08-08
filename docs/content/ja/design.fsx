@@ -112,62 +112,76 @@ F# Data Frameデザインノート
    `int`オフセットと`int`アドレスをマッピングするだけのものになります。
    シリーズやデータフレームの場合、これは単なるレコードのリストです。
 
-Now, the following types are directly used:
+現在、以下の型が直接使用されています：
 
- * `Series<'TKey, 'TValue>` represents a series of values `'TValue` indexed by an
-   index `'TKey`. A series uses an abstract vector, index and vector builder, so it 
-   should work with any data representation. A series provides some standard slicing 
-   operators, projection, filtering etc. There are also some binary operators (multiply 
-   by a scalar, add series, etc.) and addtional operations in the `Series` module.
+ * `Series<'TKey, 'TValue>` は`'TKey`でインデックスされた
+   `'TValue`型の値のシリーズを表します。シリーズは抽象ベクター、
+   インデックス、ベクタービルダーを使用するため、
+   任意のデータ表現をサポートできるようになっています。
+   シリーズはスライシング操作や射影、フィルタリングなど、
+   いくつかの標準的な操作をサポートします。
+   `Series`モジュールには他にも、いくつかの二項演算
+   (スカラー倍やシリーズの加算など)やその他の操作が用意されています。
 
- * `Frame<'TRowKey, 'TColumnKey>` represents a data frame with rows indexed using
-   `TRowKey` (this could be `DateTime` or just ordinal numbers like `int`) and columns
-   indexed by `TColumnKey` (typically a `string`). The data in the frame can be
-   hetrogeneous (e.g. different types of values in different columns) and so accessing
-   data is dynamic - but you can e.g. get a typed series.
+ * `Frame<'TRowKey, 'TColumnKey>` は`TRowKey`でインデックスされた行
+   (これは`DateTime`あるいは`int`のような単なる序数になります)、および
+   `TColumnKey`でインデックスされた列(一般的には`string`)を持った
+   データフレームを表します。
+   フレーム内には異種データが混在するため、データへのアクセスは動的に
+   行われます。
+   しかしたとえば型付のシリーズを取得するといったことも可能です。
    
-   The operations available on the data frame include adding & removing series (which 
-   aligns the new series according to the row index), joins (again - aligns the series) 
-   etc. You can also get all rows as a series of (column) series and all columns as a 
-   series of (row) series - they are available as extension methods and in the `Frame` module.
+   データフレームに対する操作としては、
+   シリーズの追加や削除(新しいシリーズは行インデックスに従って
+   アラインされます)の他に、連結(これもやはりアラインされます)も可能です。
+   また、すべての行を一連の(列)シリーズとして取得したり、
+   すべての列を一連の(行)シリーズとして取得することもできます。
+   これらの操作は拡張メソッドとして `Frame` モジュール内で定義されています。
 
-## Discussion and open questions
+## 議論および問題の提起
 
-We're hoping that the design of the internals is now reasonable, but the end user API may
-still be missing some useful functionality (let us know if you need some!) Here are a few
-things that we discussed earlier and that we may still look into at some point:
+我々としては今のところ内部の設計はリーズナブルだと思っていますが、
+エンドユーザー用APIには一部の有用な機能がまだ不足しているかもしれません
+(必要な機能があれば是非教えてください！)。
+これまでにやりとりされた議論、並びに検討中の課題については以下の通りです：
 
- * **Time series vs. pivot table** - there is some mismatch between two possible
-   interpretations and uses of the library. One is for time-series data (e.g. in finance)
-   where one typically works with dates as row indices. More generally, you can see this
-   as _continous_ index. It makes sense to do interpolation, sort the observations,
-   align them, re-scale them etc. (Note that _continuous_ is stronger than _ordered_ -
-   aside from time, the only continuous measure we can think of is distance-dependent
-   series.)
+ * **時系列データ vs. ピボットテーブル** - ライブラリには用途の異なる2つの
+   データ表現があります。
+   1つは(株価のような)時系列データで、一般的には行インデックスを日付として
+   動作するものです。
+   さらに一般的にいえば、これは **連続的** インデックスとみなすことができます。
+   したがって補間や観測値のソート、データのアライメント、リスケールといった
+   操作が有効です(なお**連続的**であることは**順序付**であることよりも強力です。
+   時間以外では、距離に異存するシリーズだけが連続的に
+   計測可能だとみなせます)。
    
-   The other case is when we have some _discrete_ observations (perhaps a list of 
-   records with customer data, a list of prices of different stock prices etc.) In this
-   case, we need more "pivot table" functions etc.
+   もう1つは**不連続な**観測値に対して使用します
+   (たとえば顧客データを表すレコードのリストや、異なる株価のリストなどです)。
+   この場合には「ピボットテーブル」の機能が必要になります。
+   
+   これら2つの用途はかなり異なるものですが、我々は両者を
+   (単にインデックスが異なるだけの)同じ型として扱うほうがいいと判断しました。
+   そうすると今度はAPIがさらに複雑になるかもしれないという問題があります。
+   これらを型の中で区別しておけば、F# 3.1の拡張メソッド機能を使用して単なる
+   「不連続データフレーム」あるいは「連続データフレーム」を拡張できます。
+   しかし今のところすべての関数は `Frame`/`Series` モジュールに定義されており、
+   任意の型を拡張する拡張メソッドが用意されています。
 
-   Although these two uses are quite different, we feel that it might make sense to use
-   the same type for both (just with a different index). The problem is that this might
-   make the API more complex. Although, if we can keep the distincion in the type, we can
-   use F# 3.1 extension methods that extend just "discrete data frame" or "continous data 
-   frame". However, for now all functions are available in `Frame`/`Series` module and 
-   as extension methods that extend any type.
+ * **型プロバイダー** - 我々はさらなる安全性を得るためにも、
+   型プロバイダーを使用することを検討しています
+   (たとえば列名のチェックやデータフレーム内の型チェックなど)。
+   今のところはTODOリストに入れられているだけです。
+   限定的ではあるにしても、何か便利なことが出来るのではないかと考えています。
+   
+   現在のアイディアとして、動的データフレームを使用してリサーチや
+   プロトタイプ実装を行いたいけれども、その後にもっと具体的なデータを
+   使用することになるような場合に、`DataFrame<"Open:float,Close:float">(dynamicDf)`
+   というように記述することで新しく型付データフレームが
+   取得できるだろうというような感じです。
 
- * **Type provider** - we are thinking about using type providers to give some additional
-   safety (like checking column names and types in a data frame). This is currently
-   on the TODO list - we think we can do something useful here, although it will 
-   certainly be limited. 
-
-   The current idea is that you migth want to do some research/prototyping using a 
-   dynamic data frame, but once you're done and have some more stable data, you should
-   be able to write, say `DataFrame<"Open:float,Close:float">(dynamicDf)` and get a
-   new typed data frame. 
-
-If you have any comments regarding the topics above, please [submit an issue
-on GitHub](https://github.com/BlueMountainCapital/Deedle/issues) or, if you
-are interested in more actively contributing, join
-the [F# for Data and Machine Learning](http://fsharp.org/technical-groups/) working
-group. *)
+上記のトピックに関して何かコメントがあれば、
+是非 [GitHub上でIssuesを登録](https://github.com/BlueMountainCapital/Deedle/issues)したり、
+もっと積極的に貢献したいという場合には
+[F# for Data and Machine Learning](http://fsharp.org/technical-groups/)
+ワーキンググループへ参加してください。
+*)
